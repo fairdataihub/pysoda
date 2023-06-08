@@ -26,6 +26,7 @@ Python package of the SODA functions for curating and sharing datasets according
 - Uploading dataset to Pennsieve with SDS compliance (ignoring empty folders and non-allowed files, avoiding duplicate files and folders, etc.)
 - And many more
 
-Pysoda will make these functions, which have been thoroughtly tested and validated, easily integratable in automated workflows such that the investigators do not have to re-write them.
+Pysoda will make these functions, which have been thoroughtly tested and validated, easily integratable in automated workflows such that the investigators do not have to re-write them. This will be very similar to the [pyfairdatatools](https://github.com/AI-READI/pyfairdatatools) Python package we are developing for our [AI-READI project](https://aireadi.org/) as part of the NIH Bridge2AI program.
 
+## Interested?
 Pysoda will be developed if there is need expressed by SPARC investigators or other investigators desiring to submit their datasets for publication on the SPARC Portal. If you think pysoda could be useful to you, please let us know through the [GitHub issues](https://github.com/fairdataihub/pysoda/issues) of this repository of via email (bpatel@fairdataihub.org).
