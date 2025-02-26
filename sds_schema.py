@@ -211,13 +211,18 @@ sds_schema = {
           "user-permissions": {"type": "array"},
           "team-permissions": {"type": "array"},
           "license": {"type": "string"},
+          "name": {"type": "string"},
         }
       },
-      # ADD to all of the ones below
       "generate-dataset": {
         "type": "object",
         "properties": {
-          "destination": {"type": "string"}
+          "destination": {"type": "string", "enum": ["ps", "local"]},
+          "if-existing": {"type": "string", "enum": ["replace", "skip", "merge"]},
+          "if-existing-files": {"type": "string", "enum": ["replace", "skip"]},
+          "generate-option": {"type": "string", "enum": ["new", "existing-ps"]},
+          "path": {"type": "string"},
+          "dataset-name": {"type": "string"},
         }
       },
       
