@@ -41,37 +41,54 @@ sds_schema = {
         "type": "array",
         "items": {"type": "string"}
       },
-
       "dataset-structure": {
         "type": "object", 
         "properties": {
           "folders": {
             "type": "object",
             "properties": {
-              "folder-name": {"type": "string"},
-              "folders": {
-                "$ref": "#/properties/dataset-structure/properties/folders"
-              },
-              "files": {
-                "type": "object",
-                "patternProperties": {
-                    ".*": {  # Matches any file name
-                        "type": "object",
-                        "properties": {
-                            "timestamp": {"type": "string"},
-                            "size": {"type": "number"},
-                            "checksum": {"type": "string"},
-                            "description": {"type": "string"},
-                            "additional-metadata": {"type": "string"}, #TODO: Define how?
-                            "extra-columns": {"type": "string"} #TODO: Define how?
+              "patternProperties": {
+                ".*": { # match any folder name
+                  "type": "object",
+                  "properties": {
+                    "folders": {
+                      "$ref": "#/properties/dataset-structure/properties/folders"
+                    },
+                    "files": {
+                      "type": "object",
+                      "properties": {
+                        "patternProperties": {
+                            ".*": {  # Matches any file name
+                                "type": "object",
+                                "properties": {
+                                    "timestamp": {"type": "string"},
+                                    "size": {"type": "number"},
+                                    "checksum": {"type": "string"},
+                                    "description": {"type": "string"},
+                                    "additional-metadata": {"type": "string"}, #TODO: Define how?
+                                    "extra-columns": {"type": "string"} #TODO: Define how?
 
+                                },
+                                "required": ["timestamp", "size", "checksum"]
+                            }
                         },
-                        "required": ["timestamp", "size", "checksum"]
+                        "additionalProperties": False
+                      }
                     }
+                  },
                 },
-                "additionalProperties": False
               },
-            },
+              "action": {
+                "type": "array", 
+                "items": {
+                  "type": "string"
+                }
+              },
+              "relativePath": {
+                "type": "string"
+              }
+            } 
+            
           },
           "files": {
             "type": "object",
@@ -88,9 +105,12 @@ sds_schema = {
             },
             "additionalProperties": False
           },
+          "relativePath": {
+            "type": "string"
+          },
         }, 
       },
-
+      
       "dataset-metadata": {
         "type": "object",
         "properties": {
@@ -143,7 +163,7 @@ sds_schema = {
                   "properties": {
                     "link": {"type": "string"},
                     "tyype": {"type": "string"},
-                    "relation": "IsProtocolFor",
+                    "relation": {"type": "string"},
                     "description": {"type": "string"},
                     "additional-metadata": {"type": "boolean"}
                   }
@@ -225,9 +245,99 @@ sds_schema = {
           "dataset-name": {"type": "string"},
         }
       },
-      
-
-
-
+      "dataset-entity-structure": {
+        "type": "object",
+        "properties": {
+          "subjects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "subjectId": {"type": "string"},
+                "metadata": {"type": "object"},
+                "samples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "sampleId": {"type": "string"},
+                      "metadata": {"type": "object"},
+                    }
+                  }
+                }
+              }
+            },
+          },
+        }
+      },
+      "dataset-entity-obj": {
+        "type": "object",
+        "properties": {
+          "bucketed-data": {
+            "type": "object",
+            "properties": {
+              "code": {"type": "array", "items": {"type": "string", "format": "file-path"}},
+              "experimental-data": {"type": "array", "items": {"type": "string", "format": "file-path"}},
+              "other": {"type": "array", "items": {"type": "string", "format": "file-path"}},
+            }
+          }
+        }
+      }
     }
 }
+
+
+sds_e = {
+  "dataset-structure": {
+    "folders": {
+      "root-folder": {
+        "folders": {
+          "nested-folder": {
+            "files": {
+              "file1.txt": {
+                "timestamp": "2023-01-01T00:00:00Z",
+                "size": 1234,
+                "checksum": "abc123",
+                "description": "Test file 1",
+                "additional-metadata": "metadata1",
+                "extra-columns": "extra1"
+              },
+              "file2.txt": {
+                "timestamp": "2023-01-02T00:00:00Z",
+                "size": 5678,
+                "checksum": "def456",
+                "description": "Test file 2",
+                "additional-metadata": "metadata2",
+                "extra-columns": "extra2"
+              }
+            }
+          },
+          "other-nested-folder": {
+            "files": {
+              "file3.txt": {
+                "timestamp": "2023-01-03T00:00:00Z",
+                "size": 91011,
+                "checksum": "ghi789",
+                "description": "Test file 3",
+                "additional-metadata": "metadata3",
+                "extra-columns": "extra3"
+              }
+            }
+          }
+        },
+        "files": {
+          "file3.txt": {
+            "timestamp": "2023-01-03T00:00:00Z",
+            "size": 91011,
+            "checksum": "ghi789",
+            "description": "Test file 3",
+            "additional-metadata": "metadata3",
+            "extra-columns": "extra3"
+          }
+        }
+      }
+    }
+  }
+}
+
+validate(sds_e, sds_schema)
