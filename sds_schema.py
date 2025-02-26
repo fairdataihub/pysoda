@@ -66,8 +66,21 @@ sds_schema = {
                                     "checksum": {"type": "string"},
                                     "description": {"type": "string"},
                                     "additional-metadata": {"type": "string"}, #TODO: Define how?
-                                    "extra-columns": {"type": "string"} #TODO: Define how?
-
+                                    "extra-columns": {"type": "string"}, #TODO: Define how?
+                                    "extension": {"type": "string"},
+                                    "action": {
+                                      "type": "array", 
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "relativePath": {
+                                      "type": "string"
+                                    },
+                                    "path": {
+                                      "type": "string"
+                                    }, 
+                                    "location": {"type": "string", "enum": ["local", "pennsieve"]},
                                 },
                                 "required": ["timestamp", "size", "checksum"]
                             }
@@ -86,29 +99,52 @@ sds_schema = {
               },
               "relativePath": {
                 "type": "string"
-              }
-            } 
+              },
+              "path": {
+                "type": "string"
+              }, 
+              "location": {"type": "string", "enum": ["local", "pennsieve"]}, 
             
           },
           "files": {
             "type": "object",
-            "patternProperties": {
-                ".*": {  # Matches any file name
-                    "type": "object",
-                    "properties": {
-                        "timestamp": {"type": "string"},
-                        "size": {"type": "number"},
-                        "checksum": {"type": "string"}
-                    },
-                    "required": ["timestamp", "size", "checksum"]
-                }
-            },
-            "additionalProperties": False
+            "properties": {
+              "patternProperties": {
+                  ".*": {  # Matches any file name
+                      "type": "object",
+                      "properties": {
+                          "timestamp": {"type": "string"},
+                          "size": {"type": "number"},
+                          "checksum": {"type": "string"},
+                          "description": {"type": "string"},
+                          "additional-metadata": {"type": "string"}, #TODO: Define how?
+                          "extra-columns": {"type": "string"}, #TODO: Define how?
+                          "extension": {"type": "string"},
+                          "action": {
+                            "type": "array", 
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "relativePath": {
+                            "type": "string"
+                          },
+                          "path": {
+                            "type": "string"
+                          }, 
+                          "location": {"type": "string", "enum": ["local", "pennsieve"]},
+                      },
+                      "required": ["timestamp", "size", "checksum"]
+                  }
+              },
+              "additionalProperties": False
+            }
           },
           "relativePath": {
             "type": "string"
           },
         }, 
+        },
       },
       
       "dataset-metadata": {
