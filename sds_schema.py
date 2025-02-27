@@ -250,10 +250,27 @@ sds_schema = {
             "type": "object"
           },
           "submission-metadata": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "milestones": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "funding-consortium": {
+                    "type": "string"
+                },
+                "consortium-data-standard": {"type": "string"},
+                "completion-date": {"type": "string"},
+                "filepath": {"type": "string"},
+            }
           },
           "code-metadata": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "code_description": {"type": "string"},
+            }
           },
           "README": {
             "type": "string"
