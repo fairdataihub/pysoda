@@ -173,7 +173,7 @@ sds_schema = {
                     "isFair": {"type": "boolean"},
                   }
                 }
-              }, #TODO: Define how?
+              },
               "contributors": {
                 "type": "object",
                 "properties": {
@@ -191,14 +191,14 @@ sds_schema = {
                    "funding": {"type": "array", "items": {"type": "string"}},
                    "acknowledgment": {"type": "string"},
                  }
-               }, #TODO: Define how?
+               },
               "protocols": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
                     "link": {"type": "string"},
-                    "tyype": {"type": "string"},
+                    "relationType": {"type": "string"},
                     "relation": {"type": "string"},
                     "description": {"type": "string"},
                     "additional-metadata": {"type": "boolean"}
@@ -233,8 +233,12 @@ sds_schema = {
               },
             }
           },
-          "shared-metadata":  {
-            "type": "object"
+          "shared-metadata":  { #UI only 
+            "type": "object",
+            "properties": {
+              "sparc-award": {"type": "string"},
+              "award-number": {"type": "string"},
+            }
           },
           "protocol-data": {
             "type": "array"
@@ -263,9 +267,36 @@ sds_schema = {
         "type": "object",
         "properties": {
           "description": {"type": "object"},
-          "pi-owner": {"type": "object"},
-          "user-permissions": {"type": "array"},
-          "team-permissions": {"type": "array"},
+          "pi-owner": {
+            "type": "object",
+            "properties": {
+              "name": {"type": "string"},
+              "userString": {"type": "string"},
+              "UUID": {"type": "string"},
+            }
+          },
+          "user-permissions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "userString": {"type": "string"},
+                "UUID": {"type": "string"},
+                "permission": {"type": "string"},
+              }
+            }
+          },
+          "team-permissions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "teamString": {"type": "string"},
+                "UUID": {"type": "string"},
+                "permission": {"type": "string"},
+              }
+            }
+          },
           "license": {"type": "string"},
           "name": {"type": "string"},
         }
