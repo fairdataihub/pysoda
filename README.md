@@ -23,37 +23,14 @@ sds.add_dataset_name('my_dataset')
 
 ```python
 
-# import your data files and folders and bucket them into the appropriate SDS category [ skippable, achieves the step of importing data into sodajsonobj in our front end code]
-sds.dataset.import(path='path/to/data', category='category_name')
+# import your data files and folders
+sds.dataset.import(path='path/to/data')
+
+# TODO: Add step where you set which high level folder a file gets assigned to
 
 
-# create your sds entity structure that takes the below shape inside of the sds object:
-# TODO: Create a validator for this structure in a separate python script
-entity_structure = {
-    'entity_name': {
-        'entity_type': 'entity_type',
-        'entity_category': 'entity_category',
-        'entity_data': ['file_or_folder_path_1'], # include the path to the imported data TODO: Use ids or paths? ids may be easier to manage as then we only need to change the the path in once place if a file is moved
-        'entity_children': {
-            'entity_name': {
-                'entity_type': 'entity_type',
-                'entity_category': 'entity_category',
-                'entity_data': ['file_or_folder_path_1'], # include the path to the imported data TODO: Use ids or paths? ids may be easier to manage as then we only need to change the the path in once place if a file is moved=,
-                'entity_children': {
-                    'entity_name': {
-                        'entity_type': 'entity_type',
-                        'entity_category': 'entity_category',
-                        'entity_data': ['file_or_folder_path_1'], # include the path to the imported data TODO: Use ids or paths? ids may be easier to manage as then we only need to change the the path in once place if a file is moved
-                        'entity_children': {}
-                    }
-                }
-            }
-        }
-    }
-}
+# map your imported data files to the entity structure defined in the SDS schema [here](sds_schema.py)
 entity_structure = sds.get_entity_structure()
-
-# define the structure of the entity relationships as per the SDS schema
 
 # set the entity structure in the sds object
 sds.set_entity_structure(entity_structure)
@@ -71,7 +48,7 @@ from sds_create import metadata
 # define your submission metadata
 submission = sds.get_submission_metadata()
 ......
-# set the submission metadata in the sds object. NOTE: Find defnitions for the sub sructure here
+# set the submission metadata in the sds object. NOTE: Find definitions for the submission metadata in the SDS schema [here](sds_schema.py)
 sds.set_submission_metadata(submission)
 
 # create the excel file for the submission metadata
@@ -91,14 +68,36 @@ metadata.manifest.create(sds, file_output_location='path/to/output')
 ### Generate your dataset
 
 ```python
+# import the generate module from the sds_create package
+from sds_create import generate
+
 # provide the Pennsieve API Key and secret
 sds.upload.auth(api_key='api, api_secret='api_secret)
 
-# upload new dataset
-sds.upload()
+# upload new dataset 
+# NOTE: You will need to download and start the Pennsieve Agent [here](https://app.pennsieve.io) to upload data to Pennsieve
+dataset_id = generate(sds) # returns dataset_id
 
-# upload to existing dataset
-sds.upload(dataset_id='dataset_id', folders='merge or replace', files='replace or skip)
+# OR upload to an existing pennsieve dataset
+# set the generate options in the sds object
+sds.set_generate_dataset_options(destination='existing-ps', if_existing="merge", if_existing_files="replace", dataset_id=dataset_id)
+update_existing(sds)
+```
 
 
+## Utilities
+
+### Compare a dataset on Pennsieve and a local dataset for differences 
+
+```python
+from sds_create import compare
+
+# provide the Pennsieve API Key and secret
+sds.upload.auth(api_key='api, api_secret='api_secret)
+
+# import the dataset from Pennsieve 
+sds.import_dataset(dataset_id='dataset_id')
+
+# compare the Pennsieve dataset with the local dataset
+results = compare(sds, local_dataset_location='path/to/local/dataset')
 ```
