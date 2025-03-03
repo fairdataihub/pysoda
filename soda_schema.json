@@ -330,7 +330,75 @@
           }
         },
         "README": { "type": "string" },
-        "CHANGES": { "type": "string" }
+        "CHANGES": { "type": "string" },
+        "performances": {
+          "type": "array",
+          "items": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 7,
+              "items": [
+                {
+                  "type": "string",
+                  "enum": ["performance id"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["protocol url or doi"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["date"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["start datetime"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["end datetime"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["participants"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Additional Metadata"]
+                }
+              ]
+            }
+          ],
+          "additionalItems": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
       }
     },
     "digital-metadata": {
