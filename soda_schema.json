@@ -466,6 +466,81 @@
               }
             ]
           }
+        },
+        "resources": {
+          "type": "array",
+          "items": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": [
+                {
+                  "type": "string",
+                  "enum": ["RRID"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Type"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Name"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["URL"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Vendor"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Version"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["ID in protocol"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Additional Metadata"]
+                }
+              ]
+            }
+          ],
+          "additionalItems": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
         }
       }
     },
