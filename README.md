@@ -9,7 +9,7 @@ pysoda is a tool for your python workflows that can help you create datasets in 
 ### Import the pysoda package into your project and initialize the soda object with the supported standard of your choosing
 
 ```python
-from pysoda import soda
+from pysoda import soda_create
 # initialize the soda_create object
 # Internal note: soda_create returns the typical sodaJSONObj with additional methods for adding data and metadata [not in version 1]
 # It is passed into the module functions just like our sodaJSONObj is passed to the backend of our api
@@ -17,16 +17,17 @@ from pysoda import soda
 soda = soda_create(standard='sds')
 
 # add a dataset name to the soda object
-soda.add_dataset_name('my_dataset')
+soda.set_dataset_name('my_dataset')
 
 ```
 
 ### Structure your data
 
 ```python
+from pysoda import dataset_import
 
 # import your data files and folders
-soda.dataset.import(path='path/to/data')
+dataset_import(path='path/to/data', soda)
 
 # TODO: Add step where you set which high level folder a file gets assigned to
 
