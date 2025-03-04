@@ -24,19 +24,28 @@ soda.set_dataset_name('my_dataset')
 ### Structure your data
 
 ```python
-from pysoda import dataset_import
 
-# import your data files and folders
-dataset_import(path='path/to/data', soda)
 
-# TODO: Add step where you set which high level folder a file gets assigned to
+# get your base dataset files and folders structure
+dataset_structure = soda.get_dataset_structure()
+
+# fill out your dataset structure.
+# NOTE: YOu will want to reference the
+# dataset_structure key in the soda_schema.json file to understand the structure
+# and what is required.
+dataset_structure['folders'] = {'data': {'files': {}'file1': {}, 'file2': {}} 'folders': {'primary': {}}}
+dataset_structure['files'] = {'filel1': {}} # NOTE: You can add metadata to the file here
+dataset_structure['relativePath] = '/'
 
 
 # map your imported data files to the entity structure defined in the soda schema [here](soda_schema.py)
 entity_structure = soda.get_entity_structure()
 
-# set the entity structure in the soda object
-soda.set_entity_structure(entity_structure)
+# fill out your entity structure using the schema as a reference
+# TODO: how are entities mapped to files in the schema?
+enntity = {'subjectId': 'sub-1', 'metadata': {'age': '1 year', 'sex': 'female'}}
+entity_structure['subjects'].append(entity)
+
 
 
 ```
