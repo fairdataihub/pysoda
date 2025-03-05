@@ -29,3 +29,6 @@ class Soda:
 
     def get_dataset_name(self):
         return self.soda_object["dataset-metadata"]["name"]
+
+    def get_submission(self):
+        return self.soda_object["dataset-metadata"]["submission-metadata"]

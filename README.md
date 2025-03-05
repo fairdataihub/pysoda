@@ -59,9 +59,13 @@ from soda_create import metadata
 
 # define your submission metadata
 submission = soda.get_submission_metadata()
-......
-# set the submission metadata in the soda object. NOTE: Find definitions for the submission metadata in the soda schema [here](soda_schema.py)
-soda.set_submission_metadata(submission)
+
+submission['consortium-data-standard'] = 'standard'
+submission['funding-consortium'] = 'SPARC'
+submission['award-number'] = '12345'
+submission['milestone-acheieved'] = ['one', 'two', 'three']
+submission['milestone-completion-date'] = '2020-01-01'
+submission['filepath'] = 'path/to/destination'
 
 # create the excel file for the submission metadata
 metadata.submission.create(soda, file_output_location='path/to/output')
