@@ -8,10 +8,9 @@ import shutil
 
 TEMPLATE_PATH = join(dirname(abspath(__file__)), 'templates')
 METADATA_UPLOAD_BF_PATH = join(dirname(abspath(__file__)), 'metadata_upload_bf')
-
-
+   
 ### Create submission file
-def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr):
+def create_excel(self, upload_boolean, bfaccount, bfdataset, filepath, soda):
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
@@ -23,6 +22,9 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
         shutil.copyfile(source, destination)
     except FileNotFoundError as e:
         raise e
+    
+    #TODO: Double check this path; name var something more descriptive
+    val_arr = soda["metadata"]["submission"]
 
     # write to excel file
     wb = load_workbook(destination)
