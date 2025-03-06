@@ -339,17 +339,17 @@
         "submission-metadata": {
           "type": "object",
           "properties": {
-            "consortium-data-standard": { "type": "string", "required": true },
-            "funding-consortium": {
+            "consortium_data_standard": { "type": "string", "required": true },
+            "funding_consortium": {
               "type": "string",
               "required": true
             },
-            "award-number": { "type": "string", "required": true },
-            "milestone-achieved": {
+            "award_number": { "type": "string", "required": true },
+            "milestone_achieved": {
               "type": "array",
               "items": { "type": "string", "required": true }
             },
-            "milestone-completion-date": { "type": "string", "required": true },
+            "milestone_completion_date": { "type": "string", "required": true },
             "filepath": { "type": "string" }
           }
         },

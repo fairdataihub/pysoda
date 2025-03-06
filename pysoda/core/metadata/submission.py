@@ -10,13 +10,15 @@ TEMPLATE_PATH = join(dirname(abspath(__file__)), 'templates')
 METADATA_UPLOAD_BF_PATH = join(dirname(abspath(__file__)), 'metadata_upload_bf')
    
 ### Create submission file
-def create_excel(self, upload_boolean, bfaccount, bfdataset, filepath, soda):
+def create_excel(soda, upload_boolean, destination_path):
+
+    # TODO: Validate the submission portion of the soda object before creating the excel file via the schema 
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
 
-    destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx") if upload_boolean else filepath
+    destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx") if upload_boolean else destination_path
 
     try:
         shutil.copyfile(source, destination)
@@ -24,17 +26,19 @@ def create_excel(self, upload_boolean, bfaccount, bfdataset, filepath, soda):
         raise e
     
     #TODO: Double check this path; name var something more descriptive
-    val_arr = soda["metadata"]["submission"]
+    submission_metadata_list = [
+        soda["dataset_metadata"]["submission_metadata"]
+    ]
 
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
-    for column, arr in zip(excel_columns(start_index=2), val_arr):
-        ws1[column + "2"] = arr["consortiumDataStandard"]
-        ws1[column + "3"] = arr["fundingConsortium"]
-        ws1[column + "4"] = arr["award"]
-        ws1[column + "5"] = arr["milestone"]
-        ws1[column + "6"] = arr["date"]
+    for column, submission_data in zip(excel_columns(start_index=2), submission_metadata_list):
+        ws1[column + "2"] = submission_data["consortium_data_standard"]
+        ws1[column + "3"] = submission_data["funding_consortium"]
+        ws1[column + "4"] = submission_data["award_number"]
+        ws1[column + "5"] = submission_data["milestone_achieved"]
+        ws1[column + "6"] = submission_data["milestone_completion_date"]
 
         ws1[column + "2"].font = font_submission
         ws1[column + "3"].font = font_submission
@@ -42,7 +46,7 @@ def create_excel(self, upload_boolean, bfaccount, bfdataset, filepath, soda):
         ws1[column + "5"].font = font_submission
         ws1[column + "6"].font = font_submission
 
-    rename_headers(ws1, len(val_arr), 2)
+    rename_headers(ws1, len(submission_metadata_list), 2)
 
     wb.save(destination)
 
