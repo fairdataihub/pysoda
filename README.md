@@ -55,7 +55,7 @@ entity_structure['subjects'].append(entity)
 ```python
 
 # import the metadata module from the soda_create package
-from soda_create import metadata
+from pysoda import metadata
 
 # define your submission metadata
 submission = soda.get_submission_metadata()
@@ -83,9 +83,24 @@ metadata.manifest.create(soda, file_output_location='path/to/output')
 
 ### Generate your dataset
 
+#### Generate locally
+
 ```python
-# import the generate module from the soda_create package
-from soda_create import generate
+
+from pysoda import generate
+
+# set the generation options
+soda.set_generate_dataset_options(destination='local', path='path/to/destination', dataset_name='my_dataset')
+
+# generate the dataset
+generate(soda)
+
+```
+
+#### Generate on Pennsieve
+
+```python
+from pysoda import generate
 
 # provide the Pennsieve API Key and secret
 soda.upload.auth(api_key='api, api_secret='api_secret)
@@ -105,7 +120,7 @@ update_existing(soda)
 ### Compare a dataset on Pennsieve and a local dataset for differences
 
 ```python
-from soda_create import compare
+from pysoda import compare
 
 # provide the Pennsieve API Key and secret
 soda.upload.auth(api_key='api, api_secret='api_secret)
