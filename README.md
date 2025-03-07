@@ -1,8 +1,19 @@
 # pysoda
 
-## Description
+## Overview
 
-pysoda is a tool for your python workflows that can help you create datasets in compliance with your favorite FAIR data standards.
+Pysoda is a tool for your python workflows that can help you create datasets in compliance with your favorite FAIR(Findable, Accessible, Interoperable, Reusable) data standards. At the moment, pysoda is primarily focused on neuromodulation, neurophysiology, and related data according to the SPARC guidelines that are aimed at making data FAIR. However, we are envisioning to extend the tool to support other standards such as BIDS, FHIR, etc, in the future.
+
+Pysoda stems from SODA, a desktop software that simplifies the organization and sharing of data that needs to comply to a FAIR data standard. While using the SODA app can be convenient for most investigators, others with coding proficiency may find it more convenient to implement automated workflows. Given that the backend of SODA contains many functions necessary for preparing and submitting a dataset that is compliant with the SPARC Data Structure (SDS) such as:
+
+Creating standard metadata files
+Generating manifest files
+Automatically complying with the file/folder naming conventions
+Validating against the offical SDS validator
+Uploading dataset to Pennsieve with SDS compliance (ignoring empty folders and non-allowed files, avoiding duplicate files and folders, etc.)
+And many more
+
+Pysoda makes these functions, which have been thoroughtly tested and validated, easily integratable in automated workflows such that the investigators do not have to re-write them. This will be very similar to the [pyfairdatatools](https://github.com/AI-READI/pyfairdatatools) Python package we are developing for our [AI-READI](https://aireadi.org/) project as part of the NIH Bridge2AI program.
 
 ## Workflow
 
