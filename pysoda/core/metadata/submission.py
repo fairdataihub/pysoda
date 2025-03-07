@@ -25,7 +25,7 @@ def create_excel(soda, upload_boolean, destination_path):
     except FileNotFoundError as e:
         raise e
     
-    #TODO: Double check this path; name var something more descriptive
+    #TODO: Do not use an array for the non-array values; zipping for the sake of the ascii value is not necessary until milestone_achieved
     submission_metadata_list = [
         soda["dataset_metadata"]["submission_metadata"]
     ]
@@ -35,25 +35,20 @@ def create_excel(soda, upload_boolean, destination_path):
     ws1 = wb["Sheet1"]
     start_index = 2
     for column, submission_data in zip(excel_columns(start_index), submission_metadata_list):
-        print(column)
         ws1[column + "2"] = submission_data["consortium_data_standard"]
         ws1[column + "3"] = submission_data["funding_consortium"]
         ws1[column + "4"] = submission_data["award_number"]
-        for i in range(len(submission_data["milestone_achieved"])):
-            milestone = submission_data["milestone_achieved"][i]
-            sub_start_index = start_index
-            for col_ascii in excel_columns(sub_start_index):
-                ws1[col_ascii + str(i + 5)] = milestone
-                sub_start_index += 1
+        for col, milestone in zip(excel_columns(start_index), submission_data["milestone_achieved"]):
+            ws1[col + str(5)] = milestone
         ws1[column + "6"] = submission_data["milestone_completion_date"]
-
         ws1[column + "2"].font = font_submission
         ws1[column + "3"].font = font_submission
         ws1[column + "4"].font = font_submission
         ws1[column + "5"].font = font_submission
         ws1[column + "6"].font = font_submission
 
-    rename_headers(ws1, len(submission_metadata_list), 2)
+    # TODO: should milestone completion date also be an array?
+    rename_headers(ws1, len(submission_metadata_list[0]["milestone_achieved"]), 2)
 
     wb.save(destination)
 
@@ -105,17 +100,3 @@ def rename_headers(workbook, max_len, start_index):
       delete_range = len(columns_list) - max_len
       workbook.delete_cols(4 + max_len, delete_range)
 
-
-soda = {
-    "dataset_metadata": {
-        "submission_metadata": {
-            "consortium_data_standard": "test",
-            "funding_consortium": "test",
-            "award_number": "test",
-            "milestone_achieved": ["test", "test2"],
-            "milestone_completion_date": "test"
-        }
-    }
-}
-
-create_excel(soda, False, "./test.xlsx")
