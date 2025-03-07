@@ -6,7 +6,7 @@ import itertools
 import shutil
 
 
-TEMPLATE_PATH = join(dirname(abspath(__file__)), 'templates')
+TEMPLATE_PATH = join(dirname(abspath(__file__)), '..', 'metadata_templates')
 METADATA_UPLOAD_BF_PATH = join(dirname(abspath(__file__)), 'metadata_upload_bf')
    
 ### Create submission file
@@ -33,11 +33,18 @@ def create_excel(soda, upload_boolean, destination_path):
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
-    for column, submission_data in zip(excel_columns(start_index=2), submission_metadata_list):
+    start_index = 2
+    for column, submission_data in zip(excel_columns(start_index), submission_metadata_list):
+        print(column)
         ws1[column + "2"] = submission_data["consortium_data_standard"]
         ws1[column + "3"] = submission_data["funding_consortium"]
         ws1[column + "4"] = submission_data["award_number"]
-        ws1[column + "5"] = submission_data["milestone_achieved"]
+        for i in range(len(submission_data["milestone_achieved"])):
+            milestone = submission_data["milestone_achieved"][i]
+            sub_start_index = start_index
+            for col_ascii in excel_columns(sub_start_index):
+                ws1[col_ascii + str(i + 5)] = milestone
+                sub_start_index += 1
         ws1[column + "6"] = submission_data["milestone_completion_date"]
 
         ws1[column + "2"].font = font_submission
@@ -62,8 +69,6 @@ def create_excel(soda, upload_boolean, destination_path):
         print("Implement later")
         # upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination, True)
     return {"size": size}
-
-
 
 def excel_columns(start_index=0):
     """
@@ -100,3 +105,17 @@ def rename_headers(workbook, max_len, start_index):
       delete_range = len(columns_list) - max_len
       workbook.delete_cols(4 + max_len, delete_range)
 
+
+soda = {
+    "dataset_metadata": {
+        "submission_metadata": {
+            "consortium_data_standard": "test",
+            "funding_consortium": "test",
+            "award_number": "test",
+            "milestone_achieved": ["test", "test2"],
+            "milestone_completion_date": "test"
+        }
+    }
+}
+
+create_excel(soda, False, "./test.xlsx")
