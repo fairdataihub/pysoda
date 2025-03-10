@@ -11,6 +11,17 @@ METADATA_UPLOAD_BF_PATH = join(dirname(abspath(__file__)), 'metadata_upload_bf')
    
 ### Create submission file
 def create_excel(soda, upload_boolean, destination_path):
+    """
+    Create an Excel file for submission metadata.
+
+    Args:
+        soda (dict): The soda object containing dataset metadata.
+        upload_boolean (bool): Whether to upload the file to Pennsieve.
+        destination_path (str): The path to save the Excel file.
+
+    Returns:
+        dict: A dictionary containing the size of the metadata file.
+    """
 
     # TODO: Validate the submission portion of the soda object before creating the excel file via the schema 
 
