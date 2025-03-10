@@ -44,17 +44,38 @@ dataset_structure = soda.get_dataset_structure()
 # NOTE: YOu will want to reference the
 # dataset_structure key in the soda_schema.json file to understand the structure
 # and what is required.
-dataset_structure['folders'] = {'data': {'files': {}'file1': {}, 'file2': {}} 'folders': {'primary': {}}}
-dataset_structure['files'] = {'filel1': {}} # NOTE: You can add metadata to the file here
-dataset_structure['relativePath] = '/'
+dataset_structure['folders'] = {
+    'data': {
+        'files': {
+            'file1': {
+                'path': '/home/user/file1.txt', 'relativePath': '/data/file1.txt', 'action': 'new'
+            }, 
+            'file2': {
+                'path': '/home/user/file2.txt', 'relativePath': '/data/file2.txt', 'action': 'new'
+            }
+        }, 
+        'folders': {
+            'primary': {
+                'files': {
+                    'file3': {
+                        'path': '/home/user/file3.txt', 'relativePath': '/data/primary/file3.txt', 'action': 'new'
+                    }
+                }
+            }
+        },
+        'relativePath': '/data'
+    },
+    'files': {},
+    'relativePath': '/'
+}
 
 
 # map your imported data files to the entity structure defined in the soda schema [here](soda_schema.py)
 entity_structure = soda.get_entity_structure()
 
 # fill out your entity structure using the schema as a reference
-# TODO: how are entities mapped to files in the schema?
-enntity = {'subjectId': 'sub-1', 'metadata': {'age': '1 year', 'sex': 'female'}}
+# NOTE: data model not finalized
+entity = {'subjectId': 'sub-1', 'metadata': {'age': '1 year', 'sex': 'female'}, 'data-file': '/data/file1.txt'}
 entity_structure['subjects'].append(entity)
 
 
@@ -75,7 +96,6 @@ submission['consortium-data-standard'] = 'standard'
 submission['funding-consortium'] = 'SPARC'
 submission['award-number'] = '12345'
 submission['milestone-acheieved'] = ['one', 'two', 'three']
-submission['milestone-completion-date'] = '2020-01-01'
 submission['filepath'] = 'path/to/destination'
 
 # create the excel file for the submission metadata
