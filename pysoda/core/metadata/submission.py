@@ -6,7 +6,7 @@ import itertools
 import shutil
 import pkg_resources
 import json
-from jsonschema import validate, ValidationError
+from jsonschema import validate
 
 TEMPLATE_PATH = join(dirname(abspath(__file__)), '..', 'metadata_templates')
 METADATA_UPLOAD_BF_PATH = join(dirname(abspath(__file__)), 'metadata_upload_bf')
@@ -150,5 +150,21 @@ soda = {
 }
 
 
+try:
+    create_excel(soda, False, "./submission.xlsx")
+except Exception as e:
+    msg = f"The submission metadata provided does not match the sds for the following reason: "
+    if e.schema_path.pop().strip() == "type":
+        print("yes")
+        s = ''
+        while e.schema_path:
+            p_v = e.schema_path.popleft()
+            if p_v.strip() != "properties":
+                if s != '':
+                    s += ' -> '
+                s += p_v
+        msg = f"{msg} {s} needs to be a list of values."
 
-create_excel(soda, False, "./submission.xlsx")
+    print(msg)
+
+

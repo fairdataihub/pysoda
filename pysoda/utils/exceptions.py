@@ -66,3 +66,21 @@ class LocalDatasetMissingSpecifiedFiles(Exception):
 
     def __str__(self):
         return self.error_message
+    
+
+def validation_error_message(e):
+    """
+    Print a message for a validation error.
+    input: e (ValidationError): The validation error from the validate library.
+    output: human readable message for the validation error.
+    """
+    if e.schema_path.pop().strip() == "type":
+        s = ''
+        while e.schema_path:
+            p_v = e.schema_path.popleft()
+            if p_v.strip() != "properties":
+                if s != '':
+                    s += ' -> '
+                s += p_v
+        msg = f"{msg} {s} needs to be a list of values."
+    return msg
