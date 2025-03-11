@@ -1,2 +1,3 @@
 include README.md 
 include pysoda/core/metadata/templates/*.xlsx
+include schema/*.json

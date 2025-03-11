@@ -4,10 +4,35 @@ from openpyxl.styles import PatternFill, Font
 from string import ascii_uppercase
 import itertools
 import shutil
-
+import pkg_resources
+import json
+from jsonschema import validate, ValidationError
 
 TEMPLATE_PATH = join(dirname(abspath(__file__)), '..', 'metadata_templates')
 METADATA_UPLOAD_BF_PATH = join(dirname(abspath(__file__)), 'metadata_upload_bf')
+
+
+
+
+def load_schema(schema_name):
+    schema_path  = pkg_resources.resource_filename(__name__, f'../../../schema/{schema_name}')
+    with open(schema_path, 'r') as schema_file:
+        schema = json.load(schema_file)
+    return schema
+
+def validate_submission_metadata(submission_metadata):
+    """
+    Validate submission metadata against the submission schema.
+
+    Args:
+        submission_metadata (dict): The submission metadata to validate.
+
+    Raises:
+        ValidationError: If the submission metadata is invalid.
+    """
+    schema = load_schema('submission_schema.json')
+    validate(instance=submission_metadata, schema=schema)
+
    
 ### Create submission file
 def create_excel(soda, upload_boolean, destination_path):
@@ -23,7 +48,7 @@ def create_excel(soda, upload_boolean, destination_path):
         dict: A dictionary containing the size of the metadata file.
     """
 
-    # TODO: Validate the submission portion of the soda object before creating the excel file via the schema 
+    validate_submission_metadata(soda["dataset_metadata"]["submission_metadata"])
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
@@ -111,3 +136,19 @@ def rename_headers(workbook, max_len, start_index):
       delete_range = len(columns_list) - max_len
       workbook.delete_cols(4 + max_len, delete_range)
 
+
+soda = {
+    "dataset_metadata": {
+        "submission_metadata": {
+            "consortium_data_standard": "BICCN",
+            "funding_consortium": "Allen Institute",
+            "award_number": "12345",
+            "milestone_achieved": ["milestone1", "milestone2", "milestone3"],
+            "milestone_completion_date": ["2021-01-01", "2021-02-01", "2021-03-01"]
+        }
+    }
+}
+
+
+
+create_excel(soda, False, "./submission.xlsx")
