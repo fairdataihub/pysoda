@@ -22,16 +22,55 @@
                 "type": "object",
                 "properties": {
                     "link": {
-                        "type": "string"
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$"
                     },
                     "relation": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "IsCitedBy",
+                            "Cites",
+                            "IsSupplementTo",
+                            "IsSupplementedBy",
+                            "IsContinuedByContinues",
+                            "IsDescribedBy",
+                            "Describes",
+                            "HasMetadata",
+                            "IsMetadataFor",
+                            "HasVersion",
+                            "IsVersionOf",
+                            "IsNewVersionOf",
+                            "IsPreviousVersionOf",
+                            "HasPart",
+                            "IsPublishedIn",
+                            "IsReferencedBy",
+                            "References",
+                            "IsDocumentedBy",
+                            "Documents",
+                            "IsCompiledBy",
+                            "Compiles",
+                            "IsVariantFormOf",
+                            "IsOriginalFormOf",
+                            "IsIdenticalTo",
+                            "IsReviewedBy",
+                            "Reviews",
+                            "IsDerivedFrom",
+                            "IsSourceOf",
+                            "IsRequiredBy",
+                            "Requires",
+                            "IsObsoletedBy",
+                            "Obsoletes"
+                        ]
                     },
                     "description": {
                         "type": "string"
                     },
                     "linkType": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "DOI",
+                            "URL"
+                        ]
                     },
                     "isFair": {
                         "type": "boolean"
@@ -44,28 +83,45 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "conID": {
+                    "contributor_orcid_id": {
                         "type": "string"
                     },
-                    "conAffiliation": {
+                    "contributor_affiliation": {
                         "type": "string"
                     },
-                    "conName": {
-                        "type": "string"
+                    "contributor_name": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z]+, [A-Za-z]+( [A-Za-z]+)?$"
                     },
-                    "conRole": {
-                        "type": "string"
-                    },
-                    "contributorFirstName": {
-                        "type": "string"
-                    },
-                    "contributorLastName": {
-                        "type": "string"
+                    "contributor_role": {
+                        "type": "string",
+                        "enum": [
+                            "PrincipalInvestigator",
+                            "Creator",
+                            "CoInvestigator",
+                            "CorrespondingAuthor",
+                            "DataCollector",
+                            "DataCurator",
+                            "DataManager",
+                            "Distributor",
+                            "Editor",
+                            "Producer",
+                            "ProjectLeader",
+                            "ProjectManager",
+                            "ProjectMember",
+                            "RelatedPerson",
+                            "Researcher",
+                            "ResearchGroup",
+                            "Sponsor",
+                            "Supervisor",
+                            "WorkPackageLeader",
+                            "Other"
+                        ]
                     }
                 }
             }
         },
-        "contributor-information": {
+        "basic-information": {
             "type": "object",
             "properties": {
                 "funding": {
@@ -84,20 +140,20 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "link": {
-                        "type": "string"
+                    "identifier": {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$"
                     },
-                    "relationType": {
-                        "type": "string"
+                    "identifier_type": {
+                        "type": "string",
+                        "enum": ["DOI", "URL"]
                     },
-                    "relation": {
-                        "type": "string"
+                    "relation_type": {
+                        "type": "string",
+                        "enum": ["IsProtocolFor", "HasProtocol"]
                     },
-                    "description": {
+                    "identifier_description": {
                         "type": "string"
-                    },
-                    "additional-metadata": {
-                        "type": "boolean"
                     }
                 }
             }
@@ -105,7 +161,7 @@
         "dataset-information": {
             "type": "object",
             "properties": {
-                "name": {
+                "title": {
                     "type": "string"
                 },
                 "description": {
