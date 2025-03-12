@@ -74,7 +74,10 @@ def validation_error_message(e):
     input: e (ValidationError): The validation error from the validate library.
     output: human readable message for the validation error.
     """
-    if e.schema_path.pop().strip() == "type":
+    msg = "There following error was found in your metadata:"
+    e_type = e.schema_path.pop().strip()
+    print(e.schema_path)
+    if e_type == "type":
         s = ''
         while e.schema_path:
             p_v = e.schema_path.popleft()
@@ -83,4 +86,7 @@ def validation_error_message(e):
                     s += ' -> '
                 s += p_v
         msg = f"{msg} {s} needs to be a list of values."
+    if e_type == "required":
+        # peel out the first line from the stringified error message
+        msg = f"{msg} {e.message.splitlines()[0]}"
     return msg

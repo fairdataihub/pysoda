@@ -137,34 +137,8 @@ def rename_headers(workbook, max_len, start_index):
       workbook.delete_cols(4 + max_len, delete_range)
 
 
-soda = {
-    "dataset_metadata": {
-        "submission_metadata": {
-            "consortium_data_standard": "BICCN",
-            "funding_consortium": "Allen Institute",
-            "award_number": "12345",
-            "milestone_achieved": ["milestone1", "milestone2", "milestone3"],
-            "milestone_completion_date": ["2021-01-01", "2021-02-01", "2021-03-01"]
-        }
-    }
-}
 
 
-try:
-    create_excel(soda, False, "./submission.xlsx")
-except Exception as e:
-    msg = f"The submission metadata provided does not match the sds for the following reason: "
-    if e.schema_path.pop().strip() == "type":
-        print("yes")
-        s = ''
-        while e.schema_path:
-            p_v = e.schema_path.popleft()
-            if p_v.strip() != "properties":
-                if s != '':
-                    s += ' -> '
-                s += p_v
-        msg = f"{msg} {s} needs to be a list of values."
 
-    print(msg)
 
 
