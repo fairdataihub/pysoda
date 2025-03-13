@@ -9,7 +9,7 @@ from openpyxl.styles import PatternFill
 
 
 
-def save_ds_description_file(
+def create_excel(
     upload_boolean,
     soda,
     generateDestination,
@@ -140,24 +140,24 @@ def populate_contributor_info(workbook, soda):
 
     ### get Contributors
     for contributor, column in zip(
-        contributor_info["contributors"], excel_columns(start_index=3)
+        contributor_info, excel_columns(start_index=3)
     ):
-        workbook[column + "19"] = contributor["conName"]
-        workbook[column + "20"] = contributor["conID"]
-        workbook[column + "21"] = contributor["conAffliation"]
-        workbook[column + "22"] = contributor["conRole"]
+        workbook[column + "19"] = contributor["contributor_name"]
+        workbook[column + "20"] = contributor["contributor_orcid_id"]
+        workbook[column + "21"] = contributor["contributor_affiliation"]
+        workbook[column + "22"] = contributor["contributor_role"]
 
-    return [contributor_info["funding"], contributor_info["contributors"]]
+    return [basic_info["funding"], contributor_info]
 
 
 def populate_related_info(workbook, soda):
     ## get related links including protocols
     related_information = soda["dataset_metadata"]["dataset_description"]["related_information"]
-    for i, column in zip(range(len(related_information)), excel_columns(start_index=3)):
-        workbook[column + "24"] = related_information[i]["description"]
-        workbook[column + "25"] = related_information[i]["relation"]
-        workbook[column + "26"] = related_information[i]["link"]
-        workbook[column + "27"] = related_information[i]["type"]
+    for info, column in zip(related_information, excel_columns(start_index=3)):
+        workbook[column + "24"] = info["identifier_description"]
+        workbook[column + "25"] = info["relation_type"]
+        workbook[column + "26"] = info["identifier"]
+        workbook[column + "27"] = info["identifier_type"]
 
     return len(related_information)
 
