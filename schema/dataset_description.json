@@ -78,7 +78,7 @@
                 }
             }
         },
-        "contributors": {
+        "contributor_information": {
             "type": "array",
             "items": {
                 "type": "object",
@@ -121,7 +121,7 @@
                 }
             }
         },
-        "basic-information": {
+        "basic_information": {
             "type": "object",
             "properties": {
                 "funding": {
@@ -135,7 +135,7 @@
                 }
             }
         },
-        "protocols": {
+        "related_information": {
             "type": "array",
             "items": {
                 "type": "object",
@@ -158,7 +158,7 @@
                 }
             }
         },
-        "dataset-information": {
+        "dataset_information": {
             "type": "object",
             "properties": {
                 "title": {
@@ -167,7 +167,7 @@
                 "description": {
                     "type": "string"
                 },
-                "studyType": {
+                "type": {
                     "type": "string"
                 },
                 "keywords": {
@@ -181,6 +181,35 @@
                 },
                 "number of subjects": {
                     "type": "number"
+                },
+                "study purpose": {
+                    "type": "string"
+                },
+                "study data collection": {
+                    "type": "string"
+                },
+                "study primary conclusion": {
+                    "type": "string"
+                },
+                "study collection title": {
+                    "type": "string"
+                }
+            }
+        },
+        "study_information": {
+            "type": "object",
+            "properties": {
+                "study purpose": {
+                    "type": "string"
+                },
+                "study data collection": {
+                    "type": "string"
+                },
+                "study primary conclusion": {
+                    "type": "string"
+                },
+                "study collection title": {
+                    "type": "string"
                 },
                 "study organ system": {
                     "type": "array",
@@ -199,32 +228,6 @@
                     "items": {
                         "type": "string"
                     }
-                },
-                "study purpose": {
-                    "type": "string"
-                },
-                "study data collection": {
-                    "type": "string"
-                },
-                "study primary conclusion": {
-                    "type": "string"
-                },
-                "study collection title": {
-                    "type": "string"
-                }
-            }
-        },
-        "study-information": {
-            "type": "object",
-            "properties": {
-                "study purpose": {
-                    "type": "string"
-                },
-                "study data collection": {
-                    "type": "string"
-                },
-                "study primary conclusion": {
-                    "type": "string"
                 }
             }
         }

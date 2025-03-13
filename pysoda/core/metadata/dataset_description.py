@@ -3,22 +3,19 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from .excel_utils import rename_headers, excel_columns
+import itertools
+from openpyxl.styles import PatternFill
 
 
 
 
 def save_ds_description_file(
     upload_boolean,
-    bfaccount,
-    bfdataset,
-    filepath,
-    dataset_dict,
-    study_info_dict,
-    constributor_info_dict,
-    additional_links_list,
+    soda,
+    generateDestination,
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
-    destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else filepath
+    destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else generateDestination
     shutil.copyfile(source, destination)
     # global namespace_logger
 
@@ -33,15 +30,15 @@ def save_ds_description_file(
     ws1["D25"] = ""
     ws1["E25"] = ""
 
-    keyword_array = populate_dataset_info(ws1, dataset_dict)
+    keyword_array = populate_dataset_info(ws1, soda)
 
-    study_array_len = populate_study_info(ws1, study_info_dict)
+    study_array_len = populate_study_info(ws1, soda)
 
     (funding_array, contributor_role_array) = populate_contributor_info(
-        ws1, constributor_info_dict
+        ws1, soda
     )
 
-    related_info_len = populate_related_info(ws1, additional_links_list)
+    related_info_len = populate_related_info(ws1, soda)
 
     # keywords length
     keyword_len = len(keyword_array)
@@ -80,85 +77,89 @@ def save_ds_description_file(
 
 
 
-def populate_study_info(workbook, val_obj):
-    workbook["D11"] = val_obj["study purpose"]
-    workbook["D12"] = val_obj["study data collection"]
-    workbook["D13"] = val_obj["study primary conclusion"]
-    workbook["D17"] = val_obj["study collection title"]
+def populate_study_info(workbook, soda):
+    study_info = soda["dataset_metadata"]["dataset_description"]["study_information"]
+    workbook["D11"] = study_info["study purpose"]
+    workbook["D12"] = study_info["study data collection"]
+    workbook["D13"] = study_info["study primary conclusion"]
+    workbook["D17"] = study_info["study collection title"]
 
     ## get study organ system
     for i, column in zip(
-        range(len(val_obj["study organ system"])), excel_columns(start_index=3)
+        range(len(study_info["study organ system"])), excel_columns(start_index=3)
     ):
-        workbook[column + "14"] = val_obj["study organ system"][i]
+        workbook[column + "14"] = study_info["study organ system"][i]
     ## get study approach
     for i, column in zip(
-        range(len(val_obj["study approach"])), excel_columns(start_index=3)
+        range(len(study_info["study approach"])), excel_columns(start_index=3)
     ):
-        workbook[column + "15"] = val_obj["study approach"][i]
+        workbook[column + "15"] = study_info["study approach"][i]
     ## get study technique
     for i, column in zip(
-        range(len(val_obj["study technique"])), excel_columns(start_index=3)
+        range(len(study_info["study technique"])), excel_columns(start_index=3)
     ):
-        workbook[column + "16"] = val_obj["study technique"][i]
+        workbook[column + "16"] = study_info["study technique"][i]
 
     return max(
-        len(val_obj["study organ system"]),
-        len(val_obj["study approach"]),
-        len(val_obj["study technique"]),
+        len(study_info["study organ system"]),
+        len(study_info["study approach"]),
+        len(study_info["study technique"]),
     )
 
 
 
-def populate_dataset_info(ws, ds_dict):
+def populate_dataset_info(ws, soda):
     ## name, description, type, samples, subjects
-    ws["D5"] = ds_dict["name"]
-    ws["D6"] = ds_dict["description"]
-    ws["D3"] = ds_dict["type"]
-    ws["D29"] = ds_dict["number of subjects"]
-    ws["D30"] = ds_dict["number of samples"]
+    dataset_information = soda["dataset_metadata"]["dataset_description"]["dataset_information"]
+    ws["D5"] = dataset_information["title"]
+    ws["D6"] = dataset_information["description"]
+    ws["D3"] = dataset_information["type"]
+    ws["D29"] = dataset_information["number of subjects"]
+    ws["D30"] = dataset_information["number of samples"]
 
     ## keywords
-    for i, column in zip(range(len(ds_dict["keywords"])), excel_columns(start_index=3)):
-        ws[column + "7"] = ds_dict["keywords"][i]
+    for i, column in zip(range(len(dataset_information["keywords"])), excel_columns(start_index=3)):
+        ws[column + "7"] = dataset_information["keywords"][i]
 
-    return ds_dict["keywords"]
-
-
+    return dataset_information["keywords"]
 
 
-def populate_contributor_info(workbook, val_array):
+
+
+def populate_contributor_info(workbook, soda):
+    contributor_info = soda["dataset_metadata"]["dataset_description"]["contributor_information"]
+    basic_info = soda["dataset_metadata"]["dataset_description"]["basic_information"]
     ## get award info
     for i, column in zip(
-        range(len(val_array["funding"])), excel_columns(start_index=3)
+        range(len(basic_info["funding"])), excel_columns(start_index=3)
     ):
-        workbook[column + "8"] = val_array["funding"][i]
+        workbook[column + "8"] = basic_info["funding"][i]
 
     ### get Acknowledgments
-    workbook["D9"] = val_array["acknowledgment"]
+    workbook["D9"] = basic_info["acknowledgment"]
 
     ### get Contributors
     for contributor, column in zip(
-        val_array["contributors"], excel_columns(start_index=3)
+        contributor_info["contributors"], excel_columns(start_index=3)
     ):
         workbook[column + "19"] = contributor["conName"]
         workbook[column + "20"] = contributor["conID"]
         workbook[column + "21"] = contributor["conAffliation"]
         workbook[column + "22"] = contributor["conRole"]
 
-    return [val_array["funding"], val_array["contributors"]]
+    return [contributor_info["funding"], contributor_info["contributors"]]
 
 
-def populate_related_info(workbook, val_array):
+def populate_related_info(workbook, soda):
     ## get related links including protocols
+    related_information = soda["dataset_metadata"]["dataset_description"]["related_information"]
+    for i, column in zip(range(len(related_information)), excel_columns(start_index=3)):
+        workbook[column + "24"] = related_information[i]["description"]
+        workbook[column + "25"] = related_information[i]["relation"]
+        workbook[column + "26"] = related_information[i]["link"]
+        workbook[column + "27"] = related_information[i]["type"]
 
-    for i, column in zip(range(len(val_array)), excel_columns(start_index=3)):
-        workbook[column + "24"] = val_array[i]["description"]
-        workbook[column + "25"] = val_array[i]["relation"]
-        workbook[column + "26"] = val_array[i]["link"]
-        workbook[column + "27"] = val_array[i]["type"]
-
-    return len(val_array)
+    return len(related_information)
 
 
 
