@@ -1,108 +1,116 @@
 {
     "input_output_information": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "properties": {
-                "number_of_inputs": {
-                    "type": "string"
-                },
-                "input_parameter_name": {
-                    "type": "string"
-                },
-                "input parameter type": {
-                    "type": "string"
-                },
-                "input_parameter_description": {
-                    "type": "string"
-                },
-                "input_units": {
-                    "type": "string"
-                },
-                "input_default_value": {
-                    "oneOf": [
-                        {
+        "type": "object",
+        "properties": {
+            "number_of_inputs": {
+                "type": "number"
+            },
+            "inputs": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "input_parameter_name": {
                             "type": "string"
                         },
-                        {
+                        "input parameter type": {
+                            "type": "string"
+                        },
+                        "input_parameter_description": {
+                            "type": "string"
+                        },
+                        "input_units": {
+                            "type": "string"
+                        },
+                        "input_default_value": {
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "number"
+                                }
+                            ]
+                        },
+                        "input_constraints": {
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "array",
+                                    "maxItems": 2,
+                                    "minItems": 2,
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                {
+                                    "type": "array",
+                                    "maxItems": 2,
+                                    "minItems": 2,
+                                    "items": {
+                                        "type": "number"
+                                    }
+                                }
+                            ]
+                        },
+                        "number_of_outputs": {
                             "type": "number"
-                        }
-                    ]
-                },
-                "input_constraints": {
-                    "oneOf": [
-                        {
+                        },
+                        "output_parameter_name": {
                             "type": "string"
                         },
-                        {
-                            "type": "array",
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        {
-                            "type": "array",
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "items": {
-                                "type": "number"
-                            }
-                        }
-                    ]
-                },
-                "number_of_outputs": {
-                    "type": "number"
-                },
-                "output_parameter_name": {
-                    "type": "string"
-                },
-                "output_parameter_type": {
-                    "type": "string"
-                },
-                "output_parameter_description": {
-                    "type": "string"
-                },
-                "output_units": {
-                    "type": "string"
-                },
-                "output_constraints": {
-                    "oneOf": [
-                        {
+                        "output_parameter_type": {
                             "type": "string"
                         },
-                        {
-                            "type": "array",
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "items": {
-                                "type": "string"
-                            }
+                        "output_parameter_description": {
+                            "type": "string"
                         },
-                        {
-                            "type": "array",
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "items": {
-                                "type": "number"
-                            }
+                        "output_units": {
+                            "type": "string"
+                        },
+                        "output_constraints": {
+                            "oneOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "array",
+                                    "maxItems": 2,
+                                    "minItems": 2,
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                {
+                                    "type": "array",
+                                    "maxItems": 2,
+                                    "minItems": 2,
+                                    "items": {
+                                        "type": "number"
+                                    }
+                                }
+                            ]
                         }
+                    },
+                    "required": [
+                        "number_of_inputs",
+                        "input_parameter_name",
+                        "input_parameter_type",
+                        "input_parameter_description",
+                        "input_units",
+                        "number_of_outputs",
+                        "output_parameter_name",
+                        "output_paramter_type",
+                        "output_parameter_description",
+                        "output_units"
                     ]
                 }
             },
-            "required": [
-                "number_of_inputs",
-                "input_parameter_name",
-                "input_parameter_type",
-                "input_parameter_description",
-                "input_units",
-                "number_of_outputs",
-                "output_parameter_name",
-                "output_paramter_type",
-                "output_parameter_description",
-                "output_units"
-            ]
+            "number_of_outputs": {
+                "type": "number"
+            }
         }
     },
     "basic_information": {
