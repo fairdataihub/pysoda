@@ -370,6 +370,159 @@
                         "description": "text"
                     }
                 ]
+            },
+            "TSR7b": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    }
+                ]
+            },
+            "TSR7c": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    }
+                ]
+            },
+            "TSR7d": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    }
+                ]
+            },
+            "TSR7e": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    }
+                ]
+            },
+            "TSR8a": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    },
+                    {
+                        "type": "string",
+                        "description": "The rating"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The target "
+                    },
+                    {
+                        "type": "string",
+                        "description": "The target justification"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text"
+                    }
+                ]
+            },
+            "TSR8b": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    }
+                ]
+            },
+            "TSR9": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    },
+                    {
+                        "type": "string",
+                        "description": "The rating"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The target "
+                    },
+                    {
+                        "type": "string",
+                        "description": "The target justification"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text"
+                    }
+                ]
+            },
+            "TSR10a": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    },
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    },
+                    {
+                        "type": "string",
+                        "description": "The rating"
+                    },
+                    {
+                        "type": "string",
+                        "description": "The target "
+                    },
+                    {
+                        "type": "string",
+                        "description": "The target justification"
+                    },
+                    {
+                        "type": "string",
+                        "description": "text"
+                    }
+                ]
+            },
+            "TSR10b": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "string",
+                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+                        "description": "The URL or DOI of the publication that describes the tool or method."
+                    }
+                ]
             }
         }
     }
