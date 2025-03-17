@@ -157,11 +157,6 @@
           },
           {
             "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
-          {
-            "type": "string",
             "description": "The rating"
           },
           {
@@ -188,11 +183,6 @@
           },
           {
             "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
-          {
-            "type": "string",
             "description": "The rating"
           },
           {
@@ -212,11 +202,6 @@
       "TSR3a": {
         "type": "array",
         "items": [
-          {
-            "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
           {
             "type": "string",
             "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
@@ -270,11 +255,6 @@
           },
           {
             "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
-          {
-            "type": "string",
             "description": "The rating"
           },
           {
@@ -294,11 +274,6 @@
       "TSR5": {
         "type": "array",
         "items": [
-          {
-            "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
           {
             "type": "string",
             "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
@@ -332,11 +307,6 @@
           },
           {
             "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
-          {
-            "type": "string",
             "description": "The rating"
           },
           {
@@ -356,11 +326,6 @@
       "TSR7a": {
         "type": "array",
         "items": [
-          {
-            "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
           {
             "type": "string",
             "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
@@ -434,11 +399,6 @@
           },
           {
             "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
-          {
-            "type": "string",
             "description": "The rating"
           },
           {
@@ -475,11 +435,6 @@
           },
           {
             "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
-          {
-            "type": "string",
             "description": "The rating"
           },
           {
@@ -499,11 +454,6 @@
       "TSR10a": {
         "type": "array",
         "items": [
-          {
-            "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-            "description": "The URL or DOI of the publication that describes the tool or method."
-          },
           {
             "type": "string",
             "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
