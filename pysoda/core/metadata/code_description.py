@@ -81,38 +81,18 @@ def populate_basic_information(ws1, soda):
 
 
 def populate_ten_simple_rules(ws1, soda):
-    
-    # populate rows 8 - 25 starting from col 3 with the ten simple rules data
     ten_simple_rules = soda["dataset_metadata"]["ten_simple_rules"]
-
     row = 8
-
-    TSR1 = ten_simple_rules["TSR1"]
-    TSR2 = ten_simple_rules["TSR2"]
-    TSR3a = ten_simple_rules["TSR3a"]
-    TSR3b = ten_simple_rules["TSR3b"]
-    TSR3c = ten_simple_rules["TSR3c"]
-    TSR4 = ten_simple_rules["TSR4"]
-    TSR5 = ten_simple_rules["TSR5"]
-    TSR6 = ten_simple_rules["TSR6"]
-    TSR7a = ten_simple_rules["TSR7a"]
-    TSR7b = ten_simple_rules["TSR7b"]
-    TSR7c = ten_simple_rules["TSR7c"]
-    TSR7d = ten_simple_rules["TSR7d"]
-    TSR7e = ten_simple_rules["TSR7e"]
-    TSR8a = ten_simple_rules["TSR8a"]
-    TSR8b = ten_simple_rules["TSR8b"]
-    TSR9 = ten_simple_rules["TSR9"]
-    TSR10a = ten_simple_rules["TSR10a"]
-    TSR10b = ten_simple_rules["TSR10b"]
-
-    for rule in [TSR1, TSR2, TSR3a, TSR3b, TSR3c, TSR4, TSR5, TSR6, TSR7a, TSR7b, TSR7c, TSR7d, TSR7e, TSR8a, TSR8b, TSR9, TSR10a, TSR10b]:
-        write_tsr_row(rule, row, ws1)
+    ascii_cols = excel_columns(start_index=3)
+    for _, rule in ten_simple_rules.items():
+        ws1[ascii_cols[0] + str(row)] = rule.get("Link", "")
+        ws1[ascii_cols[1] + str(row)] = rule.get("Rating", "")
+        ws1[ascii_cols[2] + str(row)] = rule.get("Target", "")
+        ws1[ascii_cols[3] + str(row)] = rule.get("Target Justification", "")
+        ws1[ascii_cols[4] + str(row)] = rule.get("Text", "")
         row += 1
 
-def write_tsr_row(TSR, row, ws1):
-    for rule_item, col in zip(TSR, excel_columns(start_index=3)):
-        ws1[col + str(row)] = rule_item
+
 
 soda = {
     "dataset_metadata": {
@@ -160,100 +140,100 @@ soda = {
             }
         ],
         "ten_simple_rules": {
-            "TSR1": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR2": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR3a": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR3b": [
-                "https://google.com",
-            ],
-            "TSR3c": [
-                "https://google.com",
-            ],
-            "TSR4": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR5": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR6": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR7a": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR7b": [
-                "https://google.com",
-            ],
-            "TSR7c": [
-                "https://google.com",
-            ],
-            "TSR7d": [
-                "https://google.com",
-            ],
-            "TSR7e": [
-                "https://google.com",
-            ],
-            "TSR8a": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR8b": [
-                "https://google.com"
-            ],
-            "TSR9": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR10a": [
-                "https://google.com",
-                "3",
-                "4",
-                "Silly string",
-                "All the silly things with silly string"
-            ],
-            "TSR10b": [
-                "https://google.com",
-            ]
+            "TSR1": {
+                "Link": "https://fairsharing.org/bsg-s001134",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR2": {
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR3a": {
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR3b":{
+                "Link": "https://google.com",
+            },
+            "TSR3c": {
+                "Link": "https://google.com",
+            },
+            "TSR4": {
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR5":{
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR6": {
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR7a": {
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR7b": {
+                "Link": "https://google"
+            },
+            "TSR7c": {
+                "Link": "https://google.com",
+            },
+            "TSR7d": {
+                "Link": "https://google.com",
+            },
+            "TSR7e":{
+                "Link": "https://google.com",
+            },
+            "TSR8a": {
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR8b":{
+                "Link": "https://google.com",
+            },
+            "TSR9": {
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR10a":{
+                "Link": "https://google.com",
+                "Rating": "3",
+                "Target": "4",
+                "Target Justification": "Silly string",
+                "Text": "All the silly things with silly string"
+            },
+            "TSR10b": {
+                "Link": "https://google.com"
+            }
         }
     }
 }
