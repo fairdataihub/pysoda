@@ -5,7 +5,7 @@ import shutil
 from .excel_utils import rename_headers, excel_columns
 import itertools
 from openpyxl.styles import PatternFill
-
+from utils import validate_schema
 
 
 
@@ -18,6 +18,8 @@ def create_excel(
     destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else generateDestination
     shutil.copyfile(source, destination)
     # global namespace_logger
+
+    validate_schema(soda["dataset_metadata"]["dataset_description"], "dataset_description_schema.json")
 
     # write to excel file
     wb = load_workbook(destination)

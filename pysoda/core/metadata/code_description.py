@@ -4,7 +4,7 @@ from openpyxl.styles import PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
-
+from utils import validate_schema
 
 
 # TODO: Handle optional entries when coupled with provided entries
@@ -13,6 +13,8 @@ def create_excel(soda, upload, generateDestination):
     source = join(TEMPLATE_PATH, "code_description.xlsx")
     destination = join(METADATA_UPLOAD_BF_PATH, "code_description.xlsx") if upload else generateDestination
     shutil.copyfile(source, destination)
+
+    validate_schema(soda["dataset_metadata"]["code_description"], "code_description_schema.json")
 
 
     print(destination)

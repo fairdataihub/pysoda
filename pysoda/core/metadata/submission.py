@@ -2,36 +2,14 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 from openpyxl.styles import Font
 import shutil
-import pkg_resources
-import json
-from jsonschema import validate
+
 
 
 from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH
 from .excel_utils import rename_headers, excel_columns
+from utils import validate_schema
 
 
-
-def load_schema(schema_name):
-    schema_path  = pkg_resources.resource_filename(__name__, f'../../../schema/{schema_name}')
-    with open(schema_path, 'r') as schema_file:
-        schema = json.load(schema_file)
-    return schema
-
-def validate_submission_metadata(submission_metadata):
-    """
-    Validate submission metadata against the submission schema.
-
-    Args:
-        submission_metadata (dict): The submission metadata to validate.
-
-    Raises:
-        ValidationError: If the submission metadata is invalid.
-    """
-    schema = load_schema('submission_schema.json')
-    validate(instance=submission_metadata, schema=schema)
-
-   
 ### Create submission file
 def create_excel(soda, upload_boolean, destination_path):
     """
@@ -46,7 +24,7 @@ def create_excel(soda, upload_boolean, destination_path):
         dict: A dictionary containing the size of the metadata file.
     """
 
-    validate_submission_metadata(soda["dataset_metadata"]["submission_metadata"])
+    validate_schema(soda["dataset_metadata"]["submission_metadata"], "submission_schema.json")
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
