@@ -1,19 +1,26 @@
-from constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH
-from excel_utils import rename_headers, excel_columns
+from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS,SCHEMA_NAME_SUBJECTS
+from .excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
-from utils import validate_schema
+import numpy as np
+from ...utils import validate_schema
+from openpyxl.styles import Font
 
-def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
-    source = join(TEMPLATE_PATH, "subjects.xlsx")
+
+def save_subjects_file(soda, upload_boolean, filepath):
+    source = join(TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS)
 
     if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "subjects.xlsx")
+        destination = join(METADATA_UPLOAD_BF_PATH, SCHEMA_FILE_SUBJECTS)
 
     else:
         destination = filepath
+
+    datastructure = soda["dataset-metadata"]["subjects"]
+
+    validate_schema(datastructure, SCHEMA_NAME_SUBJECTS)
 
     shutil.copyfile(source, destination)
     wb = load_workbook(destination)
@@ -67,8 +74,8 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
     size = getsize(destination)
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
-    if upload_boolean:
-        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination, True)
+    # if upload_boolean:
+    #     upload_metadata_file("subjects.xlsx", destination, True)
 
     return size
 
@@ -102,4 +109,35 @@ def sortedSubjectsTableData(matrix, fields):
         if customHeaderMatrix
         else sortedMatrix
     )
+
+subjectsTemplateHeaderList = [
+    "subject id",
+    "pool id",
+    "subject experimental group",
+    "age",
+    "sex",
+    "species",
+    "strain",
+    "rrid for strain",
+    "age category",
+    "also in dataset",
+    "member of",
+    "metadata only",
+    "laboratory internal id",
+    "date of birth",
+    "age range (min)",
+    "age range (max)",
+    "body mass",
+    "genotype",
+    "phenotype",
+    "handedness",
+    "reference atlas",
+    "experimental log file path",
+    "experiment date",
+    "disease or disorder",
+    "intervention",
+    "disease model",
+    "protocol title",
+    "protocol url or doi",
+]
 

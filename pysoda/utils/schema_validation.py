@@ -1,9 +1,19 @@
 import pkg_resources
 import json
 from jsonschema import validate
+import os.path
+
+
 
 def load_schema(schema_name):
-    schema_path  = pkg_resources.resource_filename(__name__, f'../../../schema/{schema_name}')
+    # Get the current directory of this file
+    current_dir = os.path.dirname(__file__)
+    
+    # Construct the path to the schema directory one level up
+    schema_path = os.path.join(current_dir, '..', "..", 'schema', schema_name)
+    
+    # Normalize the path
+    schema_path = os.path.abspath(schema_path)
     with open(schema_path, 'r') as schema_file:
         schema = json.load(schema_file)
     return schema
@@ -20,5 +30,6 @@ def validate_schema(schema, schema_name):
     Raises:
         ValidationError: If the metadata is invalid.
     """
+    print(schema_name)
     true_schema = load_schema(schema_name)
     validate(instance=schema, schema=true_schema)

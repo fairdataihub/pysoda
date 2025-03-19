@@ -6,7 +6,7 @@ from os.path import expanduser, join
 from .exceptions import ConfigProfileNotSet, FailedToFetchPennsieveDatasets, PennsieveDatasetCannotBeFound
 
 
-from constants import PENNSIEVE_URL
+from ..constants import PENNSIEVE_URL
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")

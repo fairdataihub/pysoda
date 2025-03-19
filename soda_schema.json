@@ -157,54 +157,8 @@
         "protocol-data": {
           "type": "array"
         },
-        "subject-metadata": {
-          "type": "array",
-          "minItems": "1",
-          "maxItems": "28",
-          "items": [
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "enum": [
-                  "subject id",
-                  "pool id",
-                  "subject experimental group",
-                  "age",
-                  "sex",
-                  "species",
-                  "strain",
-                  "RRID for strain",
-                  "age category",
-                  "also in dataset",
-                  "member of",
-                  "metadata only",
-                  "laboratory internal id",
-                  "date of birth",
-                  "age range (min)",
-                  "agre range (max)",
-                  "body mass",
-                  "genotype",
-                  "phenotype",
-                  "handedness",
-                  "reference atlas",
-                  "experimental log file path",
-                  "experiment date",
-                  "disease or disorder",
-                  "intervention",
-                  "disease model",
-                  "protocol title",
-                  "protocol uri or doi"
-                ]
-              }
-            }
-          ],
-          "additionalItems": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
+        "subjects": {
+          "$ref": "subjects.json"
         },
         "sample-metadata": {
           "type": "object",
