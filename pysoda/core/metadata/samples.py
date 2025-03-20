@@ -1,39 +1,39 @@
-from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS,SCHEMA_NAME_SUBJECTS
+from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH, SDS_FILE_SAMPLES, SCHEMA_NAME_SAMPLES
 from .excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
-import numpy as np
 from ...utils import validate_schema
-from openpyxl.styles import Font
 from .helpers import transposeMatrix, getMetadataCustomFields, sortedSubjectsTableData
+from openpyxl.styles import Font
+import numpy as np
 
-
-def save_subjects_file(soda, upload_boolean, filepath):
-    source = join(TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS)
+def create_excel(soda, upload_boolean, filepath):
+    source = join(TEMPLATE_PATH, SDS_FILE_SAMPLES)
 
     if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, SCHEMA_FILE_SUBJECTS)
+        destination = join(METADATA_UPLOAD_BF_PATH, SDS_FILE_SAMPLES)
 
     else:
         destination = filepath
 
-    datastructure = soda["dataset-metadata"]["subjects"]
-
-    validate_schema(datastructure, SCHEMA_NAME_SUBJECTS)
-
     shutil.copyfile(source, destination)
+
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
 
+    datastructure = soda["dataset_metadata"]["samples"]
+
+    validate_schema(datastructure, SCHEMA_NAME_SAMPLES)
+
     transposeDatastructure = transposeMatrix(datastructure)
 
-    mandatoryFields = transposeDatastructure[:11]
-    optionalFields = transposeDatastructure[11:]
+    mandatoryFields = transposeDatastructure[:9]
+    optionalFields = transposeDatastructure[9:]
     refinedOptionalFields = getMetadataCustomFields(optionalFields)
 
-    templateHeaderList = subjectsTemplateHeaderList
+    templateHeaderList = samplesTemplateHeaderList
     sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
 
     if refinedOptionalFields:
@@ -42,9 +42,8 @@ def save_subjects_file(soda, upload_boolean, filepath):
         )
     else:
         refinedDatastructure = transposeMatrix(sortMatrix)
-    
-    # delete all optional columns first (from the template)
-    ws1.delete_cols(12, 18)
+
+    ws1.delete_cols(10, 15)
 
     # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
@@ -53,7 +52,7 @@ def save_subjects_file(soda, upload_boolean, filepath):
     )
 
     for column, header in zip(
-        excel_columns(start_index=11), refinedDatastructure[0][11:headers_no]
+        excel_columns(start_index=9), refinedDatastructure[0][9:headers_no]
     ):
         cell = column + str(1)
         ws1[cell] = header
@@ -65,7 +64,6 @@ def save_subjects_file(soda, upload_boolean, filepath):
         if i == 0:
             continue
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
-            # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
             ws1[cell] = refinedDatastructure[i][j] or ""
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
@@ -74,42 +72,37 @@ def save_subjects_file(soda, upload_boolean, filepath):
 
     size = getsize(destination)
 
-    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    ## if generating directly on Pennsieve, call upload function
     # if upload_boolean:
-    #     upload_metadata_file("subjects.xlsx", destination, True)
+    #     upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination, True)
 
-    return size
+    return {"size": size}
+
+
+samplesTemplateHeaderList = [
+            "sample id",
+            "subject id",
+            "was derived from",
+            "pool id",
+            "sample experimental group",
+            "sample type",
+            "sample anatomical location",
+            "also in dataset",
+            "member of",
+            "metadata only",
+            "laboratory internal id",
+            "date of derivation",
+            "experimental log file path",
+            "reference atlas",
+            "pathology",
+            "laterality",
+            "cell type",
+            "plane of section",
+            "protocol title",
+            "protocol url or doi"
+        ]
 
 
 
-subjectsTemplateHeaderList = [
-    "subject id",
-    "pool id",
-    "subject experimental group",
-    "age",
-    "sex",
-    "species",
-    "strain",
-    "rrid for strain",
-    "age category",
-    "also in dataset",
-    "member of",
-    "metadata only",
-    "laboratory internal id",
-    "date of birth",
-    "age range (min)",
-    "age range (max)",
-    "body mass",
-    "genotype",
-    "phenotype",
-    "handedness",
-    "reference atlas",
-    "experimental log file path",
-    "experiment date",
-    "disease or disorder",
-    "intervention",
-    "disease model",
-    "protocol title",
-    "protocol url or doi",
-]
+
 

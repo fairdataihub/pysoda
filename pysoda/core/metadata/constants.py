@@ -12,5 +12,7 @@ SCHEMA_NAMES = {
 }
 
 
-SCHEMA_FILE_SUBJECTS = "subjects.xlsx"
+SDS_FILE_SUBJECTS = "subjects.xlsx"
 SCHEMA_NAME_SUBJECTS = "subjects.json"
+SDS_FILE_SAMPLES = "samples.xlsx"
+SCHEMA_NAME_SAMPLES = "samples.json"
