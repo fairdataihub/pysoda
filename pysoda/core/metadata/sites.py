@@ -41,30 +41,3 @@ def create_excel(soda, upload_boolean, filepath):
 
 
 
-soda = {
-    "dataset_metadata": {
-        "sites": [
-            {
-                "site_id": "S1",
-                "specimen_id": "Specimen1",
-                "site_type": "TypeA",
-                "laboratory_internal_id": "Lab1",
-                "coordinate_system": "CS1",
-                "coordinate_system_position": "Position1",
-                "more...": "Additional info"
-            },
-            {
-                "site_id": "S2",
-                "specimen_id": "Specimen2",
-                "site_type": "TypeB",
-                "laboratory_internal_id": "Lab2",
-                "coordinate_system": "CS2",
-                "coordinate_system_position": "Position2",
-                "more...": ""
-            }
-        ]
-    }
-}
-
-
-create_excel(soda, upload_boolean=False, filepath='site.xlsx')
