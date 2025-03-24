@@ -1,4 +1,4 @@
-from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS,SCHEMA_NAME_SUBJECTS
+from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SDS_FILE_SUBJECTS,SCHEMA_NAME_SUBJECTS
 from .excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
@@ -7,22 +7,18 @@ import shutil
 import numpy as np
 from ...utils import validate_schema
 from openpyxl.styles import Font
-from .helpers import transposeMatrix, getMetadataCustomFields, sortedSubjectsTableData
+from .helpers import transposeMatrix, getMetadataCustomFields, sortedSubjectsTableData, upload_metadata_file
 
 
-def save_subjects_file(soda, upload_boolean, filepath):
-    source = join(TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS)
+def create_excel(soda, upload_boolean, local_destination):
+    source = join(TEMPLATE_PATH, SDS_FILE_SUBJECTS)
 
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_PS_PATH, SCHEMA_FILE_SUBJECTS)
-
-    else:
-        destination = filepath
 
     datastructure = soda["dataset-metadata"]["subjects"]
 
     validate_schema(datastructure, SCHEMA_NAME_SUBJECTS)
 
+    destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_SUBJECTS) if upload_boolean else local_destination
     shutil.copyfile(source, destination)
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
@@ -75,12 +71,83 @@ def save_subjects_file(soda, upload_boolean, filepath):
     size = getsize(destination)
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
-    # if upload_boolean:
-    #     upload_metadata_file("subjects.xlsx", destination, True)
+    if upload_boolean:
+        upload_metadata_file(SDS_FILE_SUBJECTS, soda, destination, True)
 
     return size
 
 
+soda = {
+    "ps-account-selected": {
+        "account-name": "soda-pennsieve-cb3c-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+    },
+    "ps-dataset-selected": {
+        "dataset-name": "12.3.0-beta"
+    },
+    "dataset-metadata": {
+        "subjects": [[
+                "subject id",
+                "pool id",
+                "subject experimental group",
+                "age",
+                "sex",
+                "species",
+                "strain",
+                "rrid for strain",
+                "age category",
+                "also in dataset",
+                "member of",
+                "metadata only",
+                "laboratory internal id",
+                "date of birth",
+                "age range (min)",
+                "age range (max)",
+                "body mass",
+                "genotype",
+                "phenotype",
+                "handedness",
+                "reference atlas",
+                "experimental log file path",
+                "experiment date",
+                "disease or disorder",
+                "intervention",
+                "disease model",
+                "protocol title",
+                "protocol url or doi",
+        ], 
+        [
+            "sub-01",
+            "pool-01",
+            "control",
+            "3",
+            "M",
+            "mouse",
+            "C57BL/6",
+            "RRID:IMSR_JAX:000664",
+            "adult",
+            "yes",
+            "group-01",
+            "no",
+            "lab-01",
+            "2018-01-01",
+            "3",
+            "6",
+            "25",
+            "WT",
+            "normal",
+            "right",
+            "Allen Mouse Brain Atlas",
+            "path/to/log/file",
+            "2018-01-01",
+            "none",
+            "none",
+            "none",
+            "none",
+            "none"
+        ]
+        ]
+    }
+}
 
 subjectsTemplateHeaderList = [
     "subject id",
@@ -112,4 +179,6 @@ subjectsTemplateHeaderList = [
     "protocol title",
     "protocol url or doi",
 ]
+
+
 
