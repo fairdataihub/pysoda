@@ -1,4 +1,4 @@
-from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH
+from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SDS_FILE_DATASET_DESCRIPTION, SCHEMA_NAME_DATASET_DESCRIPTION
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
@@ -6,20 +6,21 @@ from .excel_utils import rename_headers, excel_columns
 import itertools
 from openpyxl.styles import PatternFill
 from utils import validate_schema
+from .helpers import upload_metadata_file
 
 
 
 def create_excel(
     upload_boolean,
     soda,
-    generateDestination,
+    local_destination,
 ):
-    source = join(TEMPLATE_PATH, "dataset_description.xlsx")
-    destination = join(METADATA_UPLOAD_PS_PATH, "dataset_description.xlsx") if upload_boolean else generateDestination
+    source = join(TEMPLATE_PATH, SDS_FILE_DATASET_DESCRIPTION)
+    destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_DATASET_DESCRIPTION) if upload_boolean else local_destination
     shutil.copyfile(source, destination)
     # global namespace_logger
 
-    validate_schema(soda["dataset_metadata"]["dataset_description"], "dataset_description_schema.json")
+    validate_schema(soda["dataset_metadata"]["dataset_description"], SCHEMA_NAME_DATASET_DESCRIPTION)
 
     # write to excel file
     wb = load_workbook(destination)
@@ -69,10 +70,9 @@ def create_excel(
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        print("Implement later")
-        # upload_metadata_file(
-        #     "dataset_description.xlsx", bfaccount, bfdataset, destination, True
-        # )
+        upload_metadata_file(
+            "dataset_description.xlsx", soda, destination, True
+        )
 
     return {"size": size}
 
