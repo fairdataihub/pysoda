@@ -1,38 +1,43 @@
-from constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH
+from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SDS_FILE_CODE_DESCRIPTION, SCHEMA_NAME_CODE_DESCRIPTION
 from excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from utils import validate_schema
+from .helpers import upload_metadata_file
 
 
 # TODO: Handle optional entries when coupled with provided entries
 # TODO: Handle extending columns and filling with color when more entries are provided than the template default handles
-def create_excel(soda, upload, generateDestination):
-    source = join(TEMPLATE_PATH, "code_description.xlsx")
-    destination = join(METADATA_UPLOAD_PS_PATH, "code_description.xlsx") if upload else generateDestination
+def create_excel(soda, upload, local_destination):
+    source = join(TEMPLATE_PATH, SDS_FILE_CODE_DESCRIPTION)
+    destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_CODE_DESCRIPTION) if upload else local_destination
     shutil.copyfile(source, destination)
 
-    validate_schema(soda["dataset_metadata"]["code_description"], "code_description_schema.json")
+    validate_schema(soda["dataset_metadata"]["code_description"], SCHEMA_NAME_CODE_DESCRIPTION)
 
-
-    print(destination)
     wb = load_workbook("./" +destination)
     print(wb.sheetnames)
     ws1 = wb[wb.sheetnames[0]]
-
-    print(ws1)
 
     populate_input_output_information(ws1, soda)
 
     populate_basic_information(ws1, soda)
 
-
     populate_ten_simple_rules(ws1, soda)
 
-
     wb.save(destination)
+
+    size = getsize(destination)
+
+    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
+    if upload:
+        upload_metadata_file(
+            SDS_FILE_CODE_DESCRIPTION, soda, destination, True
+        )
+
+    return {"size": size}
 
 
 
