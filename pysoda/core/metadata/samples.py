@@ -5,18 +5,14 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema
-from .helpers import transposeMatrix, getMetadataCustomFields, sortedSubjectsTableData
+from .helpers import transposeMatrix, getMetadataCustomFields, sortedSubjectsTableData, upload_metadata_file
 from openpyxl.styles import Font
 import numpy as np
 
-def create_excel(soda, upload_boolean, filepath):
+def create_excel(soda, upload_boolean, local_destination):
     source = join(TEMPLATE_PATH, SDS_FILE_SAMPLES)
 
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_SAMPLES)
-
-    else:
-        destination = filepath
+    destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_SAMPLES) if upload_boolean else local_destination
 
     shutil.copyfile(source, destination)
 
@@ -73,8 +69,8 @@ def create_excel(soda, upload_boolean, filepath):
     size = getsize(destination)
 
     ## if generating directly on Pennsieve, call upload function
-    # if upload_boolean:
-    #     upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination, True)
+    if upload_boolean:
+        upload_metadata_file(SDS_FILE_SAMPLES, soda,  destination, True)
 
     return {"size": size}
 
