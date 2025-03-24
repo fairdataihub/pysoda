@@ -1,4 +1,4 @@
-from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH
+from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
@@ -15,7 +15,7 @@ def create_excel(
     generateDestination,
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
-    destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else generateDestination
+    destination = join(METADATA_UPLOAD_PS_PATH, "dataset_description.xlsx") if upload_boolean else generateDestination
     shutil.copyfile(source, destination)
     # global namespace_logger
 

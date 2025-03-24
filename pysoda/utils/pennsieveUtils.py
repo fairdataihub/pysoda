@@ -1,38 +1,6 @@
 import requests
-from os.path import expanduser, join
-from .exceptions import FailedToFetchPennsieveDatasets, PennsieveDatasetCannotBeFound
-from .authentication import get_access_token, create_request_headers
-
-
 from ..constants import PENNSIEVE_URL
-
-userpath = expanduser("~")
-configpath = join(userpath, ".pennsieve", "config.ini")
-
-def generate_options_set(soda_json_structure):
-    return "generate-dataset" in soda_json_structure.keys()
-
-def generating_locally(soda_json_structure):
-    return soda_json_structure["generate-dataset"]["destination"] == "local"
-
-def generating_on_ps(soda_json_structure):
-    return soda_json_structure["generate-dataset"]["destination"] == "bf"
-
-def uploading_with_ps_account(soda_json_structure):
-    return "bf-account-selected" in soda_json_structure
-
-def uploading_to_existing_ps_dataset(soda_json_structure):
-    return "bf-dataset-selected" in soda_json_structure
-
-def can_resume_prior_upload(resume_status):
-    global ums 
-    return resume_status and ums.df_mid_has_progress()
-
-def virtual_dataset_empty(soda_json_structure):
-    return (
-        "dataset-structure" not in soda_json_structure
-        and "metadata-files" not in soda_json_structure
-        )
+from .authentication import get_access_token
 
 def get_dataset_id(dataset_name_or_id):
     """
@@ -46,18 +14,23 @@ def get_dataset_id(dataset_name_or_id):
     if dataset_name_or_id.startswith("N:dataset:"):
         return dataset_name_or_id
     
-    # Attempt to retrieve the user's dataset list from Pennsieve
-    dataset_list = get_users_dataset_list()    
+
+    try:
+        # Attempt to retrieve the user's dataset list from Pennsieve
+        dataset_list = get_users_dataset_list()
+    except Exception as e:
+        print(e)
+        # abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
     
     # Iterate through the user's dataset list to find a matching dataset name
     for dataset in dataset_list:
         if dataset["content"]["name"] == dataset_name_or_id:
             return dataset["content"]["id"]
     
-    # If no matching dataset is found, abort with a 404 status and a specific error message
-    raise PennsieveDatasetCannotBeFound(dataset_name_or_id)
+    # If no matching dataset is found, abort with a 400 status and a specific error message
+    print(f"Error: Dataset '{dataset_name_or_id}' not found in user's dataset list.")
     # abort(404, "Please select a valid Pennsieve dataset.")
-
+  
 
 def get_users_dataset_list():
     """
@@ -100,10 +73,26 @@ def get_users_dataset_list():
 
         return datasets
     except Exception as e:
-        raise FailedToFetchPennsieveDatasets("Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
+        raise e
+    
 
 
 
 
 
-
+def create_request_headers(ps_or_token):
+    """
+    Creates necessary HTTP headers for making Pennsieve API requests.
+    Input: 
+        ps: Pennsieve object for a user that has been authenticated
+    """
+    if type(ps_or_token) == str:
+        return {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {ps_or_token}",
+        }
+    
+    return {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {ps_or_token.get_user().session_token}",
+    }

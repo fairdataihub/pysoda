@@ -1,4 +1,4 @@
-from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS,SCHEMA_NAME_SUBJECTS
+from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS,SCHEMA_NAME_SUBJECTS
 from .excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
@@ -14,7 +14,7 @@ def save_subjects_file(soda, upload_boolean, filepath):
     source = join(TEMPLATE_PATH, SCHEMA_FILE_SUBJECTS)
 
     if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, SCHEMA_FILE_SUBJECTS)
+        destination = join(METADATA_UPLOAD_PS_PATH, SCHEMA_FILE_SUBJECTS)
 
     else:
         destination = filepath

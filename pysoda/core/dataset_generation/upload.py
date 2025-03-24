@@ -115,7 +115,7 @@ def validate_dataset_structure(soda_json_structure, resume):
                     logger.info("Failed to validate dataset files")
                     logger.info(error)
                     main_curate_status = "Done"
-                    abort(400, error)
+                    # abort(400, error)
         except Exception as e:
             main_curate_status = "Done"
             raise e

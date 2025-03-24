@@ -2,16 +2,17 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 from openpyxl.styles import Font
 import shutil
+import tempfile
+from .helpers import upload_metadata_file
 
 
-
-from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH
+from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH
 from .excel_utils import rename_headers, excel_columns
-from utils import validate_schema
+from ...utils import validate_schema
 
 
 ### Create submission file
-def create_excel(soda, upload_boolean, destination_path):
+def create_excel(soda, upload_boolean, local_destination):
     """
     Create an Excel file for submission metadata.
 
@@ -30,7 +31,7 @@ def create_excel(soda, upload_boolean, destination_path):
 
     source = join(TEMPLATE_PATH, "submission.xlsx")
 
-    destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx") if upload_boolean else destination_path
+    destination = join(METADATA_UPLOAD_PS_PATH, "submission.xlsx") if upload_boolean else local_destination
 
     try:
         shutil.copyfile(source, destination)
@@ -64,6 +65,8 @@ def create_excel(soda, upload_boolean, destination_path):
 
     wb.save(destination)
 
+    print("Excel file created successfully at:", destination)
+
     wb.close()
 
     # calculate the size of the metadata file
@@ -73,13 +76,35 @@ def create_excel(soda, upload_boolean, destination_path):
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
-        print("Implement later")
-        # upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination, True)
+        print("Uploading Excel file to Pennsieve...")
+        upload_metadata_file("submission.xlsx", soda, destination, True)
+        print("Excel file uploaded successfully to Pennsieve.")
     return {"size": size}
 
 
 
+soda = {
+    "dataset_metadata": {
+        "submission_metadata": {
+            "consortium_data_standard": "Example Consortium",
+            "funding_consortium": "Example Funding Consortium",
+            "award_number": "123456",
+            "milestone_achieved": ["Milestone 1", "Milestone 2"],
+            "milestone_completion_date": "2023-10-01"
+        }
+    },
+    "ps-account-selected": {
+        "account-name": "soda-pennsieve-cb3c-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+    },
+    "ps-dataset-selected": {
+        "dataset-name": "12.3.0-beta"
+    }
+}
 
+try:
+    create_excel(soda, True, "")
+except Exception as e:
+    print(e)
 
 
 

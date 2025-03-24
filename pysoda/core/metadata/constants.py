@@ -1,9 +1,11 @@
-from os.path import join, getsize, abspath, dirname
+from os.path import join, getsize, abspath, dirname, expanduser
+from os import makedirs
 
 
 
 TEMPLATE_PATH = join(dirname(abspath(__file__)), '..', 'metadata_templates')
-METADATA_UPLOAD_BF_PATH = join(dirname(abspath(__file__)), 'metadata_upload_bf')
+METADATA_UPLOAD_PS_PATH = expanduser("~/.pysoda")
+makedirs(METADATA_UPLOAD_PS_PATH, exist_ok=True)
 
 
 SCHEMA_NAMES = {

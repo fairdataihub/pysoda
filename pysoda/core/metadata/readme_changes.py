@@ -1,11 +1,11 @@
-from .constants import METADATA_UPLOAD_BF_PATH
+from .constants import METADATA_UPLOAD_PS_PATH
 from os.path import join, getsize
 
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
 ## (not used for generating locally)
 def create_excel(soda, file_type):
-    file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
+    file_path = join(METADATA_UPLOAD_PS_PATH, file_type)
     text_string = ''
 
     if file_type == "README.txt":

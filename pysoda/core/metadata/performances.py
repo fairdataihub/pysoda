@@ -1,4 +1,4 @@
-from .constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH, SDS_FILE_PERFORMANCES, SCHEMA_NAME_PERFORMANCES
+from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SDS_FILE_PERFORMANCES, SCHEMA_NAME_PERFORMANCES
 from .excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
@@ -10,7 +10,7 @@ def create_excel(soda, upload_boolean, filepath):
     source = join(TEMPLATE_PATH, SDS_FILE_PERFORMANCES)
 
     if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, SDS_FILE_PERFORMANCES)
+        destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_PERFORMANCES)
     else:
         destination = filepath
 

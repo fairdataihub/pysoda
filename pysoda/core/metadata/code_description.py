@@ -1,4 +1,4 @@
-from constants import METADATA_UPLOAD_BF_PATH, TEMPLATE_PATH
+from constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH
 from excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
@@ -11,7 +11,7 @@ from utils import validate_schema
 # TODO: Handle extending columns and filling with color when more entries are provided than the template default handles
 def create_excel(soda, upload, generateDestination):
     source = join(TEMPLATE_PATH, "code_description.xlsx")
-    destination = join(METADATA_UPLOAD_BF_PATH, "code_description.xlsx") if upload else generateDestination
+    destination = join(METADATA_UPLOAD_PS_PATH, "code_description.xlsx") if upload else generateDestination
     shutil.copyfile(source, destination)
 
     validate_schema(soda["dataset_metadata"]["code_description"], "code_description_schema.json")

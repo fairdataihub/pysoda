@@ -1,1 +1,1 @@
-from .permissions import pennsieve_get_current_user_permissions
+from .permissions import pennsieve_get_current_user_permissions, has_edit_permissions
