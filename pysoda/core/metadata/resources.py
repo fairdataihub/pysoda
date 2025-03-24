@@ -5,14 +5,12 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema
+from .helpers import upload_metadata_file
 
-def create_excel(soda, upload_boolean, filepath):
+def create_excel(soda, upload_boolean, local_destination):
     source = join(TEMPLATE_PATH, SDS_FILE_RESOURCES)
 
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_RESOURCES)
-    else:
-        destination = filepath
+    destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_RESOURCES) if upload_boolean else local_destination
 
     shutil.copyfile(source, destination)
 
@@ -40,6 +38,16 @@ def create_excel(soda, upload_boolean, filepath):
         row += 1
 
     wb.save(destination)
+
+
+    size = getsize(destination)
+
+
+    ## if generating directly on Pennsieve, call upload function
+    if upload_boolean:
+        upload_metadata_file(SDS_FILE_RESOURCES, soda,  destination, True)
+
+    return {"size": size}
 
 
 
