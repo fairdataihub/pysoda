@@ -1,5 +1,6 @@
 from .constants import METADATA_UPLOAD_PS_PATH
 from os.path import join, getsize
+from .helpers import upload_metadata_file
 
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
@@ -18,6 +19,6 @@ def create_excel(soda, file_type):
 
     size = getsize(file_path)
 
-    # upload_metadata_file(file_type, bfaccount, bfdataset, file_path, True)
+    upload_metadata_file(file_type, soda, file_path, True)
 
     return { "size": size, "filepath": file_path }
