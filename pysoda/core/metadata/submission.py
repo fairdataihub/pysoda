@@ -83,28 +83,7 @@ def create_excel(soda, upload_boolean, local_destination):
 
 
 
-soda = {
-    "dataset_metadata": {
-        "submission_metadata": {
-            "consortium_data_standard": "Example Consortium",
-            "funding_consortium": "Example Funding Consortium",
-            "award_number": "123456",
-            "milestone_achieved": ["Milestone 1", "Milestone 2"],
-            "milestone_completion_date": "2023-10-01"
-        }
-    },
-    "ps-account-selected": {
-        "account-name": "soda-pennsieve-cb3c-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-    },
-    "ps-dataset-selected": {
-        "dataset-name": "12.3.0-beta"
-    }
-}
 
-try:
-    create_excel(soda, True, "")
-except Exception as e:
-    print(e)
 
 
 
