@@ -3476,7 +3476,7 @@ def reset_upload_session_environment(resume):
 
 
 
-def main_curate_function(soda_json_structure, resume):
+def main_curate_function(soda, resume):
     global logger
     global main_curate_status
     global manifest_id 
@@ -3484,13 +3484,13 @@ def main_curate_function(soda_json_structure, resume):
     global total_files
 
     logger.info("Starting generating selected dataset")
-    logger.info(f"Generating dataset metadata generate-options={soda_json_structure['generate-dataset']}")
+    logger.info(f"Generating dataset metadata generate-options={soda['generate-dataset']}")
 
 
     reset_upload_session_environment(resume)
 
 
-    validate_dataset_structure(soda_json_structure, resume)
+    validate_dataset_structure(soda, resume)
 
     
     logger.info("Generating dataset step 3")
@@ -3498,14 +3498,14 @@ def main_curate_function(soda_json_structure, resume):
     # 2] Generate
     main_curate_progress_message = "Generating dataset"
     try:
-        if (soda_json_structure["generate-dataset"]["destination"] == "local"):
+        if (soda["generate-dataset"]["destination"] == "local"):
             logger.info("main_curate_function generating locally")
-            generate_dataset(soda_json_structure, resume, ps=None)
+            generate_dataset(soda, resume, ps=None)
         else:
             logger.info("main_curate_function generating on Pennsieve")
-            accountname = soda_json_structure["bf-account-selected"]["account-name"]
+            accountname = soda["bf-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
-            generate_dataset(soda_json_structure, resume, ps)
+            generate_dataset(soda, resume, ps)
     except Exception as e:
         main_curate_status = "Done"
         raise e
@@ -3513,7 +3513,7 @@ def main_curate_function(soda_json_structure, resume):
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
 
-    logger.info(f"Finished generating selected dataset {soda_json_structure['generate-dataset']['dataset-name']}")
+    logger.info(f"Finished generating selected dataset {soda['generate-dataset']['dataset-name']}")
     return {
         "main_curate_progress_message": main_curate_progress_message,
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
