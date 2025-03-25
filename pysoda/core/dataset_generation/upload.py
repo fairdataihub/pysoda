@@ -8,7 +8,7 @@ from ...utils import (
     EmptyDatasetError, LocalDatasetMissingSpecifiedFiles,
     PennsieveUploadException
 )
-from permissions import pennsieve_get_current_user_permissions
+from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
 from ..metadata import create_high_level_manifest_files
 
@@ -46,21 +46,20 @@ import pathlib
 from flask import abort
 import requests
 from datetime import datetime
-from permissions import pennsieve_get_current_user_permissions
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
-from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
+# from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 # from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
-from uploadManifests import  get_upload_manifests
-from errors import PennsieveUploadException
+# from uploadManifests import  get_upload_manifests
+# from errors import PennsieveUploadException
 from .manifestSession import UploadManifestSession
-from constants import PENNSIEVE_URL
+from ...constants import PENNSIEVE_URL
 
-from pysodaUtils import (
-    check_forbidden_characters_ps
-)
+# from pysodaUtils import (
+#     check_forbidden_characters_ps
+# )
 
-from organizeDatasets import import_pennsieve_dataset
+# from organizeDatasets import import_pennsieve_dataset
 
 
 ### Global variables
@@ -3816,3 +3815,49 @@ def generate_manifest_file_data(dataset_structure):
 
 
 
+soda = {
+    "generate-dataset": {
+        "destination": "local",
+        "generate-option": "new",
+        "dataset-name": "test_dataset",
+        "path": "/Users/aaronm",
+        "if-existing": ""
+    },
+    "dataset-structure": {
+        "folders": {
+            "primary": {
+                "folders": {},
+                "files": {
+                    "validation_progress.txt": {
+                        "location": "local",
+                        "path": "/Users/aaronm/gmps-11/primary/pool-1/validation_progress.txt",
+                        "type": "local",
+                        "action": ["new"],
+                    },
+                    "clean_metadata.py": {
+                        "location": "local",
+                        "type": "local",
+                        "path": "/Users/aaronm/gmps-11/primary/pool-1/sub-1/clean_metadata.py",
+                        "action": ["new"]
+                    }
+                }
+            }
+        }, 
+        "files":  {
+            "metadata.xlsx": {
+                "location": "local",
+                "path": "/Users/aaronm/gmps-11/primary/metadata.xlsx",
+                "type": "local",
+                "action": ["new"]
+            }
+        },
+        "relativePath": "/"
+    }
+}
+
+
+try:
+    main_curate_function(soda, False)
+except Exception as e:
+    print("Error is")
+    print(e)

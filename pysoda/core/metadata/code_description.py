@@ -1,10 +1,10 @@
 from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SDS_FILE_CODE_DESCRIPTION, SCHEMA_NAME_CODE_DESCRIPTION
-from excel_utils import rename_headers, excel_columns
+from .excel_utils import rename_headers, excel_columns
 from openpyxl.styles import PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
-from utils import validate_schema
+from ...utils import validate_schema
 from .helpers import upload_metadata_file
 
 
@@ -101,151 +101,7 @@ def populate_ten_simple_rules(ws1, soda):
 
 
 
-soda = {
-    "dataset_metadata": {
-        "input_output_information": {
-            "number_of_inputs": 1,
-            "inputs": [
-                {
-                    "input_parameter_name": "ws1", 
-                    "input parameter type": "worksheet",
-                    "input_parameter_description": "The worksheet to write to",
-                    "input_units": "N/A",
-                    "input_default_value": "worksheet",
-                },
-                {
-                    "input_parameter_name": "soda", 
-                    "input parameter type": "dictionary",
-                    "input_parameter_description": "The soda dictionary",
-                    "input_units": "N/A",
-                    "input_default_value": "soda",
-                },
-            ],
-            "number_of_outputs": 1,
-            "outputs": [
-                {
-                    "output_parameter_name": "None",
-                    "output_parameter_type": "None",
-                    "output_parameter_description": "None",
-                    "output_units": "N/A",
-                    "output_default_value": "N/A",
-                }
-            ]
-        },
-        "basic_information": [
-            {
-                "RRID_term": "RRID:SCR_016755",
-                "RRID_identifier": "https://scicrunch.org/resolver/RRID:SCR_016755",
-                "ontology_term": "N/A",
-                "ontology_identifier": "N/A",
-            },
-            {
-                "RRID_term": "RRID:SCR_016755",
-                "RRID_identifier": "https://scicrunch.org/resolver/RRID:SCR_016755",
-                "ontology_term": "N/A",
-                "ontology_identifier": "N/A",
-            }
-        ],
-        "ten_simple_rules": {
-            "TSR1": {
-                "Link": "https://fairsharing.org/bsg-s001134",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR2": {
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR3a": {
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR3b":{
-                "Link": "https://google.com",
-            },
-            "TSR3c": {
-                "Link": "https://google.com",
-            },
-            "TSR4": {
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR5":{
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR6": {
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR7a": {
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR7b": {
-                "Link": "https://google"
-            },
-            "TSR7c": {
-                "Link": "https://google.com",
-            },
-            "TSR7d": {
-                "Link": "https://google.com",
-            },
-            "TSR7e":{
-                "Link": "https://google.com",
-            },
-            "TSR8a": {
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR8b":{
-                "Link": "https://google.com",
-            },
-            "TSR9": {
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR10a":{
-                "Link": "https://google.com",
-                "Rating": "3",
-                "Target": "4",
-                "Target Justification": "Silly string",
-                "Text": "All the silly things with silly string"
-            },
-            "TSR10b": {
-                "Link": "https://google.com"
-            }
-        }
-    }
-}
 
-create_excel(soda, False, "code_description.xlsx")
 
 
     

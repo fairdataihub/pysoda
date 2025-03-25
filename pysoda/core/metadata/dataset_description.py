@@ -5,7 +5,7 @@ import shutil
 from .excel_utils import rename_headers, excel_columns
 import itertools
 from openpyxl.styles import PatternFill
-from utils import validate_schema
+from ...utils import validate_schema
 from .helpers import upload_metadata_file
 
 
