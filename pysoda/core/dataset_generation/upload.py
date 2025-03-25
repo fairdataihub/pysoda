@@ -10,6 +10,7 @@ from ...utils import (
 )
 from permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
+from ..metadata import create_high_level_manifest_files
 
 logger = logging.getLogger(__name__)
 
@@ -834,7 +835,7 @@ def check_json_size(jsonStructure):
         raise e
 
 
-def generate_dataset_locally(soda_json_structure):
+def generate_dataset_locally(soda):
     global logger
     logger.info("starting generate_dataset_locally")
 
@@ -874,7 +875,7 @@ def generate_dataset_locally(soda_json_structure):
                             if not isfile(destination_path):
                                 if (
                                     "existing" in file["action"]
-                                    and soda_json_structure["generate-dataset"][
+                                    and soda["generate-dataset"][
                                         "if-existing"
                                     ]
                                     == "merge"
@@ -897,9 +898,9 @@ def generate_dataset_locally(soda_json_structure):
     logger.info("generate_dataset_locally step 1")
     # 1. Create new folder for dataset or use existing merge with existing or create new dataset
     main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
-    dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
-    if_existing = soda_json_structure["generate-dataset"]["if-existing"]
-    dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
+    dataset_absolute_path = soda["generate-dataset"]["path"]
+    if_existing = soda["generate-dataset"]["if-existing"]
+    dataset_name = soda["generate-dataset"]["dataset-name"]
     datasetpath = join(dataset_absolute_path, dataset_name)
     datasetpath = return_new_path(datasetpath)
     mkdir(datasetpath)
@@ -910,7 +911,7 @@ def generate_dataset_locally(soda_json_structure):
     # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
     list_copy_files = []
     list_move_files = []
-    dataset_structure = soda_json_structure["dataset-structure"]
+    dataset_structure = soda["dataset-structure"]
 
     for folder_key, folder in dataset_structure["folders"].items():
         folderpath = join(datasetpath, folder_key)
@@ -920,9 +921,9 @@ def generate_dataset_locally(soda_json_structure):
         )
 
     # 3. Add high-level metadata files in the list
-    if "metadata-files" in soda_json_structure.keys():
+    if "metadata-files" in soda.keys():
         logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
-        metadata_files = soda_json_structure["metadata-files"]
+        metadata_files = soda["metadata-files"]
         for file_key, file in metadata_files.items():
             if file["type"] == "local":
                 metadata_path = file["path"]
@@ -935,11 +936,11 @@ def generate_dataset_locally(soda_json_structure):
                         list_copy_files.append([metadata_path, destination_path])
 
     # 4. Add manifest files in the list
-    if "manifest-files" in soda_json_structure.keys():
+    if "manifest-files" in soda.keys():
         logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
         main_curate_progress_message = "Preparing manifest files"
         manifest_files_structure = create_high_level_manifest_files(
-            soda_json_structure, manifest_folder_path
+            soda, manifest_folder_path
         )
         for key in manifest_files_structure.keys():
             manifestpath = manifest_files_structure[key]
