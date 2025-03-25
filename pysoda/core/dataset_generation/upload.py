@@ -588,7 +588,7 @@ def check_empty_files_folders(soda_json_structure):
 
             for file_key in list(my_folder["files"].keys()):
                 file = my_folder["files"][file_key]
-                file_type = file["type"]
+                file_type = file["location"]
                 if file_type == "local":
                     file_path = file["path"]
                     if isfile(file_path):
@@ -653,7 +653,7 @@ def check_empty_files_folders(soda_json_structure):
             metadata_files = soda_json_structure["metadata-files"]
             for file_key in list(metadata_files.keys()):
                 file = metadata_files[file_key]
-                file_type = file["type"]
+                file_type = file["location"]
                 if file_type == "local":
                     file_path = file["path"]
                     if isfile(file_path):
@@ -706,10 +706,10 @@ def check_local_dataset_files_validity(soda_json_structure):
             file = my_folder["files"][file_key]
             if file_key in ["manifest.xlsx", "manifest.csv"]:
                 continue
-            file_type = file["type"]
+            file_type = file["location"]
             if file_type == "local":
                 file_path = file["path"]
-                if file["type"] == "bf":
+                if file["location"] == "bf":
                     continue
                 if not isfile(file_path):
                     relative_path = my_relative_path + "/" + file_key
@@ -753,7 +753,7 @@ def check_local_dataset_files_validity(soda_json_structure):
         # Remove specified metadata files that do net exist at the specified paths or that are empty
         for file_key in list(metadata_files.keys()):
             file = metadata_files[file_key]
-            file_type = file["type"]
+            file_type = file["location"]
             if file_type == "local":
                 file_path = file["path"]
                 if not isfile(file_path):
@@ -796,7 +796,7 @@ def check_json_size(jsonStructure):
             if "files" in folder.keys():
                 for file_key, file in folder["files"].items():
                     if "deleted" not in file["action"]:
-                        file_type = file["type"]
+                        file_type = file["location"]
                         if file_type == "local":
                             file_path = file["path"]
                             if isfile(file_path):
@@ -816,7 +816,7 @@ def check_json_size(jsonStructure):
         if "metadata-files" in jsonStructure.keys():
             metadata_files = jsonStructure["metadata-files"]
             for file_key, file in metadata_files.items():
-                if file["type"] == "local":
+                if file["location"] == "local":
                     metadata_path = file["path"]
                     if isfile(metadata_path) and "new" in file["action"]:
                         total_dataset_size += getsize(metadata_path)
@@ -864,7 +864,7 @@ def generate_dataset_locally(soda):
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
                 if "deleted" not in file["action"]:
-                    file_type = file["type"]
+                    file_type = file["location"]
                     if file_type == "local":
                         file_path = file["path"]
                         if isfile(file_path):
@@ -924,7 +924,7 @@ def generate_dataset_locally(soda):
         logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
         metadata_files = soda["metadata-files"]
         for file_key, file in metadata_files.items():
-            if file["type"] == "local":
+            if file["location"] == "local":
                 metadata_path = file["path"]
                 if isfile(metadata_path):
                     destination_path = join(datasetpath, file_key)
@@ -1203,7 +1203,7 @@ def create_high_lvl_manifest_files_existing_ps(
                 my_bf_existing_files_name = []
                 my_bf_existing_files_name_with_extension = []
             for file_key, file in my_folder["files"].items():
-                if file["type"] == "local":
+                if file["location"] == "local":
                     file_path = file["path"]
                     if isfile(file_path):
                         desired_name = splitext(file_key)[0]
@@ -1998,7 +1998,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             metadata_files = soda_json_structure["metadata-files"]
             metadata_files_list = []
             for file_key, file in metadata_files.items():
-                if file["type"] == "local":
+                if file["location"] == "local":
                     metadata_path = file["path"]
                     if isfile(metadata_path):
                         metadata_files_list.append(metadata_path)
@@ -2041,7 +2041,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 for file_key, file in dataset_structure["files"].items():
                     # relative_path = generate_relative_path(my_relative_path, file_key)
                     file_path = file["path"]
-                    if isfile(file_path) and file["type"] == "local":
+                    if isfile(file_path) and file["location"] == "local":
                         projected_name = splitext(basename(file_path))[0]
                         projected_name_w_extension = basename(file_path)
                         desired_name = splitext(file_key)[0]
@@ -2206,7 +2206,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
                 for file_key, file in my_folder["files"].items():
                     # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
-                    if file["type"] == "local":
+                    if file["location"] == "local":
                         file_path = file["path"]
                         if isfile(file_path) and existing_file_option == "replace" and file_key in ps_folder_children["files"]:
                             my_file = ps_folder_children["files"][file_key]
@@ -2233,7 +2233,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 # add the files that are set to be uploaded to Pennsieve to a list 
                 # handle renaming files and creating duplicates
                 for file_key, file in my_folder["files"].items():
-                    if file["type"] == "local":
+                    if file["location"] == "local":
                         file_path = file["path"]
                         if isfile(file_path):
                             initial_name = splitext(basename(file_path))[0]
@@ -2452,7 +2452,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 ) = ps_get_existing_files_details(ds)
                 metadata_files = soda_json_structure["metadata-files"]
                 for file_key, file in metadata_files.items():
-                    if file["type"] == "local":
+                    if file["location"] == "local":
                         metadata_path = file["path"]
                         if isfile(metadata_path):
                             initial_name = splitext(basename(metadata_path))[0]
@@ -3002,7 +3002,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
         # check that the subfolders and files specified in the dataset are valid
         if "files" in folder_dict.keys():
             for file_key, file in folder_dict["files"].items():
-                file_type = file["type"]
+                file_type = file["location"]
                 relative_path = (f"{folder_path}/{file_key}")
                 # If file is from Pennsieve we verify if file exists on Pennsieve
                 if file_type == "bf":
@@ -3072,7 +3072,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
     if "metadata-files" in soda_json_structure.keys():
         # check that the metadata files specified in the dataset are valid
         for file_key, file in soda_json_structure["metadata-files"].items():
-            if file["type"] == "bf":
+            if file["location"] == "bf":
                 file_id = file["path"]
                 if next((item for item in root_folder if item["content"]["id"] == file_id), None) is None:
                     error.append(f"{file_key} id: {file_id}")
@@ -3831,12 +3831,12 @@ soda = {
                     "validation_progress.txt": {
                         "location": "local",
                         "path": "/Users/aaronm/gmps-11/primary/pool-1/validation_progress.txt",
-                        "type": "local",
+
                         "action": ["new"],
                     },
                     "clean_metadata.py": {
                         "location": "local",
-                        "type": "local",
+
                         "path": "/Users/aaronm/gmps-11/primary/pool-1/sub-1/clean_metadata.py",
                         "action": ["new"]
                     }
@@ -3847,7 +3847,7 @@ soda = {
             "metadata.xlsx": {
                 "location": "local",
                 "path": "/Users/aaronm/gmps-11/primary/metadata.xlsx",
-                "type": "local",
+
                 "action": ["new"]
             }
         },
