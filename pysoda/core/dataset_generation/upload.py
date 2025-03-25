@@ -3190,8 +3190,7 @@ def validate_local_dataset_generate_path(soda_json_structure):
         raise FileNotFoundError(error_message)
 
 
-def generating_locally(soda_json_structure):
-    return soda_json_structure["generate-dataset"]["destination"] == "local"
+
 
 def generating_on_ps(soda_json_structure):
     return soda_json_structure["generate-dataset"]["destination"] == "bf"
@@ -3254,31 +3253,31 @@ def generate_new_ds_ps(soda_json_structure, dataset_name, ps):
     ps_upload_to_dataset(soda_json_structure, ps, myds, False)
 
 
-def generate_dataset(soda_json_structure, resume, ps):
+def generate_dataset(soda, resume, ps):
     global main_generate_destination
     global main_total_generate_dataset_size
 
  
     # Generate dataset locally
-    if generating_locally(soda_json_structure):
+    if generating_locally(soda):
         logger.info("generate_dataset generating_locally")
-        main_generate_destination = soda_json_structure["generate-dataset"][
+        main_generate_destination = soda["generate-dataset"][
             "destination"
         ]
         _, main_total_generate_dataset_size = generate_dataset_locally(
-            soda_json_structure
+            soda
         )
 
     # Generate dataset to Pennsieve
-    if generating_on_ps(soda_json_structure):
-        main_generate_destination = soda_json_structure["generate-dataset"][
+    if generating_on_ps(soda):
+        main_generate_destination = soda["generate-dataset"][
             "destination"
         ]
-        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
+        generate_option = soda["generate-dataset"]["generate-option"]
 
-        if uploading_to_existing_ps_dataset(soda_json_structure) and soda_json_structure["starting-point"]["type"] != "new":
+        if uploading_to_existing_ps_dataset(soda) and soda["starting-point"]["type"] != "new":
             selected_dataset_id = get_dataset_id(
-                soda_json_structure["bf-dataset-selected"]["dataset-name"]
+                soda["bf-dataset-selected"]["dataset-name"]
             )
             # make an api request to pennsieve to get the dataset details
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
@@ -3286,35 +3285,35 @@ def generate_dataset(soda_json_structure, resume, ps):
             myds = r.json()
 
             if can_resume_prior_upload(resume): 
-                ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
+                ps_upload_to_dataset(soda, ps, myds, resume)
             else:
-                ps_update_existing_dataset(soda_json_structure, myds, ps, resume)
+                ps_update_existing_dataset(soda, myds, ps, resume)
 
-        elif generate_option == "new" or generate_option == "existing-bf" and soda_json_structure["starting-point"]["type"] == "new":
+        elif generate_option == "new" or generate_option == "existing-bf" and soda["starting-point"]["type"] == "new":
             # if dataset name is in the generate-dataset section, we are generating a new dataset
-            if "dataset-name" in soda_json_structure["generate-dataset"]:
-                dataset_name = soda_json_structure["generate-dataset"][
+            if "dataset-name" in soda["generate-dataset"]:
+                dataset_name = soda["generate-dataset"][
                     "dataset-name"
                 ]
-            elif "digital-metadata" in soda_json_structure and "name" in soda_json_structure["digital-metadata"]:
-                dataset_name = soda_json_structure["digital-metadata"]["name"]
-            elif "bf-dataset-selected" in soda_json_structure and "dataset-name" in soda_json_structure["bf-dataset-selected"]:
-                dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+            elif "digital-metadata" in soda and "name" in soda["digital-metadata"]:
+                dataset_name = soda["digital-metadata"]["name"]
+            elif "bf-dataset-selected" in soda and "dataset-name" in soda["bf-dataset-selected"]:
+                dataset_name = soda["bf-dataset-selected"]["dataset-name"]
             
             if resume: 
-                generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps)
+                generate_new_ds_ps_resume(soda, dataset_name, ps)
             else: 
                 try: 
                     selected_dataset_id = get_dataset_id(dataset_name)
                 except Exception as e:
                     if e.code == 404:
-                        generate_new_ds_ps(soda_json_structure, dataset_name, ps)
+                        generate_new_ds_ps(soda, dataset_name, ps)
                         return
                     else:
                         abort(e.status_code, e.message)
 
                 myds = get_dataset_with_backoff(selected_dataset_id)
-                ps_upload_to_dataset(soda_json_structure, ps, myds, resume)
+                ps_upload_to_dataset(soda, ps, myds, resume)
 
                         
                 
