@@ -10,7 +10,7 @@ from ...utils import (
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
-from ..metadata import create_high_level_manifest_files
+from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest
 
 logger = logging.getLogger(__name__)
 
@@ -935,18 +935,11 @@ def generate_dataset_locally(soda):
                         list_copy_files.append([metadata_path, destination_path])
 
     # 4. Add manifest files in the list
-    if "manifest-files" in soda.keys():
+    if "manifest_files" in soda["dataset_metadata"].keys():
         logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
         main_curate_progress_message = "Preparing manifest files"
-        manifest_files_structure = create_high_level_manifest_files(
-            soda, manifest_folder_path
-        )
-        for key in manifest_files_structure.keys():
-            manifestpath = manifest_files_structure[key]
-            if isfile(manifestpath):
-                destination_path = join(datasetpath, key, "manifest.xlsx")
-                main_total_generate_dataset_size += getsize(manifestpath)
-                list_copy_files.append([manifestpath, destination_path])
+        manifest.create_excel(soda, False, join(datasetpath,  "manifest.xlsx"))
+
 
     logger.info("generate_dataset_locally step 5 moving files to new location")
     # 5. Move files to new location
@@ -3852,6 +3845,66 @@ soda = {
             }
         },
         "relativePath": "/"
+    },
+    "dataset_metadata": {
+    "manifest_files": {
+        "data": {
+            "headers": [                  
+                  "filename",
+                  "timestamp",
+                  "description",
+                  "file type",
+                  "entity",
+                  "data modality",
+                  "also in dataset",
+                  "also in dataset path",
+                  "data dictionary path",
+                  "entity is transitive",
+                  "Additional Metadata"
+            ],
+            "data": [
+                [
+                    "metadata.xlsx",
+                    "",
+                    "",
+                    ".xlsx",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "validation_progress.txt",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "clean_metadata.py",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            ]
+        }
+    }
     }
 }
 

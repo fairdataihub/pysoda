@@ -33,6 +33,7 @@ def create_excel(soda, upload_boolean, local_destination):
         ascii_header_idx += 1
       row += 1
 
+    print(destination)
     wb.save(destination)
 
     size = getsize(destination)
