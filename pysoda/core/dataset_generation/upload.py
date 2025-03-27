@@ -931,6 +931,20 @@ def generate_dataset_locally(soda):
                     samples.create_excel(soda, join(datasetpath, file_key))
                 elif file_key == "code_description.xlsx":
                     code_description.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "dataset_description.xlsx": 
+                    dataset_description.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "performancds.xlsx":
+                    performance.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "reources.xlsx":
+                    resources.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "sites.xlsx":
+                    sites.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "submission.xlsx":
+                    submission.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "README.TXT":
+                    readme.create_readme(soda, join(datasetpath, file_key))
+                elif file_key == "CHANGES.md":
+                    changes.create_changes(soda, join(datasetpath, file_key))
 
     # 4. Add manifest files in the list
     if "manifest_files" in soda["dataset_metadata"].keys():
