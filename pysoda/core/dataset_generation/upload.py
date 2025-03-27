@@ -920,19 +920,17 @@ def generate_dataset_locally(soda):
         )
 
     # 3. Add high-level metadata files in the list
-    if "metadata-files" in soda.keys():
+    if "metadata_files" in soda.keys():
         logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
-        metadata_files = soda["metadata-files"]
+        metadata_files = soda["metadata_files"]
         for file_key, file in metadata_files.items():
             if file["location"] == "local":
-                metadata_path = file["path"]
-                if isfile(metadata_path):
-                    destination_path = join(datasetpath, file_key)
-                    if "existing" in file["action"]:
-                        list_move_files.append([metadata_path, destination_path])
-                    elif "new" in file["action"]:
-                        main_total_generate_dataset_size += getsize(metadata_path)
-                        list_copy_files.append([metadata_path, destination_path])
+                if file_key == "subjects.xlsx":
+                    subjects.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "samples.xlsx":
+                    samples.create_excel(soda, join(datasetpath, file_key))
+                elif file_key == "code_description.xlsx":
+                    code_description.create_excel(soda, join(datasetpath, file_key))
 
     # 4. Add manifest files in the list
     if "manifest_files" in soda["dataset_metadata"].keys():
