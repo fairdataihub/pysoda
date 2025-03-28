@@ -120,6 +120,9 @@
             "award-number": { "type": "string" }
           }
         },
+        "dataset_description": {
+          "$ref": "dataset_description.json"
+        },
         "protocol-data": {
           "type": "array"
         },
@@ -132,224 +135,19 @@
         "submission": {
           "$ref": "submission_schema.json"
         },
-        "code-metadata": {
-          "type": "object",
-          "properties": {
-            "code_description": { "type": "string" }
-          }
+        "code_description": {
+          "$ref": "code_description.json"
         },
         "README": { "type": "string" },
         "CHANGES": { "type": "string" },
         "performances": {
-          "type": "array",
-          "items": [
-            {
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 7,
-              "items": [
-                {
-                  "type": "string",
-                  "enum": ["performance id"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["protocol url or doi"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["date"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["start datetime"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["end datetime"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["participants"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["Additional Metadata"]
-                }
-              ]
-            }
-          ],
-          "additionalItems": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 7,
-            "items": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          }
+          "$ref": "performances.json"
         },
         "sites": {
-          "type": "array",
-          "items": [
-            {
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 7,
-              "items": [
-                {
-                  "type": "string",
-                  "enum": ["site id"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["specimen id"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["site type"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["laboratory internal id"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["coordinate system"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["coordinate system position"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["more..."]
-                }
-              ]
-            }
-          ],
-          "additionalItems": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 7,
-            "items": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          }
+          "$ref": "sites.json"
         },
         "resources": {
-          "type": "array",
-          "items": [
-            {
-              "type": "array",
-              "minItems": 1,
-              "maxItems": 8,
-              "items": [
-                {
-                  "type": "string",
-                  "enum": ["RRID"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["Type"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["Name"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["URL"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["Vendor"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["Version"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["ID in protocol"]
-                },
-                {
-                  "type": "string",
-                  "enum": ["Additional Metadata"]
-                }
-              ]
-            }
-          ],
-          "additionalItems": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 8,
-            "items": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "string"
-              }
-            ]
-          }
+          "$ref": "resources.json"
         }
       }
     },
