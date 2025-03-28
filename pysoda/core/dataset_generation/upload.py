@@ -10,7 +10,7 @@ from ...utils import (
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
-from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest
+from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, readme_changes
 
 logger = logging.getLogger(__name__)
 
@@ -920,31 +920,30 @@ def generate_dataset_locally(soda):
         )
 
     # 3. Add high-level metadata files in the list
-    if "metadata_files" in soda.keys():
+    if "dataset_metadata" in soda.keys():
         logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
-        metadata_files = soda["metadata_files"]
-        for file_key, file in metadata_files.items():
-            if file["location"] == "local":
-                if file_key == "subjects.xlsx":
-                    subjects.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "samples.xlsx":
-                    samples.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "code_description.xlsx":
-                    code_description.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "dataset_description.xlsx": 
-                    dataset_description.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "performancds.xlsx":
-                    performance.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "reources.xlsx":
-                    resources.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "sites.xlsx":
-                    sites.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "submission.xlsx":
-                    submission.create_excel(soda, join(datasetpath, file_key))
-                elif file_key == "README.TXT":
-                    readme.create_readme(soda, join(datasetpath, file_key))
-                elif file_key == "CHANGES.md":
-                    changes.create_changes(soda, join(datasetpath, file_key))
+        metadata_files = soda["dataset_metadata"]
+        for file_key, _ in metadata_files.items():
+            if file_key == "subjects":
+                subjects.create_excel(soda, False, join(datasetpath, "subjects.xlsx"))
+            elif file_key == "samples":
+                samples.create_excel(soda, False, join(datasetpath, "samples.xlsx"))
+            elif file_key == "code_description":
+                code_description.create_excel(soda, False, join(datasetpath, "code_description.xlsx"))
+            elif file_key == "dataset_description": 
+                dataset_description.create_excel(soda, False, join(datasetpath, "dataset_description.xlsx"))
+            elif file_key == "performances":
+                performances.create_excel(soda, False, join(datasetpath, "performances.xlsx"))
+            elif file_key == "reources":
+                resources.create_excel(soda, False, join(datasetpath, "resources.xlsx"))
+            elif file_key == "sites":
+                sites.create_excel(soda, False, join(datasetpath, "sites.xlsx"))
+            elif file_key == "submission":
+                submission.create_excel(soda, False, join(datasetpath, "submission.xlsx"))
+            elif file_key == "README":
+                readme_changes.create_readme(soda, False, join(datasetpath, "README.TXT"))
+            elif file_key == "CHANGES":
+                readme_changes.create_changes(soda, False, join(datasetpath, "CHANGES.md"))
 
     # 4. Add manifest files in the list
     if "manifest_files" in soda["dataset_metadata"].keys():
@@ -3859,64 +3858,71 @@ soda = {
         "relativePath": "/"
     },
     "dataset_metadata": {
-    "manifest_files": {
-        "data": {
-            "headers": [                  
-                  "filename",
-                  "timestamp",
-                  "description",
-                  "file type",
-                  "entity",
-                  "data modality",
-                  "also in dataset",
-                  "also in dataset path",
-                  "data dictionary path",
-                  "entity is transitive",
-                  "Additional Metadata"
-            ],
-            "data": [
-                [
-                    "metadata.xlsx",
-                    "",
-                    "",
-                    ".xlsx",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
+        "manifest_files": {
+            "data": {
+                "headers": [                  
+                    "filename",
+                    "timestamp",
+                    "description",
+                    "file type",
+                    "entity",
+                    "data modality",
+                    "also in dataset",
+                    "also in dataset path",
+                    "data dictionary path",
+                    "entity is transitive",
+                    "Additional Metadata"
                 ],
-                [
-                    "validation_progress.txt",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                ],
-                [
-                    "clean_metadata.py",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
+                "data": [
+                    [
+                        "metadata.xlsx",
+                        "",
+                        "",
+                        ".xlsx",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ],
+                    [
+                        "validation_progress.txt",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ],
+                    [
+                        "clean_metadata.py",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ]
                 ]
-            ]
+            }
+        },
+        "submission": {
+            "consortium_data_standard": "Fair Glissando",
+            "funding_consortium": "SPARC",
+            "award_number": "OT2OD023876",
+            "milestone_achieved": ["Yes", "Yes"],
+            "milestone_completion_date": "March_1st"
         }
-    }
     }
 }
 

@@ -25,7 +25,7 @@ def create_excel(soda, upload_boolean, local_destination):
         dict: A dictionary containing the size of the metadata file.
     """
 
-    validate_schema(soda["dataset_metadata"]["submission_metadata"], "submission_schema.json")
+    validate_schema(soda["dataset_metadata"]["submission"], "submission_schema.json")
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
@@ -40,7 +40,7 @@ def create_excel(soda, upload_boolean, local_destination):
     
     #TODO: Do not use an array for the non-array values; zipping for the sake of the ascii value is not necessary until milestone_achieved
     submission_metadata_list = [
-        soda["dataset_metadata"]["submission_metadata"]
+        soda["dataset_metadata"]["submission"]
     ]
 
     # write to excel file

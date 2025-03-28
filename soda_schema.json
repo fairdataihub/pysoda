@@ -126,10 +126,10 @@
         "subjects": {
           "$ref": "subjects.json"
         },
-        "sample-metadata": {
+        "samples": {
           "$ref": "samples.json"
         },
-        "submission-metadata": {
+        "submission": {
           "$ref": "submission_schema.json"
         },
         "code-metadata": {

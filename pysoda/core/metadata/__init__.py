@@ -3,3 +3,8 @@ from .dataset_description import create_excel
 from .readme_changes import create_excel
 from .code_description import create_excel
 from .manifest_package import create_high_level_manifest_files, get_auto_generated_manifest_files
+from .manifest import create_excel
+from .resources import create_excel
+from .performances import create_excel
+from .submission import create_excel
+from .sites import create_excel
