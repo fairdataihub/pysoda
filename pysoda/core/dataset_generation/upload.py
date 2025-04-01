@@ -11,7 +11,7 @@ from ...utils import (
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
 from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, readme_changes
-
+from ..upload_manifests import get_upload_manifests
 logger = logging.getLogger(__name__)
 
 main_curate_progress_message = ""
@@ -50,7 +50,6 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 # from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 # from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
-from uploadManifests import  get_upload_manifests
 # from errors import PennsieveUploadException
 from .manifestSession import UploadManifestSession
 from ...constants import PENNSIEVE_URL
