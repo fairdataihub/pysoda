@@ -6,7 +6,7 @@ from ...utils import (
     connect_pennsieve_client, get_dataset_id, get_access_token,
     PennsieveActionNoPermission, PennsieveDatasetCannotBeFound,
     EmptyDatasetError, LocalDatasetMissingSpecifiedFiles,
-    PennsieveUploadException
+    PennsieveUploadException, create_request_headers
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
@@ -50,10 +50,11 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 # from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL, get_users_dataset_list
 # from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
-# from uploadManifests import  get_upload_manifests
+from uploadManifests import  get_upload_manifests
 # from errors import PennsieveUploadException
 from .manifestSession import UploadManifestSession
 from ...constants import PENNSIEVE_URL
+from ..dataset_importing import import_pennsieve_dataset
 
 # from pysodaUtils import (
 #     check_forbidden_characters_ps
