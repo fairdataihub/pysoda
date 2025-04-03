@@ -1,6 +1,8 @@
 import requests
 from ..constants import PENNSIEVE_URL
 from .authentication import get_access_token
+import re 
+from .exceptions import PennsieveDatasetCannotBeFound
 
 def get_dataset_id(dataset_name_or_id):
     """
@@ -27,9 +29,8 @@ def get_dataset_id(dataset_name_or_id):
         if dataset["content"]["name"] == dataset_name_or_id:
             return dataset["content"]["id"]
     
-    # If no matching dataset is found, abort with a 400 status and a specific error message
-    print(f"Error: Dataset '{dataset_name_or_id}' not found in user's dataset list.")
-    # abort(404, "Please select a valid Pennsieve dataset.")
+    # If no matching dataset is found, abort with a 404 status and a specific error message
+    raise PennsieveDatasetCannotBeFound(dataset_name_or_id)
   
 
 def get_users_dataset_list():
@@ -96,3 +97,23 @@ def create_request_headers(ps_or_token):
             "Content-Type": "application/json",
             "Authorization": f"Bearer {ps_or_token.get_user().session_token}",
     }
+
+
+forbidden_characters_bf = '\/:*?"<>.,'
+
+
+def check_forbidden_characters_ps(my_string):
+    """
+    Check for forbidden characters in Pennsieve file/folder name
+
+    Args:
+        my_string: string with characters (string)
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile(f"[{forbidden_characters_bf}]")
+    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
+        return False
+    else:
+        return True

@@ -6,7 +6,8 @@ from ...utils import (
     connect_pennsieve_client, get_dataset_id, get_access_token,
     PennsieveActionNoPermission, PennsieveDatasetCannotBeFound,
     EmptyDatasetError, LocalDatasetMissingSpecifiedFiles,
-    PennsieveUploadException, create_request_headers
+    PennsieveUploadException, create_request_headers, check_forbidden_characters_ps, get_users_dataset_list,
+    PennsieveDatasetNameInvalid, PennsieveDatasetNameTaken, PennsieveAccountInvalid
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
@@ -618,7 +619,7 @@ def check_empty_files_folders(soda_json_structure):
 
             if not my_folder["folders"] and not my_folder["files"]:
                 ignore = False
-                if "type" in my_folder and my_folder["type"] == "bf":
+                if "location" in my_folder and my_folder["location"] == "ps":
                     ignore = True
                 if not ignore:
                     error_message = my_relative_path
@@ -709,7 +710,7 @@ def check_local_dataset_files_validity(soda_json_structure):
             file_type = file["location"]
             if file_type == "local":
                 file_path = file["path"]
-                if file["location"] == "bf":
+                if file["location"] == "ps":
                     continue
                 if not isfile(file_path):
                     relative_path = my_relative_path + "/" + file_key
@@ -731,7 +732,7 @@ def check_local_dataset_files_validity(soda_json_structure):
             folder = my_folder["folders"][folder_key]
             recursive_empty_local_folder_remove(folder, folder_key, folders_content)
 
-        if not my_folder["folders"] and not my_folder["files"] and my_folder["type"] != "bf":
+        if not my_folder["folders"] and not my_folder["files"] and my_folder["location"] != "ps":
             del my_folders_content[my_folder_key]
 
     error = []
@@ -1020,23 +1021,28 @@ def ps_create_new_dataset(datasetname, ps):
             count += 1
 
         if count > 0:
-            abort(400, error)
+            raise PennsieveDatasetNameInvalid(datasetname)
 
         try:
             dataset_list = get_users_dataset_list()
         except Exception as e:
-            abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
+            raise Exception("Failed to retrieve datasets from Pennsieve. Please try again later.")
 
         for dataset in dataset_list:
             if datasetname == dataset["content"]["name"]:
-                abort(400, "Dataset name already exists")
+                raise PennsieveDatasetNameTaken("Dataset name already exists")
+            
+        print("About to create a dataset")
         
         # Create the dataset on Pennsieve
         r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
         r.raise_for_status()
 
+        print("Finished creating dataset")
+
         return r.json()
 
+    # TODO: Remove unnecessary raise
     except Exception as e:
         raise e
 
@@ -1666,7 +1672,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
                 new_folder = r.json()
             
             current_folder_structure["folders"][folder] = {
-                "type": "bf",
+                "location": "ps",
                 "action": ["existing"],
                 "path": new_folder['content']['id'],
                 "folders": {},
@@ -1675,7 +1681,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
 
         index += 1
         # check if path exists for folder, if not then folder has not been created on Pennsieve yet, so create it and add it to the path key
-        if "path" not in current_folder_structure["folders"][folder].keys() or current_folder_structure["folders"][folder]["type"] != "bf":
+        if "path" not in current_folder_structure["folders"][folder].keys() or current_folder_structure["folders"][folder]["location"] != "ps":
             r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder, current_folder_structure["path"], ds['content']['id']))
             r.raise_for_status()
             new_folder_id = r.json()["content"]["id"]
@@ -1694,7 +1700,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
             for item in list(folder["files"]):
                 if (
                     "moved" in folder["files"][item]["action"]
-                    and folder["files"][item]["type"] == "bf"
+                    and folder["files"][item]["location"] == "ps"
                 ):
                     # create the folders if they do not exist
                     new_folder_id = ""
@@ -1715,7 +1721,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
             for item in list(folder["files"]):
                 if (
                     "renamed" in folder["files"][item]["action"]
-                    and folder["files"][item]["type"] == "bf"
+                    and folder["files"][item]["location"] == "ps"
                 ):
                     # rename the file on Pennsieve
                     r = requests.put(f"{PENNSIEVE_URL}/packages/{folder['files'][item]['path']}?updateStorage=true", json={"name": item}, headers=create_request_headers(ps))
@@ -1732,7 +1738,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
         files and folders that exist inside.
         """
         for item in list(folder["folders"]):
-            if folder["folders"][item]["type"] == "bf":
+            if folder["folders"][item]["location"] == "ps":
                 if "moved" in folder["folders"][item]["action"]:
                     file_path = folder["folders"][item]["path"]
                     # remove the file from the dataset
@@ -1754,7 +1760,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     def recursive_folder_rename(folder, mode):
         for item in list(folder["folders"]):
             if (
-                folder["folders"][item]["type"] == "bf"
+                folder["folders"][item]["location"] == "ps"
                 and "action" in folder["folders"][item].keys()
                 and mode in folder["folders"][item]["action"]
             ):
@@ -1832,12 +1838,12 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     logger.info("ps_update_existing_dataset step 9 run the ps_create_new_dataset code to upload any new files added to the dataset")
     if "manifest-files" in soda_json_structure.keys():
         if "auto-generated" in soda_json_structure["manifest-files"].keys():
-            soda_json_structure["manifest-files"] = {"destination": "bf", "auto-generated": True}
+            soda_json_structure["manifest-files"] = {"destination": "ps", "auto-generated": True}
         else:
-            soda_json_structure["manifest-files"] = {"destination": "bf"}
+            soda_json_structure["manifest-files"] = {"destination": "ps"}
 
     soda_json_structure["generate-dataset"] = {
-        "destination": "bf",
+        "destination": "ps",
         "if-existing": "merge",
         "if-existing-files": "replace",
         "generate-option": "existing-bf"
@@ -2403,9 +2409,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         brand_new_dataset = False
         dataset_structure = soda_json_structure["dataset-structure"]
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
-        starting_point = soda_json_structure["starting-point"]["type"]
+        starting_point = soda_json_structure["starting-point"]["origin"]
         relative_path = ds["content"]["name"]
 
+        print("Post setup")
 
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
@@ -3009,7 +3016,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
                 file_type = file["location"]
                 relative_path = (f"{folder_path}/{file_key}")
                 # If file is from Pennsieve we verify if file exists on Pennsieve
-                if file_type == "bf":
+                if file_type == "ps":
                     file_actions = file["action"]
                     file_id = file["path"]
                     if "moved" in file_actions:
@@ -3024,9 +3031,9 @@ def ps_check_dataset_files_validity(soda_json_structure):
         
         if "folders" in folder_dict.keys():
             for folder_key, folder in folder_dict["folders"].items():
-                folder_type = folder["type"]
+                folder_type = folder["location"]
                 relative_path = (f"{folder_path}/{folder_key}")
-                if folder_type == "bf":
+                if folder_type == "ps":
                     folder_id = folder["path"]
                     folder_action = folder["action"]
                     if "moved" in folder_action:
@@ -3055,9 +3062,9 @@ def ps_check_dataset_files_validity(soda_json_structure):
         dataset_structure = soda_json_structure["dataset-structure"]
         if "folders" in dataset_structure:
             for folder_key, folder in dataset_structure["folders"].items():
-                folder_type = folder["type"]
+                folder_type = folder["location"]
                 relative_path = folder_key
-                if folder_type == "bf":
+                if folder_type == "ps":
                     collection_id = folder["path"]
                     collection_actions = folder["action"]
                     if "moved" in collection_actions:
@@ -3076,7 +3083,7 @@ def ps_check_dataset_files_validity(soda_json_structure):
     if "metadata-files" in soda_json_structure.keys():
         # check that the metadata files specified in the dataset are valid
         for file_key, file in soda_json_structure["metadata-files"].items():
-            if file["location"] == "bf":
+            if file["location"] == "ps":
                 file_id = file["path"]
                 if next((item for item in root_folder if item["content"]["id"] == file_id), None) is None:
                     error.append(f"{file_key} id: {file_id}")
@@ -3128,7 +3135,7 @@ def clean_json_structure(soda_json_structure):
             for item in list(folder["files"]):
                 if (
                     "renamed" in folder["files"][item]["action"]
-                    and folder["files"][item]["type"] == "bf"
+                    and folder["files"][item]["location"] == "ps"
                 ):
                     continue
 
@@ -3144,7 +3151,7 @@ def clean_json_structure(soda_json_structure):
         """
 
         for folder_item in list(folder["folders"]):
-            if folder["folders"][folder_item]["type"] == "bf":
+            if folder["folders"][folder_item]["location"] == "ps":
                 if "deleted" in folder["folders"][folder_item]["action"]:
                     del folder["folders"][folder_item]
                 else:
@@ -3171,8 +3178,8 @@ def clean_json_structure(soda_json_structure):
             raise e
 
     if "starting-point" in main_keys and soda_json_structure["starting-point"][
-        "type"
-    ] in ["bf", "local"]:
+        "location"
+    ] in ["ps", "local"]:
         recursive_file_delete(dataset_structure)
         recursive_folder_delete(dataset_structure)
         soda_json_structure["dataset-structure"] = dataset_structure
@@ -3197,13 +3204,13 @@ def validate_local_dataset_generate_path(soda_json_structure):
 
 
 def generating_on_ps(soda_json_structure):
-    return soda_json_structure["generate-dataset"]["destination"] == "bf"
+    return soda_json_structure["generate-dataset"]["destination"] == "ps"
 
 def uploading_with_ps_account(soda_json_structure):
-    return "bf-account-selected" in soda_json_structure
+    return "ps-account-selected" in soda_json_structure
 
 def uploading_to_existing_ps_dataset(soda_json_structure):
-    return "bf-dataset-selected" in soda_json_structure
+    return "ps-dataset-selected" in soda_json_structure
 
 def can_resume_prior_upload(resume_status):
     global ums 
@@ -3251,7 +3258,9 @@ def generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps):
     ps_upload_to_dataset(soda_json_structure, ps, myds, True)
 
 def generate_new_ds_ps(soda_json_structure, dataset_name, ps):
+    print("3258")
     ds = ps_create_new_dataset(dataset_name, ps)
+    print("New dataset created")
     selected_dataset_id = ds["content"]["id"]    
     myds = get_dataset_with_backoff(selected_dataset_id)
     ps_upload_to_dataset(soda_json_structure, ps, myds, False)
@@ -3279,7 +3288,7 @@ def generate_dataset(soda, resume, ps):
         ]
         generate_option = soda["generate-dataset"]["generate-option"]
 
-        if uploading_to_existing_ps_dataset(soda) and soda["starting-point"]["type"] != "new":
+        if uploading_to_existing_ps_dataset(soda) and soda["starting-point"]["origin"] != "new":
             selected_dataset_id = get_dataset_id(
                 soda["bf-dataset-selected"]["dataset-name"]
             )
@@ -3293,7 +3302,7 @@ def generate_dataset(soda, resume, ps):
             else:
                 ps_update_existing_dataset(soda, myds, ps, resume)
 
-        elif generate_option == "new" or generate_option == "existing-bf" and soda["starting-point"]["type"] == "new":
+        elif generate_option == "new" or generate_option == "existing-ps" and soda["starting-point"]["origin"] == "new":
             # if dataset name is in the generate-dataset section, we are generating a new dataset
             if "dataset-name" in soda["generate-dataset"]:
                 dataset_name = soda["generate-dataset"][
@@ -3301,7 +3310,7 @@ def generate_dataset(soda, resume, ps):
                 ]
             elif "digital-metadata" in soda and "name" in soda["digital-metadata"]:
                 dataset_name = soda["digital-metadata"]["name"]
-            elif "bf-dataset-selected" in soda and "dataset-name" in soda["bf-dataset-selected"]:
+            elif "ps-dataset-selected" in soda and "dataset-name" in soda["ps-dataset-selected"]:
                 dataset_name = soda["bf-dataset-selected"]["dataset-name"]
             
             if resume: 
@@ -3309,14 +3318,18 @@ def generate_dataset(soda, resume, ps):
             else: 
                 try: 
                     selected_dataset_id = get_dataset_id(dataset_name)
+                    print("Should have dataset id now")
+                    print(selected_dataset_id)
                 except Exception as e:
-                    if e.code == 404:
+                    if isinstance(e, PennsieveDatasetCannotBeFound):
+                        print("Generating the new dataset then")
                         generate_new_ds_ps(soda, dataset_name, ps)
                         return
                     else:
-                        abort(e.status_code, e.message)
-
+                        raise Exception(f"{e.status_code}, {e.message}")
+                print("3322")
                 myds = get_dataset_with_backoff(selected_dataset_id)
+                print("3324")
                 ps_upload_to_dataset(soda, ps, myds, resume)
 
                         
@@ -3347,6 +3360,7 @@ def validate_dataset_structure(soda_json_structure, resume):
         
 
     logger.info("main_curate_function step 1.2")
+    print("Validating Pennsieve account information")
 
     # 1.2. If generating dataset to Pennsieve or any other Pennsieve actions are requested check that the destination is valid
     if uploading_with_ps_account(soda_json_structure):
@@ -3355,11 +3369,11 @@ def validate_dataset_structure(soda_json_structure, resume):
             main_curate_progress_message = (
                 "Checking that the selected Pennsieve account is valid"
             )
-            accountname = soda_json_structure["bf-account-selected"]["account-name"]
+            accountname = soda_json_structure["ps-account-selected"]["account-name"]
             connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
-            abort(400, "Please select a valid Pennsieve account.")
+            raise PennsieveAccountInvalid("Please select a valid Pennsieve account.")
 
  
     if uploading_to_existing_ps_dataset(soda_json_structure):
@@ -3368,7 +3382,7 @@ def validate_dataset_structure(soda_json_structure, resume):
             main_curate_progress_message = (
                 "Checking that the selected Pennsieve dataset is valid"
             )
-            bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+            bfdataset = soda_json_structure["ps-dataset-selected"]["dataset-name"]
             selected_dataset_id = get_dataset_id(bfdataset)
 
         except Exception as e:
@@ -3383,6 +3397,7 @@ def validate_dataset_structure(soda_json_structure, resume):
             abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
 
     logger.info("main_curate_function step 1.3")
+    print("Here now")
 
 
     # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
@@ -3414,7 +3429,7 @@ def validate_dataset_structure(soda_json_structure, resume):
             main_curate_progress_message = (
                 "Checking that the Pennsieve files and folders are valid"
             )
-            if soda_json_structure["generate-dataset"]["destination"] == "bf":
+            if soda_json_structure["generate-dataset"]["destination"] == "ps":
                 if error := ps_check_dataset_files_validity(soda_json_structure):
                     logger.info("Failed to validate dataset files")
                     logger.info(error)
@@ -3506,8 +3521,10 @@ def main_curate_function(soda, resume):
             generate_dataset(soda, resume, ps=None)
         else:
             logger.info("main_curate_function generating on Pennsieve")
-            accountname = soda["bf-account-selected"]["account-name"]
+            print("Doing Pennsieve")
+            accountname = soda["ps-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
+            print("Finished doing Pennsieve")
             generate_dataset(soda, resume, ps)
     except Exception as e:
         main_curate_status = "Done"
@@ -3781,7 +3798,7 @@ def generate_manifest_file_data(dataset_structure):
 
                 # Determine timestamp 
                 filename = os.path.basename(file_info["path"].replace("\\", "/"))
-                if is_pennsieve and file_info["type"] == "bf":
+                if is_pennsieve and file_info["location"] == "ps":
                     timestamp = file_info["timestamp"]
                 else:
                     local_path = pathlib.Path(file_info["path"])
@@ -3821,39 +3838,42 @@ def generate_manifest_file_data(dataset_structure):
 
 soda = {
     "generate-dataset": {
-        "destination": "local",
+        "destination": "ps",
         "generate-option": "new",
-        "dataset-name": "test_dataset",
+        "dataset-name": "test_dataset_pysoda",
         "path": "/Users/aaronm",
         "if-existing": ""
+    },
+    "ps-account-selected": {
+        "account-name": "soda-pennsieve-e48c-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0",
+    },
+    "starting-point": {
+        "origin": "new",
     },
     "dataset-structure": {
         "folders": {
             "primary": {
                 "folders": {},
                 "files": {
-                    "validation_progress.txt": {
+                    "test_1.dat": {
                         "location": "local",
-                        "path": "/Users/aaronm/gmps-11/primary/pool-1/validation_progress.txt",
-
+                        "path": "C:\\Users\\aaron\\basic-dataset\\primary\\test_1.dat",
                         "action": ["new"],
                     },
-                    "clean_metadata.py": {
+                    "test_2.dat": {
                         "location": "local",
-
-                        "path": "/Users/aaronm/gmps-11/primary/pool-1/sub-1/clean_metadata.py",
+                        "path": "C:\\Users\\aaron\\basic-dataset\\primary\\test_2.dat",
+                        "action": ["new"]
+                    },
+                    "test_3.dat": {
+                        "location": "local",
+                        "path": "C:\\Users\\aaron\\basic-dataset\\primary\\test_3.dat",
                         "action": ["new"]
                     }
                 }
             }
         }, 
         "files":  {
-            "metadata.xlsx": {
-                "location": "local",
-                "path": "/Users/aaronm/gmps-11/primary/metadata.xlsx",
-
-                "action": ["new"]
-            }
         },
         "relativePath": "/"
     },

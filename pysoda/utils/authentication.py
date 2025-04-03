@@ -26,10 +26,6 @@ cached_access_token = None
 last_fetch_time = 0
 TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
-# Variables for token caching
-cached_access_token = None
-last_fetch_time = 0
-TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
 # from namespaces import NamespaceEnum, get_namespace_logger
 
@@ -319,12 +315,18 @@ def get_access_token(api_key=None, api_secret=None):
     # global namespace_logger
     current_time = time.time()
 
+    print("Current time:", current_time)
+
+
+
     # If the cached_access_token is not None and the last fetch time is less than the cache duration, return the cached access token
     if cached_access_token and current_time - last_fetch_time < TOKEN_CACHE_DURATION:
         return cached_access_token
     
+    print("Cached token not returned")
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
+    print("Cognito config response:", r.json())
 
     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
     cognito_region_name = r.json()["region"]
@@ -335,6 +337,8 @@ def get_access_token(api_key=None, api_secret=None):
         aws_access_key_id="",
         aws_secret_access_key="",
     )
+
+    print("boto3 client done")
 
     # use the default profile values for auth if no api_key or api_secret is provided
     if api_key is None or api_secret is None:

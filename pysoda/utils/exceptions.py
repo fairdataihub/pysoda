@@ -83,7 +83,31 @@ class PennsieveUploadException(Exception):
     def __str__(self):
         return self.error_message
 
+
+
+class PennsieveDatasetNameTaken(Exception):
+    def __init__(self, dataset_name):
+        self.dataset_name = dataset_name
+        self.error_message = f"The Pennsieve dataset name {self.dataset_name} is already taken."
+
+    def __str__(self):
+        return self.error_message
     
+class PennsieveDatasetNameInvalid(Exception):
+    def __init__(self, dataset_name):
+        self.dataset_name = dataset_name
+        self.error_message = f"The Pennsieve dataset name {self.dataset_name} is invalid."
+
+    def __str__(self):
+        return self.error_message
+    
+class PennsieveAccountInvalid(Exception):
+    def __init__(self, account_name):
+        self.account_name = account_name
+        self.error_message = f"The Pennsieve account name {self.account_name} is invalid."
+
+    def __str__(self):
+        return self.error_message
 
 def validation_error_message(e):
     """
