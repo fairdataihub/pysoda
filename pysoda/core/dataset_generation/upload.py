@@ -11,7 +11,7 @@ from ...utils import (
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
-from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, readme_changes
+from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, readme_changes, METADATA_UPLOAD_PS_PATH
 from ..upload_manifests import get_upload_manifests
 logger = logging.getLogger(__name__)
 
@@ -2425,11 +2425,81 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 brand_new_dataset = True
                 list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
 
-            if "metadata-files" in soda_json_structure.keys():
-                list_upload_metadata_files = gather_metadata_files(soda_json_structure)
+            if "dataset_metadata" in soda_json_structure.keys():
+                # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
+                # list_upload_metadata_files = gather_metadata_files(soda_json_structure)
 
-            if "manifest-files" in soda_json_structure.keys():
-                list_upload_manifest_files = gather_manifest_files(soda_json_structure)
+                for key, _ in soda_json_structure["dataset_metadata"].items():
+                    if key == "submission":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "submission.xlsx")
+                        submission.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "subjects":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "subjects.xlsx")
+                        subjects.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "samples":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "samples.xlsx")
+                        samples.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "performances":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "performances.xlsx")
+                        performances.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "resources":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "resources.xlsx")
+                        resources.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "sites":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "sites.xlsx")
+                        sites.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "dataset_description":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "dataset_description.xlsx")
+                        dataset_description.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "code_description":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "code_description.xlsx")
+                        code_description.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    
+            print("Finished metadata files")
+
+            if "manifest_files" in soda["dataset_metadata"].keys():
+                # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
+                # list_upload_manifest_files = gather_manifest_files(soda_json_structure)
+                logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
+                main_curate_progress_message = "Preparing manifest files"
+                metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
+                manifest.create_excel(soda, False, os.path.join(METADATA_UPLOAD_PS_PATH,  "manifest.xlsx"))
+                main_total_generate_dataset_size += getsize(metadata_path)
+                total_files += 1
+                total_metadata_files += 1
+                list_upload_manifest_files.append(metadata_path)
 
         else:
 
@@ -2572,6 +2642,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         # create a manifest for files - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         elif len(list_upload_files) > 0:
             main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
+            print("Queueing")
 
             first_file_local_path = list_upload_files[0][0][0]
 
