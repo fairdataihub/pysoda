@@ -4018,8 +4018,8 @@ soda = {
 }
 
 
-try:
-    main_curate_function(soda, False)
-except Exception as e:
-    print("Error is")
-    print(e)
+# try:
+#     main_curate_function(soda, False)
+# except Exception as e:
+#     print("Error is")
+#     print(e)
