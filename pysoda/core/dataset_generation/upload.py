@@ -7,7 +7,7 @@ from ...utils import (
     PennsieveActionNoPermission, PennsieveDatasetCannotBeFound,
     EmptyDatasetError, LocalDatasetMissingSpecifiedFiles,
     PennsieveUploadException, create_request_headers, check_forbidden_characters_ps, get_users_dataset_list,
-    PennsieveDatasetNameInvalid, PennsieveDatasetNameTaken, PennsieveAccountInvalid
+    PennsieveDatasetNameInvalid, PennsieveDatasetNameTaken, PennsieveAccountInvalid, TZLOCAL
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
@@ -2728,13 +2728,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             # add manifest files to the upload manifest
             if list_upload_manifest_files:
                 current_files_in_subscriber_session += total_manifest_files
-                for item in list_upload_manifest_files:
-                    manifest_file = item[0]
-                    ps_folder = item[1]
-                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
-
-                    # add the files to the manifest
-                    ps.manifest.add(manifest_file, ps_folder, manifest_id)
+                for manifest_file_path in list_upload_manifest_files:
+                    # add the file to the manifest
+                    ps.manifest.add(manifest_file_path, "primary", manifest_id)
 
             
             # set rename files to ums for upload resuming if this upload fails
@@ -3184,6 +3180,7 @@ def check_server_access_to_files(file_list):
     return {"accessible_files": accessible_files, "inaccessible_files": inaccessible_files}
 
 
+# TODO: Update for SDS 3.0
 def clean_json_structure(soda_json_structure):
     global logger
     # Delete any files on Pennsieve that have been marked as deleted
@@ -3249,12 +3246,14 @@ def clean_json_structure(soda_json_structure):
             raise e
 
     if "starting-point" in main_keys and soda_json_structure["starting-point"][
-        "location"
+        "origin"
     ] in ["ps", "local"]:
         recursive_file_delete(dataset_structure)
         recursive_folder_delete(dataset_structure)
         soda_json_structure["dataset-structure"] = dataset_structure
 
+    logger.info("clean_json_structure step 1")
+    logger.info(soda_json_structure)
     # here will be clean up the soda json object before creating the manifest file cards
     return {"soda_json_structure": soda_json_structure}
 
@@ -3869,6 +3868,7 @@ def generate_manifest_file_data(dataset_structure):
 
                 # Determine timestamp 
                 filename = os.path.basename(file_info["path"].replace("\\", "/"))
+                logger.info(f"Processing file: {filename}")
                 if is_pennsieve and file_info["location"] == "ps":
                     timestamp = file_info["timestamp"]
                 else:
@@ -3888,6 +3888,7 @@ def generate_manifest_file_data(dataset_structure):
 
     # Initialize variables
     manifest_data = []  # Collects all rows for the manifest
+    # TODO: Update to SDS 3.0
     header_row = [
         "filename", "timestamp", "description", "file type", "entity",
         "data modality", "also in dataset", "data dictionary path",
