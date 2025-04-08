@@ -2730,7 +2730,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 current_files_in_subscriber_session += total_manifest_files
                 for manifest_file_path in list_upload_manifest_files:
                     # add the file to the manifest
-                    ps.manifest.add(manifest_file_path, "primary", manifest_id)
+                    ps.manifest.add(manifest_file_path, "/", manifest_id)
 
             
             # set rename files to ums for upload resuming if this upload fails
