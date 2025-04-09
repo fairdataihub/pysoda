@@ -570,12 +570,12 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     return dst
 
 
-def check_empty_files_folders(soda_json_structure):
+def check_empty_files_folders(soda):
     """
     Function to check for empty files and folders
 
     Args:
-        soda_json_structure: soda dict with information about all specified files and folders
+        soda: soda dict with information about all specified files and folders
     Output:
         error: error message with list of non valid local data files, if any
     """
@@ -629,8 +629,8 @@ def check_empty_files_folders(soda_json_structure):
 
         error_files = []
         error_folders = []
-        if "dataset-structure" in soda_json_structure.keys():
-            dataset_structure = soda_json_structure["dataset-structure"]
+        if "dataset-structure" in soda.keys():
+            dataset_structure = soda["dataset-structure"]
             if "folders" in dataset_structure:
                 for folder_key, folder in dataset_structure["folders"].items():
                     relative_path = folder_key
@@ -650,8 +650,8 @@ def check_empty_files_folders(soda_json_structure):
                         error_folders,
                     )
 
-        if "metadata-files" in soda_json_structure.keys():
-            metadata_files = soda_json_structure["metadata-files"]
+        if "metadata-files" in soda.keys():
+            metadata_files = soda["metadata-files"]
             for file_key in list(metadata_files.keys()):
                 file = metadata_files[file_key]
                 file_type = file["location"]
@@ -664,7 +664,7 @@ def check_empty_files_folders(soda_json_structure):
                             error_message = file_key + " (path: " + file_path + ")"
                             error_files.append(error_message)
             if not metadata_files:
-                del soda_json_structure["metadata-files"]
+                del soda["metadata-files"]
 
         if len(error_files) > 0:
             error_message = [
@@ -681,19 +681,19 @@ def check_empty_files_folders(soda_json_structure):
         return {
             "empty_files": error_files, 
             "empty_folders": error_folders, 
-            "soda_json_structure": soda_json_structure
+            "soda": soda
         }
 
     except Exception as e:
         raise e
 
 
-def check_local_dataset_files_validity(soda_json_structure):
+def check_local_dataset_files_validity(soda):
     """
     Function to check that the local data files and folders specified in the dataset are valid
 
     Args:
-        soda_json_structure: soda dict with information about all specified files and folders
+        soda: soda dict with information about all specified files and folders
     Output:
         error: error message with list of non valid local data files, if any
     """
@@ -736,8 +736,8 @@ def check_local_dataset_files_validity(soda_json_structure):
             del my_folders_content[my_folder_key]
 
     error = []
-    if "dataset-structure" in soda_json_structure.keys():
-        dataset_structure = soda_json_structure["dataset-structure"]
+    if "dataset-structure" in soda.keys():
+        dataset_structure = soda["dataset-structure"]
         # Remove 0kb files, files that can't be found, and any empty folders from the dataset data files
         if "folders" in dataset_structure:
             for folder_key, folder in dataset_structure["folders"].items():
@@ -749,8 +749,8 @@ def check_local_dataset_files_validity(soda_json_structure):
                 folder = dataset_structure["folders"][folder_key]
                 recursive_empty_local_folder_remove(folder, folder_key, folders_content)
 
-    if "metadata-files" in soda_json_structure.keys():
-        metadata_files = soda_json_structure["metadata-files"]
+    if "metadata-files" in soda.keys():
+        metadata_files = soda["metadata-files"]
         # Remove specified metadata files that do net exist at the specified paths or that are empty
         for file_key in list(metadata_files.keys()):
             file = metadata_files[file_key]
@@ -765,7 +765,7 @@ def check_local_dataset_files_validity(soda_json_structure):
                     if file_size == 0:
                         del metadata_files[file_key]
         if not metadata_files:
-            del soda_json_structure["metadata-files"]
+            del soda["metadata-files"]
 
     # Return list of all the files that were not found. 
     if len(error) > 0:
@@ -1064,13 +1064,13 @@ double_extensions = [
 
 
 def create_high_lvl_manifest_files_existing_ps(
-    soda_json_structure, ps, my_tracking_folder
+    soda, ps, my_tracking_folder
 ):
     """
     Function to create manifest files for each high-level SPARC folder.
 
     Args:
-        soda_json_structure: soda dict with information about the dataset to be generated/modified
+        soda: soda dict with information about the dataset to be generated/modified
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
@@ -1339,7 +1339,7 @@ def create_high_lvl_manifest_files_existing_ps(
         makedirs(manifest_folder_path)
 
         # import info about files already on ps
-        dataset_structure = soda_json_structure["dataset-structure"]
+        dataset_structure = soda["dataset-structure"]
         manifest_dict_save = {}
         for high_level_folder_key, high_level_folder in my_tracking_folder["children"]["folders"].items():
             if (
@@ -1392,8 +1392,8 @@ def create_high_lvl_manifest_files_existing_ps(
         # import info from local files to be uploaded
         local_timezone = TZLOCAL()
         manifest_files_structure = {}
-        existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
-        existing_file_option = soda_json_structure["generate-dataset"][
+        existing_folder_option = soda["generate-dataset"]["if-existing"]
+        existing_file_option = soda["generate-dataset"][
             "if-existing-files"
         ]
         for folder_key, folder in dataset_structure["folders"].items():
@@ -1593,7 +1593,7 @@ def get_base_file_name(file_name):
     return output
 
 
-def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
+def ps_update_existing_dataset(soda, ds, ps, resume):
     global logger
 
     logger.info("Starting ps_update_existing_dataset")
@@ -1619,9 +1619,9 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
             recursive_file_delete(folder["folders"][item])
 
     # Delete any files on Pennsieve that have been marked as deleted
-    def metadata_file_delete(soda_json_structure):
-        if "metadata-files" in soda_json_structure.keys():
-            folder = soda_json_structure["metadata-files"]
+    def metadata_file_delete(soda):
+        if "metadata-files" in soda.keys():
+            folder = soda["metadata-files"]
             for item in list(folder):
                 if "deleted" in folder[item]["action"]:
                     r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [folder[item]["path"]]})
@@ -1775,7 +1775,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     # 1. Remove all existing files on Pennsieve, that the user deleted.
     logger.info("ps_update_existing_dataset step 1 remove existing files on Pennsieve the user deleted")
     main_curate_progress_message = "Checking Pennsieve for deleted files"
-    dataset_structure = soda_json_structure["dataset-structure"]
+    dataset_structure = soda["dataset-structure"]
     recursive_file_delete(dataset_structure)
     main_curate_progress_message = (
         "Files on Pennsieve marked for deletion have been deleted"
@@ -1784,7 +1784,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     # 2. Rename any deleted folders on Pennsieve to allow for replacements.
     logger.info("ps_update_existing_dataset step 2 rename deleted folders on Pennsieve to allow for replacements")
     main_curate_progress_message = "Checking Pennsieve for deleted folders"
-    dataset_structure = soda_json_structure["dataset-structure"]
+    dataset_structure = soda["dataset-structure"]
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
@@ -1799,7 +1799,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     logger.info("ps_update_existing_dataset step 3 get the status of all files currently on Pennsieve and create the folderpath for all items in both dataset structures")
     main_curate_progress_message = "Fetching files and folders from Pennsieve"
     current_bf_dataset_files_folders = import_pennsieve_dataset(
-        soda_json_structure.copy()
+        soda.copy()
     )["soda_object"]
     ps_dataset = current_bf_dataset_files_folders["dataset-structure"]
     main_curate_progress_message = "Creating file paths for all files on Pennsieve"
@@ -1831,18 +1831,18 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
     # 7. Delete any metadata files that are marked as deleted.
     logger.info("ps_update_existing_dataset step 8 delete any metadata files that are marked as deleted")
     main_curate_progress_message = "Removing any metadata files marked for deletion"
-    metadata_file_delete(soda_json_structure)
+    metadata_file_delete(soda)
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
     # 8. Run the original code to upload any new files added to the dataset.
     logger.info("ps_update_existing_dataset step 9 run the ps_create_new_dataset code to upload any new files added to the dataset")
-    if "manifest-files" in soda_json_structure.keys():
-        if "auto-generated" in soda_json_structure["manifest-files"].keys():
-            soda_json_structure["manifest-files"] = {"destination": "ps", "auto-generated": True}
+    if "manifest-files" in soda.keys():
+        if "auto-generated" in soda["manifest-files"].keys():
+            soda["manifest-files"] = {"destination": "ps", "auto-generated": True}
         else:
-            soda_json_structure["manifest-files"] = {"destination": "ps"}
+            soda["manifest-files"] = {"destination": "ps"}
 
-    soda_json_structure["generate-dataset"] = {
+    soda["generate-dataset"] = {
         "destination": "ps",
         "if-existing": "merge",
         "if-existing-files": "replace",
@@ -1851,7 +1851,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps, resume):
 
     end = timer()
     logger.info(f"Time for ps_update_existing_dataset function: {timedelta(seconds=end - start)}")
-    ps_upload_to_dataset(soda_json_structure, ps, ds, resume)
+    ps_upload_to_dataset(soda, ps, ds, resume)
 
 
 def get_origin_manifest_id(dataset_id):
@@ -1923,7 +1923,7 @@ list_of_files_to_rename = {}
 renamed_files_counter = 0 
 
 
-def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
+def ps_upload_to_dataset(soda, ps, ds, resume=False):
     global logger
 
     # Progress tracking variables that are used for the frontend progress bar.
@@ -1971,7 +1971,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
 
-        def gather_manifest_files(soda_json_structure):
+        def gather_manifest_files(soda):
             """
             Gather the manifest files from the soda json structure.
             Output: A list of the file path of the manifest files.
@@ -1982,8 +1982,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             global bytes_file_path_dict
 
             list_manifest_files = []
-            if "auto-generated" in soda_json_structure["manifest-files"] and soda_json_structure["manifest-files"]["auto-generated"] == True:
-                    manifest_files_structure = get_auto_generated_manifest_files(soda_json_structure)
+            if "auto-generated" in soda["manifest-files"] and soda["manifest-files"]["auto-generated"] == True:
+                    manifest_files_structure = get_auto_generated_manifest_files(soda)
                     for key in manifest_files_structure.keys():
                         manifestpath = manifest_files_structure[key]
                         list_manifest_files.append([manifestpath, key])
@@ -1995,7 +1995,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
             return list_manifest_files
 
-        def gather_metadata_files(soda_json_structure):
+        def gather_metadata_files(soda):
             """
             Gather the metadata files from the soda json structure.
             Output: A list of the file path of the metadata files.
@@ -2005,7 +2005,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
             nonlocal total_metadata_files
             global bytes_file_path_dict
 
-            metadata_files = soda_json_structure["metadata-files"]
+            metadata_files = soda["metadata-files"]
             metadata_files_list = []
             for file_key, file in metadata_files.items():
                 if file["location"] == "local":
@@ -2407,9 +2407,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
         list_upload_manifest_files = []
         list_of_files_to_rename = {}
         brand_new_dataset = False
-        dataset_structure = soda_json_structure["dataset-structure"]
-        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
-        starting_point = soda_json_structure["starting-point"]["origin"]
+        dataset_structure = soda["dataset-structure"]
+        generate_option = soda["generate-dataset"]["generate-option"]
+        starting_point = soda["starting-point"]["origin"]
         relative_path = ds["content"]["name"]
 
         print("Post setup")
@@ -2425,11 +2425,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                 brand_new_dataset = True
                 list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
 
-            if "dataset_metadata" in soda_json_structure.keys():
+            if "dataset_metadata" in soda.keys():
                 # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
-                # list_upload_metadata_files = gather_metadata_files(soda_json_structure)
+                # list_upload_metadata_files = gather_metadata_files(soda)
 
-                for key, _ in soda_json_structure["dataset_metadata"].items():
+                for key, _ in soda["dataset_metadata"].items():
                     if key == "submission":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "submission.xlsx")
                         submission.create_excel(soda, False, metadata_path)
@@ -2491,7 +2491,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
             if "manifest_files" in soda["dataset_metadata"].keys():
                 # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
-                # list_upload_manifest_files = gather_manifest_files(soda_json_structure)
+                # list_upload_manifest_files = gather_manifest_files(soda)
                 logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
                 main_curate_progress_message = "Preparing manifest files"
                 metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
@@ -2505,8 +2505,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
             main_curate_progress_message = "Preparing a list of files to upload"
 
-            existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
-            existing_file_option = soda_json_structure["generate-dataset"][
+            existing_folder_option = soda["generate-dataset"]["if-existing"]
+            existing_file_option = soda["generate-dataset"][
                 "if-existing-files"
             ]
 
@@ -2525,13 +2525,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
 
 
             # 3. Add high-level metadata files to a list
-            if "metadata-files" in soda_json_structure.keys():
+            if "metadata-files" in soda.keys():
                 logger.info("ps_create_new_dataset (optional) step 3 create high level metadata list")
                 (
                     my_bf_existing_files_name,
                     _,
                 ) = ps_get_existing_files_details(ds)
-                metadata_files = soda_json_structure["metadata-files"]
+                metadata_files = soda["metadata-files"]
                 for file_key, file in metadata_files.items():
                     if file["location"] == "local":
                         metadata_path = file["path"]
@@ -2557,13 +2557,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds, resume=False):
                             total_metadata_files += 1
 
             # 4. Prepare and add manifest files to a list
-            if "manifest-files" in soda_json_structure.keys():
+            if "manifest-files" in soda.keys():
                 logger.info("ps_create_new_dataset (optional) step 4 create manifest list")
                 # create local folder to save manifest files temporarly (delete any existing one first)
-                if "auto-generated" in soda_json_structure["manifest-files"]:
-                    if soda_json_structure["manifest-files"]["auto-generated"] == True:
+                if "auto-generated" in soda["manifest-files"]:
+                    if soda["manifest-files"]["auto-generated"] == True:
                         manifest_files_structure = (
-                            get_auto_generated_manifest_files(soda_json_structure)
+                            get_auto_generated_manifest_files(soda)
                         )
 
                     # add manifest files to list after deleting existing ones
@@ -3043,7 +3043,7 @@ origin_manifest_id = None
 
 
 
-def ps_check_dataset_files_validity(soda_json_structure):
+def ps_check_dataset_files_validity(soda):
     """
     Function to check that the bf data files and folders specified in the dataset are valid
 
@@ -3119,14 +3119,14 @@ def ps_check_dataset_files_validity(soda_json_structure):
 
     error = []
     # check that the files and folders specified in the dataset are valid
-    dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+    dataset_name = soda["bf-dataset-selected"]["dataset-name"]
     dataset_id = get_dataset_id(dataset_name)
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
     root_folder = r.json()["children"]
 
-    if "dataset-structure" in soda_json_structure.keys():
-        dataset_structure = soda_json_structure["dataset-structure"]
+    if "dataset-structure" in soda.keys():
+        dataset_structure = soda["dataset-structure"]
         if "folders" in dataset_structure:
             for folder_key, folder in dataset_structure["folders"].items():
                 folder_type = folder["location"]
@@ -3147,9 +3147,9 @@ def ps_check_dataset_files_validity(soda_json_structure):
                         # recursively check all files + subfolders of collection_id
                         error = check_folder_validity(collection_id, folder, relative_path, error)
 
-    if "metadata-files" in soda_json_structure.keys():
+    if "metadata-files" in soda.keys():
         # check that the metadata files specified in the dataset are valid
-        for file_key, file in soda_json_structure["metadata-files"].items():
+        for file_key, file in soda["metadata-files"].items():
             if file["location"] == "ps":
                 file_id = file["path"]
                 if next((item for item in root_folder if item["content"]["id"] == file_id), None) is None:
@@ -3181,7 +3181,7 @@ def check_server_access_to_files(file_list):
 
 
 # TODO: Update for SDS 3.0
-def clean_json_structure(soda_json_structure):
+def clean_json_structure(soda):
     global logger
     # Delete any files on Pennsieve that have been marked as deleted
     def recursive_file_delete(folder):
@@ -3228,8 +3228,8 @@ def clean_json_structure(soda_json_structure):
                 recursive_folder_delete(folder["folders"][folder_item])
         return
 
-    main_keys = soda_json_structure.keys()
-    dataset_structure = soda_json_structure["dataset-structure"]
+    main_keys = soda.keys()
+    dataset_structure = soda["dataset-structure"]
 
     if ("dataset-structure" not in main_keys and "metadata-files" not in main_keys):
         abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
@@ -3237,30 +3237,30 @@ def clean_json_structure(soda_json_structure):
     if "generate-dataset" in main_keys:
         # Check that local files/folders exist
         try:
-            if error := check_local_dataset_files_validity(soda_json_structure):
+            if error := check_local_dataset_files_validity(soda):
                 abort(400, error)
             # check that dataset is not empty after removing all the empty files and folders
-            if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
+            if not soda["dataset-structure"]["folders"] and "metadata-files" not in soda:
                 abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
         except Exception as e:
             raise e
 
-    if "starting-point" in main_keys and soda_json_structure["starting-point"][
+    if "starting-point" in main_keys and soda["starting-point"][
         "origin"
     ] in ["ps", "local"]:
         recursive_file_delete(dataset_structure)
         recursive_folder_delete(dataset_structure)
-        soda_json_structure["dataset-structure"] = dataset_structure
+        soda["dataset-structure"] = dataset_structure
 
     logger.info("clean_json_structure step 1")
-    logger.info(soda_json_structure)
+    logger.info(soda)
     # here will be clean up the soda json object before creating the manifest file cards
-    return {"soda_json_structure": soda_json_structure}
+    return {"soda": soda}
 
 
 
-def validate_local_dataset_generate_path(soda_json_structure):
-    generate_dataset = soda_json_structure["generate-dataset"]
+def validate_local_dataset_generate_path(soda):
+    generate_dataset = soda["generate-dataset"]
     local_dataset_path = generate_dataset["path"]
     if not isdir(local_dataset_path):
         error_message = (
@@ -3273,27 +3273,27 @@ def validate_local_dataset_generate_path(soda_json_structure):
 
 
 
-def generating_on_ps(soda_json_structure):
-    return soda_json_structure["generate-dataset"]["destination"] == "ps"
+def generating_on_ps(soda):
+    return soda["generate-dataset"]["destination"] == "ps"
 
-def uploading_with_ps_account(soda_json_structure):
-    return "ps-account-selected" in soda_json_structure
+def uploading_with_ps_account(soda):
+    return "ps-account-selected" in soda
 
-def uploading_to_existing_ps_dataset(soda_json_structure):
-    return "ps-dataset-selected" in soda_json_structure
+def uploading_to_existing_ps_dataset(soda):
+    return "ps-dataset-selected" in soda
 
 def can_resume_prior_upload(resume_status):
     global ums 
     return resume_status and ums.df_mid_has_progress()
 
-def virtual_dataset_empty(soda_json_structure):
+def virtual_dataset_empty(soda):
     return (
-        "dataset-structure" not in soda_json_structure
-        and "metadata-files" not in soda_json_structure
+        "dataset-structure" not in soda
+        and "metadata-files" not in soda
         )
 
-def generate_options_set(soda_json_structure):
-    return "generate-dataset" in soda_json_structure.keys()
+def generate_options_set(soda):
+    return "generate-dataset" in soda.keys()
 
 
 def get_dataset_with_backoff(selected_dataset_id):
@@ -3314,7 +3314,7 @@ def get_dataset_with_backoff(selected_dataset_id):
             time.sleep(10)
 
 
-def generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps):
+def generate_new_ds_ps_resume(soda, dataset_name, ps):
     # get the dataset id by the name 
     try: 
         selected_dataset_id = get_dataset_id(dataset_name)
@@ -3325,15 +3325,15 @@ def generate_new_ds_ps_resume(soda_json_structure, dataset_name, ps):
             selected_dataset_id = ds["content"]["id"]
     
     myds = get_dataset_with_backoff(selected_dataset_id)
-    ps_upload_to_dataset(soda_json_structure, ps, myds, True)
+    ps_upload_to_dataset(soda, ps, myds, True)
 
-def generate_new_ds_ps(soda_json_structure, dataset_name, ps):
+def generate_new_ds_ps(soda, dataset_name, ps):
     print("3258")
     ds = ps_create_new_dataset(dataset_name, ps)
     print("New dataset created")
     selected_dataset_id = ds["content"]["id"]    
     myds = get_dataset_with_backoff(selected_dataset_id)
-    ps_upload_to_dataset(soda_json_structure, ps, myds, False)
+    ps_upload_to_dataset(soda, ps, myds, False)
 
 
 def generate_dataset(soda, resume, ps):
@@ -3406,7 +3406,7 @@ def generate_dataset(soda, resume, ps):
                 
 
 
-def validate_dataset_structure(soda_json_structure, resume):
+def validate_dataset_structure(soda, resume):
 
     global main_curate_status
     global main_curate_progress_message
@@ -3415,15 +3415,15 @@ def validate_dataset_structure(soda_json_structure, resume):
     # 1] Check for potential errors
     logger.info("main_curate_function step 1")
 
-    if not generate_options_set(soda_json_structure):
+    if not generate_options_set(soda):
         main_curate_status = "Done"
         abort(400, "Error: Please select an option to generate a dataset")
 
     # 1.1. If the dataset is being generated locally then check that the local destination is valid
-    if generating_locally(soda_json_structure): 
+    if generating_locally(soda): 
         main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
         try: 
-            validate_local_dataset_generate_path(soda_json_structure)
+            validate_local_dataset_generate_path(soda)
         except Exception as e:
             main_curate_status = "Done"
             abort(400, str(e))
@@ -3433,26 +3433,26 @@ def validate_dataset_structure(soda_json_structure, resume):
     print("Validating Pennsieve account information")
 
     # 1.2. If generating dataset to Pennsieve or any other Pennsieve actions are requested check that the destination is valid
-    if uploading_with_ps_account(soda_json_structure):
+    if uploading_with_ps_account(soda):
         # check that the Pennsieve account is valid
         try: 
             main_curate_progress_message = (
                 "Checking that the selected Pennsieve account is valid"
             )
-            accountname = soda_json_structure["ps-account-selected"]["account-name"]
+            accountname = soda["ps-account-selected"]["account-name"]
             connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
             raise PennsieveAccountInvalid("Please select a valid Pennsieve account.")
 
  
-    if uploading_to_existing_ps_dataset(soda_json_structure):
+    if uploading_to_existing_ps_dataset(soda):
         # check that the Pennsieve dataset is valid
         try:
             main_curate_progress_message = (
                 "Checking that the selected Pennsieve dataset is valid"
             )
-            bfdataset = soda_json_structure["ps-dataset-selected"]["dataset-name"]
+            bfdataset = soda["ps-dataset-selected"]["dataset-name"]
             selected_dataset_id = get_dataset_id(bfdataset)
 
         except Exception as e:
@@ -3474,7 +3474,7 @@ def validate_dataset_structure(soda_json_structure, resume):
     # Note: Empty folders and 0 kb files will be removed without warning (a warning will be provided on the front end before starting the curate process)
     # Check at least one file or folder are added to the dataset
     main_curate_progress_message = "Checking that the dataset is not empty"
-    if virtual_dataset_empty(soda_json_structure):
+    if virtual_dataset_empty(soda):
         main_curate_status = "Done" 
         abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
 
@@ -3482,25 +3482,25 @@ def validate_dataset_structure(soda_json_structure, resume):
     logger.info("main_curate_function step 1.3.1")
 
     # Check that local files/folders exist
-    if error := check_local_dataset_files_validity(soda_json_structure):
+    if error := check_local_dataset_files_validity(soda):
         main_curate_status = "Done"
         abort(400, error)
 
     # check that dataset is not empty after removing all the empty files and folders
-    if virtual_dataset_empty(soda_json_structure):
+    if virtual_dataset_empty(soda):
         main_curate_status = "Done"
         abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
 
 
     logger.info("main_curate_function step 1.3.2")
     # Check that bf files/folders exist (Only used for when generating from an existing Pennsieve dataset)
-    if uploading_to_existing_ps_dataset(soda_json_structure) and can_resume_prior_upload(resume) == False:                     
+    if uploading_to_existing_ps_dataset(soda) and can_resume_prior_upload(resume) == False:                     
         try:
             main_curate_progress_message = (
                 "Checking that the Pennsieve files and folders are valid"
             )
-            if soda_json_structure["generate-dataset"]["destination"] == "ps":
-                if error := ps_check_dataset_files_validity(soda_json_structure):
+            if soda["generate-dataset"]["destination"] == "ps":
+                if error := ps_check_dataset_files_validity(soda):
                     logger.info("Failed to validate dataset files")
                     logger.info(error)
                     main_curate_status = "Done"
@@ -3663,14 +3663,14 @@ def main_curate_function_progress():
     }
 
 
-def preview_dataset(soda_json_structure):
+def preview_dataset(soda):
     """
     Associated with 'Preview' button in the SODA interface
     Creates a folder for preview and adds mock files based on the files specified in the UI by the user (same name as origin but 0 kb in size)
     Opens the dialog box to showcase the files / folders added
 
     Args:
-        soda_json_structure: soda dict with information about all specified files and folders
+        soda: soda dict with information about all specified files and folders
     Action:
         Opens the dialog box at preview_path
     Returns:
@@ -3681,7 +3681,7 @@ def preview_dataset(soda_json_structure):
 
     # remove empty files and folders from dataset
     try:
-        check_empty_files_folders(soda_json_structure)
+        check_empty_files_folders(soda)
     except Exception as e:
         raise e
 
@@ -3695,7 +3695,7 @@ def preview_dataset(soda_json_structure):
 
     try:
 
-        if "dataset-structure" in soda_json_structure.keys():
+        if "dataset-structure" in soda.keys():
             # create folder structure
             def recursive_create_mock_folder_structure(my_folder, my_folderpath):
                 if "folders" in my_folder.keys():
@@ -3710,18 +3710,18 @@ def preview_dataset(soda_json_structure):
                         if "deleted" not in file["action"]:
                             open(join(my_folderpath, file_key), "a").close()
 
-            dataset_structure = soda_json_structure["dataset-structure"]
+            dataset_structure = soda["dataset-structure"]
             folderpath = preview_path
             recursive_create_mock_folder_structure(dataset_structure, folderpath)
 
-            if "manifest-files" in soda_json_structure.keys() and "folders" in dataset_structure.keys():
+            if "manifest-files" in soda.keys() and "folders" in dataset_structure.keys():
                 for folder_key, folder in dataset_structure["folders"].items():
                     manifest_path = join(preview_path, folder_key, "manifest.xlsx")
                     if not isfile(manifest_path):
                         open(manifest_path, "a").close()
 
-        if "metadata-files" in soda_json_structure.keys():
-            for metadata_key in soda_json_structure["metadata-files"].keys():
+        if "metadata-files" in soda.keys():
+            for metadata_key in soda["metadata-files"].keys():
                 open(join(preview_path, metadata_key), "a").close()
 
         if len(listdir(preview_path)) > 0:
@@ -3736,7 +3736,7 @@ def preview_dataset(soda_json_structure):
         raise e
 
 
-def generate_manifest_file_locally(generate_purpose, soda_json_structure):
+def generate_manifest_file_locally(generate_purpose, soda):
     """
     Function to generate manifest files locally
     """
@@ -3769,11 +3769,11 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
             else:
                 shutil.copy2(s, d)
 
-    dataset_structure = soda_json_structure["dataset-structure"]
-    manifest_destination = soda_json_structure["manifest-files"]["local-destination"]
+    dataset_structure = soda["dataset-structure"]
+    manifest_destination = soda["manifest-files"]["local-destination"]
 
     recursive_item_path_create(dataset_structure, [])
-    create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_folder_path)
+    create_high_lvl_manifest_files_existing_ps_starting_point(soda, manifest_folder_path)
 
     if generate_purpose == "edit-manifest":
         manifest_destination = os.path.join(manifest_destination, "SODA Manifest Files")
@@ -3907,116 +3907,6 @@ def generate_manifest_file_data(dataset_structure):
     return manifest_data
 
 
-
-soda = {
-    "generate-dataset": {
-        "destination": "ps",
-        "generate-option": "new",
-        "dataset-name": "test_dataset_pysoda",
-        "path": "/Users/aaronm",
-        "if-existing": ""
-    },
-    "ps-account-selected": {
-        "account-name": "soda-pennsieve-e48c-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0",
-    },
-    "starting-point": {
-        "origin": "new",
-    },
-    "dataset-structure": {
-        "folders": {
-            "primary": {
-                "folders": {},
-                "files": {
-                    "test_1.dat": {
-                        "location": "local",
-                        "path": "C:\\Users\\aaron\\basic-dataset\\primary\\test_1.dat",
-                        "action": ["new"],
-                    },
-                    "test_2.dat": {
-                        "location": "local",
-                        "path": "C:\\Users\\aaron\\basic-dataset\\primary\\test_2.dat",
-                        "action": ["new"]
-                    },
-                    "test_3.dat": {
-                        "location": "local",
-                        "path": "C:\\Users\\aaron\\basic-dataset\\primary\\test_3.dat",
-                        "action": ["new"]
-                    }
-                }
-            }
-        }, 
-        "files":  {
-        },
-        "relativePath": "/"
-    },
-    "dataset_metadata": {
-        "manifest_files": {
-            "data": {
-                "headers": [                  
-                    "filename",
-                    "timestamp",
-                    "description",
-                    "file type",
-                    "entity",
-                    "data modality",
-                    "also in dataset",
-                    "also in dataset path",
-                    "data dictionary path",
-                    "entity is transitive",
-                    "Additional Metadata"
-                ],
-                "data": [
-                    [
-                        "metadata.xlsx",
-                        "",
-                        "",
-                        ".xlsx",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        ""
-                    ],
-                    [
-                        "validation_progress.txt",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        ""
-                    ],
-                    [
-                        "clean_metadata.py",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        ""
-                    ]
-                ]
-            }
-        },
-        "submission": {
-            "consortium_data_standard": "Fair Glissando",
-            "funding_consortium": "SPARC",
-            "award_number": "OT2OD023876",
-            "milestone_achieved": ["Yes", "Yes"],
-            "milestone_completion_date": "March_1st"
-        }
-    }
-}
 
 
 # try:
