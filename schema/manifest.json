@@ -1,41 +1,36 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "patternProperties": {
-    ".*": {
-      "type": "object",
-      "properties": {
-        "headers": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minItems": 1,
-            "maxItems": 11,
-            "enum": [
-              "filename",
-              "timestamp",
-              "description",
-              "file type",
-              "entity",
-              "data modality",
-              "also in dataset",
-              "also in dataset path",
-              "data dictionary path",
-              "entity is transitive",
-              "Additional Metadata"
-            ]
-          }
-        },
-        "data": {
-          "type": "array",
-          "items": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 11,
-            "items": {
-              "type": "string"
-            }
-          }
+  "properties": {
+    "headers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minItems": 1,
+        "maxItems": 11,
+        "enum": [
+          "filename",
+          "timestamp",
+          "description",
+          "file type",
+          "entity",
+          "data modality",
+          "also in dataset",
+          "also in dataset path",
+          "data dictionary path",
+          "entity is transitive",
+          "Additional Metadata"
+        ]
+      }
+    },
+    "data": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 11,
+        "items": {
+          "type": "string"
         }
       }
     }

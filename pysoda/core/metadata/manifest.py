@@ -6,6 +6,7 @@ from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema
 from .helpers import upload_metadata_file
+import os
 
 
 def create_excel(soda, upload_boolean, local_destination):
@@ -25,7 +26,7 @@ def create_excel(soda, upload_boolean, local_destination):
     # get the ascii column headers
     row = 2
     ascii_headers = excel_columns(start_index=0)
-    manifest_entries = manifest["data"]["data"]
+    manifest_entries = manifest["data"]
     for entry_items in manifest_entries:
       ascii_header_idx = 0 
       for entry in entry_items:
@@ -44,6 +45,25 @@ def create_excel(soda, upload_boolean, local_destination):
 
     return {"size": size}
 
+
+def load_existing_manifest_file(manifest_file_path):
+   # check that a file exists at the path 
+    if not os.path.exists(manifest_file_path):
+        raise FileNotFoundError(f"Manifest file not found at {manifest_file_path}")
+    
+   # load the xlsx file and store its first row as a headers array and the rest of the rows in a data key 
+    wb = load_workbook(manifest_file_path)
+    ws1 = wb["Sheet1"]
+    headers = []
+    data = []
+
+    for row in ws1.iter_rows(min_row=1, max_row=1, values_only=True):
+        headers = list(row)
+
+    for row in ws1.iter_rows(min_row=2, values_only=True):
+        data.append(list(row))
+
+    return {"headers": headers, "data": data}
 
 # soda = {
 #     "generate-dataset": {
