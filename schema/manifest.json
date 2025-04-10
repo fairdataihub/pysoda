@@ -71,14 +71,14 @@
           },
           {
             "type": "string",
-            "description": "Path to the dataset that this data file is part of. This should be a valid file path in the system where the manifest is being used."
+            "description": "Path to the dataset that this data file is part of. This should be a valid file path in the system where the manifest is being used. Should be true or false or empty."
           },
           {
             "type": "string",
             "description": "Path to the data dictionary for this data file. This should be a valid file path in the system where the manifest is being used."
           },
           {
-            "type": "boolean",
+            "type": "string",
             "description": "Indicates whether the entity represented in this data file is transitive. This should be either true or false."
           },
           {

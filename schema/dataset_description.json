@@ -16,7 +16,7 @@
                 }
             }
         },
-        "additional-links": {
+        "additional_links": {
             "type": "array",
             "items": {
                 "type": "object",
@@ -84,14 +84,17 @@
                 "type": "object",
                 "properties": {
                     "contributor_orcid_id": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The ORCiD for this contributor."
                     },
                     "contributor_affiliation": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "The institutional affiliation for this contributor."
                     },
                     "contributor_name": {
                         "type": "string",
-                        "pattern": "^[A-Za-z]+, [A-Za-z]+( [A-Za-z]+)?$"
+                        "pattern": "^[A-Za-z]+, [A-Za-z]+( [A-Za-z]+)?$",
+                        "description": "The name of the contributor. The format should be 'Last Name, First Name'."
                     },
                     "contributor_role": {
                         "type": "string",
@@ -116,7 +119,8 @@
                             "Supervisor",
                             "WorkPackageLeader",
                             "Other"
-                        ]
+                        ],
+                        "description": "The role of the contributor in the project. There must be at least one PrincipalInvestigator."
                     }
                 }
             }
@@ -124,22 +128,60 @@
         "basic_information": {
             "type": "object",
             "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "The title of the project."
+                },
+                "subtitle": {
+                    "type": "string",
+                    "description": "The subtitle of the project."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A detailed description of the project."
+                },
+                "keywords": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of keywords related to the project."
+                },
                 "funding": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "description": "List of funding awards for the project."
                 },
-                "acknowledgment": {
-                    "type": "string"
+                "acknowledgments": {
+                    "type": "string",
+                    "description": "Acknowledgments for the project."
+                },
+                "license": {
+                    "type": "string",
+                    "description": "The license under which the project is released."
                 }
-            }
+            },
+            "required": [
+                "title",
+                "description",
+                "keywords",
+                "license"
+            ]
         },
         "related_information": {
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
+                    "identifier_description": {
+                        "type": "string"
+                    },
+                    "relation_type": {
+                        "type": "string",
+                        "enum": ["IsProtocolFor", "HasProtocol"]
+                    },
                     "identifier": {
                         "type": "string",
                         "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$"
@@ -147,15 +189,14 @@
                     "identifier_type": {
                         "type": "string",
                         "enum": ["DOI", "URL"]
-                    },
-                    "relation_type": {
-                        "type": "string",
-                        "enum": ["IsProtocolFor", "HasProtocol"]
-                    },
-                    "identifier_description": {
-                        "type": "string"
                     }
-                }
+                },
+                "required": [
+                    "identifier_description",
+                    "relation_type",
+                    "identifier",
+                    "identifier_type"
+                ]
             }
         },
         "dataset_information": {
@@ -199,31 +240,31 @@
         "study_information": {
             "type": "object",
             "properties": {
-                "study purpose": {
+                "study_purpose": {
                     "type": "string"
                 },
-                "study data collection": {
+                "study_data_collection": {
                     "type": "string"
                 },
-                "study primary conclusion": {
+                "study_primary_conclusion": {
                     "type": "string"
                 },
-                "study collection title": {
+                "study_collection_title": {
                     "type": "string"
                 },
-                "study organ system": {
+                "study_organ_system": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "study approach": {
+                "study_approach": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "study technique": {
+                "study_technique": {
                     "type": "array",
                     "items": {
                         "type": "string"
