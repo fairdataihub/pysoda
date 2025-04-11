@@ -37,14 +37,71 @@
                     "disease model",
                     "protocol title",
                     "protocol url or doi"
-                ]
+                ],
+                "contains": {
+                    "enum": [
+                        "subject id",
+                        "pool id",
+                        "subject experimental group",
+                        "age",
+                        "sex",
+                        "species",
+                        "strain",
+                        "rrid for strain",
+                        "age category",
+                        "also in dataset",
+                        "member of",
+                        "metadata only"
+                    ]
+
+                }
             }
         }
     ],
     "additionalItems": {
         "type": "array",
-        "items": {
-            "type": "string"
-        }
+        "items": [
+            {
+                "type": "string",
+                "description": "Unique identifier for the subject. This should be a unique identifier for the subject within the dataset.",
+                "minLength": 1
+            },
+            {
+                "type": "string",
+                "description": "Unique identifier for the pool associated with the subject. This should be a unique identifier for the pool within the dataset."
+            },
+            {
+                "type": "string",
+                "description": "Experimental group associated with the subject. This should provide information about the experimental conditions or treatment groups to which the subject belongs."
+            },
+            {
+                "type": "string",
+                "description": "Age of the subject. This should be a numeric value representing the age of the subject at the time of data collection."
+            }, 
+            {
+                "type": "string",
+                "description": "Sex of the subject."
+            }, 
+            {
+                "type": "string",
+                "description": "Species of the subject. This should be the scientific name of the species."
+            },
+            {
+                "type": "string",
+                "description": "Strain of the subject. This should provide information about the genetic background of the subject."
+            },
+            {
+                "type": "string",
+                "description": "RRID for strain. This should be a unique identifier for the strain in the Research Resource Identifier (RRID) database."
+            },
+            {
+                "type": "string",
+                "description": "Age category of the subject. This should provide information about the age range of the subject."
+            },
+            {
+                "type": "string",
+                "description": "Additional metadata related to the subject."
+            }
+        ]
     }
 }
