@@ -2,81 +2,151 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
-        "description": {
+        "metadata_version": {
+            "type": "string",
+            "description": "The version of the metadata schema used."
+        },
+        "type": {
+            "type": "string",
+            "description": "The type of the dataset. For example, experimental."
+        },
+        "standards_information": {
             "type": "object",
             "properties": {
-                "study-purpose": {
-                    "type": "string"
+                "data_standard": {
+                    "type": "string",
+                    "description": "The name of the standard used in the project."
                 },
-                "data-collectoin": {
-                    "type": "string"
-                },
-                "primary-conclusion": {
-                    "type": "string"
+                "data_standard_version": {
+                    "type": "string",
+                    "description": "The version of the standard used in the project."
                 }
-            }
+            },
+            "required": [
+                "data_standard",
+                "data_standard_version",
+            ]
         },
-        "additional_links": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "link": {
-                        "type": "string",
-                        "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$"
-                    },
-                    "relation": {
-                        "type": "string",
-                        "enum": [
-                            "IsCitedBy",
-                            "Cites",
-                            "IsSupplementTo",
-                            "IsSupplementedBy",
-                            "IsContinuedByContinues",
-                            "IsDescribedBy",
-                            "Describes",
-                            "HasMetadata",
-                            "IsMetadataFor",
-                            "HasVersion",
-                            "IsVersionOf",
-                            "IsNewVersionOf",
-                            "IsPreviousVersionOf",
-                            "HasPart",
-                            "IsPublishedIn",
-                            "IsReferencedBy",
-                            "References",
-                            "IsDocumentedBy",
-                            "Documents",
-                            "IsCompiledBy",
-                            "Compiles",
-                            "IsVariantFormOf",
-                            "IsOriginalFormOf",
-                            "IsIdenticalTo",
-                            "IsReviewedBy",
-                            "Reviews",
-                            "IsDerivedFrom",
-                            "IsSourceOf",
-                            "IsRequiredBy",
-                            "Requires",
-                            "IsObsoletedBy",
-                            "Obsoletes"
-                        ]
-                    },
-                    "description": {
+        "basic_information": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "description": "The title of the project."
+                },
+                "subtitle": {
+                    "type": "string",
+                    "description": "The subtitle of the project."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "A detailed description of the project."
+                },
+                "keywords": {
+                    "type": "array",
+                    "items": {
                         "type": "string"
                     },
-                    "linkType": {
-                        "type": "string",
-                        "enum": [
-                            "DOI",
-                            "URL"
-                        ]
+                    "description": "A list of keywords related to the project."
+                },
+                "funding": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     },
-                    "isFair": {
-                        "type": "boolean"
+                    "description": "List of funding awards for the project."
+                },
+                "acknowledgments": {
+                    "type": "string",
+                    "description": "Acknowledgments for the project."
+                },
+                "license": {
+                    "type": "string",
+                    "description": "The license under which the project is released."
+                }
+            },
+            "required": [
+                "title",
+                "description",
+                "keywords",
+                "license"
+            ]
+        },
+        "funding_information": {
+            "type": "object",
+            "properties": {
+                "funding_consortium": {
+                    "type": "array",
+                    "description": "The name of the funding consortium or consortiums.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "funding_agency": {
+                    "type": "array",
+                    "description": "The name of the funding agency or agencies.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "award_number": {
+                    "type": "array",
+                    "description": "The award number(s) for the funding.",
+                    "items": {
+                        "type": "string"
                     }
                 }
             }
+        },
+        "study_information": {
+            "type": "object",
+            "properties": {
+                "study_purpose": {
+                    "type": "string",
+                    "description": "The purpose of the study."
+                },
+                "study_data_collection": {
+                    "type": "string",
+                    "description": "The data collection methods used in the study."
+                },
+                "study_primary_conclusion": {
+                    "type": "string",
+                    "description": "The primary conclusion of the study."
+                },
+                "study_organ_system": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The organ system(s) studied in the research."
+                },
+                "study_approach": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The approach used in the study. E.g., electrophysiology"
+                },
+                "study_technique": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "The technique(s) used in the study. E.g., patch clamp, whole cell recording"
+                },
+                "study_collection_title": {
+                    "type": "string",
+                    "description": "The title of the study collection this dataset belongs to, if one exists."
+                }
+            },
+            "required": [
+                "study_purpose",
+                "study_data_collection",
+                "study_primary_conclusion",
+                "study_organ_system",
+                "study_approach",
+                "study_technique"
+            ]
         },
         "contributor_information": {
             "type": "array",
@@ -125,51 +195,6 @@
                 }
             }
         },
-        "basic_information": {
-            "type": "object",
-            "properties": {
-                "title": {
-                    "type": "string",
-                    "description": "The title of the project."
-                },
-                "subtitle": {
-                    "type": "string",
-                    "description": "The subtitle of the project."
-                },
-                "description": {
-                    "type": "string",
-                    "description": "A detailed description of the project."
-                },
-                "keywords": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "A list of keywords related to the project."
-                },
-                "funding": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "List of funding awards for the project."
-                },
-                "acknowledgments": {
-                    "type": "string",
-                    "description": "Acknowledgments for the project."
-                },
-                "license": {
-                    "type": "string",
-                    "description": "The license under which the project is released."
-                }
-            },
-            "required": [
-                "title",
-                "description",
-                "keywords",
-                "license"
-            ]
-        },
         "related_information": {
             "type": "array",
             "items": {
@@ -199,77 +224,48 @@
                 ]
             }
         },
-        "dataset_information": {
+        "participant_information": {
             "type": "object",
             "properties": {
-                "title": {
-                    "type": "string"
+                "number_of_subjects": {
+                    "type": "number",
+                    "description": "The number of subjects in the study."
                 },
-                "description": {
-                    "type": "string"
+                "number_of_samples": {
+                    "type": "number",
+                    "description": "The number of samples in the study."
                 },
-                "type": {
-                    "type": "string"
+                "number_of_sites": {
+                    "type": "number",
+                    "description": "The number of sites in the study."
                 },
-                "keywords": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "number of samples": {
-                    "type": "number"
-                },
-                "number of subjects": {
-                    "type": "number"
-                },
-                "study purpose": {
-                    "type": "string"
-                },
-                "study data collection": {
-                    "type": "string"
-                },
-                "study primary conclusion": {
-                    "type": "string"
-                },
-                "study collection title": {
-                    "type": "string"
+                "number_of_performance": {
+                    "type": "number",
+                    "description": "The number of performance in the study."
                 }
-            }
-        },
-        "study_information": {
-            "type": "object",
-            "properties": {
-                "study_purpose": {
-                    "type": "string"
-                },
-                "study_data_collection": {
-                    "type": "string"
-                },
-                "study_primary_conclusion": {
-                    "type": "string"
-                },
-                "study_collection_title": {
-                    "type": "string"
-                },
-                "study_organ_system": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "study_approach": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "study_technique": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
+            },
+            "required": [
+                "number_of_subjects",
+                "number_of_samples",
+                "number_of_sites",
+                "number_of_performance"
+            ]
+        }
+    },
+    "data_dictionary_information": {
+        "type": "object",
+        "properties": {
+            "data_dictionary_path": {
+                "type": "string",
+                "description": "The path to the data dictionary file."
+            },
+            "data_dictionary_type": {
+                "type": "string",
+                "description": "The type of the data dictionary. E.g., json-schema"
+            },
+            "data_dictionary_description": {
+                "type": "string",
+                "description": "A descrption of the data dictionary."
             }
         }
     }
