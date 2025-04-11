@@ -35,12 +35,11 @@
         "items": [
           {
             "type": "string",
-            "pattern": "^(?:[a-zA-Z]:)?[\\\\/](?:[^\\\\/:*?\"<>|]+[\\\\/])*[^\\\\/:*?\"<>|]+$",
-            "description": "File path to the data file. This should be a valid file path in the system where the manifest is being used."
+            "description": "File path to the data file. This should be a valid file path is relative to the root of the dataset."
           }, 
           {
             "type": "string",
-            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+            "pattern":  "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2},\\d{1,6}[+-]\\d{2}:\\d{2}|)$",
             "description": "Timestamp of when the data was created or last modified. This should be in ISO 8601 format."
           },
           {
@@ -52,14 +51,12 @@
             "description": "Type of the data file. This should be the extension of the data file. Such as .txt, .csv, .json, etc."
           },
           {
-            "type": "string",
-            "enum": [
-              "subject",
-              "sample",
-              "performance",
-              "site"
-            ],
-            "description": "Type of entity represented in the data file. This should be one of the following: subject, sample, performance, site."
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Each id should be taken from the subject.xlsx, samples.xlsx, sites.xlsx, or perfromances.xslx files."
+            },
+            "description": "A list of the entity ids that this file is associated with."
           },
           {
             "type": "string",
