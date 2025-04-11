@@ -34,6 +34,13 @@
         "description": "Additional metadata about the resource, such as usage notes or specific details"
       }
     },
-    "required": ["rrid"]
+    "required": [
+      "rrid",
+      "name",
+      "url",
+      "vendor",
+      "version",
+      "id_in_protocol"
+    ]
   }
 }
