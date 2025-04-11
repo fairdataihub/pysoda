@@ -1,7 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "array",
-  "minItems": 1,
   "maxItems": 19,
   "items": [
     {
@@ -29,14 +28,128 @@
           "plane of section",
           "protocol title",
           "protocol url or doi"
-        ]
+        ], 
+        "contains": {
+          "enum": [
+            "sample id",
+            "subject id",
+            "was derived from",
+            "pool id",
+            "sample experimental group",
+            "sample type",
+            "sample anatomical location",
+            "also in dataset",
+            "member of",
+            "metadata only"
+          ]
+        }
       }
     }
   ],
   "additionalItems": {
     "type": "array",
-    "items": {
-      "type": "string"
-    }
+    "maxItems": 19,
+    "items": [
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Sample ID. This should be a unique identifier for the sample within the dataset."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Subject ID. This should be a unique identifier for the subject from which the sample was derived."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Was derived from. This should be a unique identifier for the sample from which this sample was derived."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Pool ID. This should be a unique identifier for the pool to which this sample belongs."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Sample experimental group. This should be a unique identifier for the experimental group to which this sample belongs."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Sample type. This should be a unique identifier for the type of sample (e.g., blood, tissue, etc.)."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Sample anatomical location. This should be a unique identifier for the anatomical location of the sample."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Also in dataset. This should be a unique identifier for any other datasets in which this sample is included."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Member of. This should be a unique identifier for any groups or cohorts to which this sample belongs."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description":  "Metadata only. Indicates whether this sample is metadata only (true) or not (false)."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Laboratory internal id. This should be a unique identifier for the sample within the laboratory."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Date of derivation. This should be the date when the sample was derived."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Experimental log file path. This should be a valid file path to the experimental log file for this sample."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Reference atlas. This should be a unique identifier for the reference atlas used in the experiment."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Pathology. This should be a unique identifier for the pathology associated with this sample."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description": "Laterality. This should be a unique identifier for the laterality of the sample (e.g., left, right, bilateral)."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description":  "Cell type. This should be a unique identifier for the cell type of the sample."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description":  "Plane of section. This should be a unique identifier for the plane of section of the sample."
+      },
+      {
+        "type": "string",
+        "minLength": 1,
+        "description":  "Protocol title. This should be a unique identifier for the protocol used in the experiment."
+      },
+      {
+        "type":  "string",
+        "minLength": 1,
+        "description":  "Protocol URL or DOI. This should be a valid URL or DOI to the protocol used in the experiment."
+      }
+    ]
   }
 }
