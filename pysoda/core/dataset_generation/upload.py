@@ -749,24 +749,6 @@ def check_local_dataset_files_validity(soda):
                 folder = dataset_structure["folders"][folder_key]
                 recursive_empty_local_folder_remove(folder, folder_key, folders_content)
 
-    if "metadata-files" in soda.keys():
-        metadata_files = soda["metadata-files"]
-        # Remove specified metadata files that do net exist at the specified paths or that are empty
-        for file_key in list(metadata_files.keys()):
-            file = metadata_files[file_key]
-            file_type = file["location"]
-            if file_type == "local":
-                file_path = file["path"]
-                if not isfile(file_path):
-                    error_message = file_key + " (path: " + file_path + ")"
-                    error.append(error_message)
-                else:
-                    file_size = getsize(file_path)
-                    if file_size == 0:
-                        del metadata_files[file_key]
-        if not metadata_files:
-            del soda["metadata-files"]
-
     # Return list of all the files that were not found. 
     if len(error) > 0:
         error_message = [
@@ -3231,17 +3213,29 @@ def clean_json_structure(soda):
     main_keys = soda.keys()
     dataset_structure = soda["dataset-structure"]
 
-    if ("dataset-structure" not in main_keys and "metadata-files" not in main_keys):
-        abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+    if ("dataset-structure" not in main_keys and "dataset_metadata" not in main_keys):
+        if "ps-dataset-selected" in main_keys:
+            dataset_name = soda["ps-dataset-selected"]["dataset-name"]
+        elif "generate-dataset" in main_keys:
+            dataset_name = soda["generate-dataset"]["dataset-name"]
+        else:
+            dataset_name = "Unset Name"
+        raise EmptyDatasetError(dataset_name)
 
     if "generate-dataset" in main_keys:
         # Check that local files/folders exist
         try:
             if error := check_local_dataset_files_validity(soda):
-                abort(400, error)
+                raise LocalDatasetMissingSpecifiedFiles(error)
             # check that dataset is not empty after removing all the empty files and folders
-            if not soda["dataset-structure"]["folders"] and "metadata-files" not in soda:
-                abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+            if not soda["dataset-structure"]["folders"] and "dataset_metadata" not in soda:
+                if "ps-dataset-selected" in main_keys:
+                    dataset_name = soda["ps-dataset-selected"]["dataset-name"]
+                elif "generate-dataset" in main_keys:
+                    dataset_name = soda["generate-dataset"]["dataset-name"]
+                else:
+                    dataset_name = "Unset Name"
+                raise EmptyDatasetError(dataset_name)
         except Exception as e:
             raise e
 
