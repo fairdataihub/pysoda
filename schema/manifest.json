@@ -62,7 +62,7 @@
             "description": "Type of the data file. This should be the extension of the data file. Such as .txt, .csv, .json, etc."
           },
           {
-            "type": "array",
+            "type": "string",
             "items": {
               "type": "string",
               "description": "Each id should be taken from the subject.xlsx, samples.xlsx, sites.xlsx, or perfromances.xslx files."
