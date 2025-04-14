@@ -7,7 +7,8 @@ from ...utils import (
     PennsieveActionNoPermission, PennsieveDatasetCannotBeFound,
     EmptyDatasetError, LocalDatasetMissingSpecifiedFiles,
     PennsieveUploadException, create_request_headers, check_forbidden_characters_ps, get_users_dataset_list,
-    PennsieveDatasetNameInvalid, PennsieveDatasetNameTaken, PennsieveAccountInvalid, TZLOCAL
+    PennsieveDatasetNameInvalid, PennsieveDatasetNameTaken, PennsieveAccountInvalid, TZLOCAL, GenerateOptionsNotSet,
+    PennsieveDatasetFilesInvalid
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
@@ -44,7 +45,6 @@ import shutil
 import subprocess
 import gevent
 import pathlib
-from flask import abort
 import requests
 from datetime import datetime
 from openpyxl import load_workbook
@@ -3411,7 +3411,7 @@ def validate_dataset_structure(soda, resume):
 
     if not generate_options_set(soda):
         main_curate_status = "Done"
-        abort(400, "Error: Please select an option to generate a dataset")
+        raise GenerateOptionsNotSet()
 
     # 1.1. If the dataset is being generated locally then check that the local destination is valid
     if generating_locally(soda): 
@@ -3420,7 +3420,7 @@ def validate_dataset_structure(soda, resume):
             validate_local_dataset_generate_path(soda)
         except Exception as e:
             main_curate_status = "Done"
-            abort(400, str(e))
+            raise e
         
 
     logger.info("main_curate_function step 1.2")
@@ -3451,17 +3451,17 @@ def validate_dataset_structure(soda, resume):
 
         except Exception as e:
             main_curate_status = "Done"
-            abort(400, "Error: Please select a valid Pennsieve dataset")
+            bfdataset = soda["ps-dataset-selected"]["dataset-name"]
+            raise PennsieveDatasetCannotBeFound(bfdataset)
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
         role = pennsieve_get_current_user_permissions(selected_dataset_id, get_access_token())["role"]
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
-            abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
+            raise PennsieveActionNoPermission("uploading to Pennsieve dataset")
 
     logger.info("main_curate_function step 1.3")
-    print("Here now")
 
 
     # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
@@ -3470,7 +3470,13 @@ def validate_dataset_structure(soda, resume):
     main_curate_progress_message = "Checking that the dataset is not empty"
     if virtual_dataset_empty(soda):
         main_curate_status = "Done" 
-        abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+        if "generate-options" in soda.keys():
+            dataset_name = soda["generate-options"]["dataset-name"]
+        elif "ps-dataset-selected" in soda.keys():
+            dataset_name = soda["ps-dataset-selected"]["dataset-name"]
+        else:
+            dataset_name = "Name not set"
+        raise EmptyDatasetError(dataset_name)
 
 
     logger.info("main_curate_function step 1.3.1")
@@ -3478,12 +3484,19 @@ def validate_dataset_structure(soda, resume):
     # Check that local files/folders exist
     if error := check_local_dataset_files_validity(soda):
         main_curate_status = "Done"
-        abort(400, error)
+        raise LocalDatasetMissingSpecifiedFiles(error)
+
 
     # check that dataset is not empty after removing all the empty files and folders
     if virtual_dataset_empty(soda):
         main_curate_status = "Done"
-        abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+        if "generate-options" in soda.keys():
+            dataset_name = soda["generate-options"]["dataset-name"]
+        elif "ps-dataset-selected" in soda.keys():
+            dataset_name = soda["ps-dataset-selected"]["dataset-name"]
+        else:
+            dataset_name = "Name not set"
+        raise EmptyDatasetError(dataset_name, "The dataset is empty after removing all the empty files and folders.")
 
 
     logger.info("main_curate_function step 1.3.2")
@@ -3498,7 +3511,7 @@ def validate_dataset_structure(soda, resume):
                     logger.info("Failed to validate dataset files")
                     logger.info(error)
                     main_curate_status = "Done"
-                    abort(400, error)
+                    raise PennsieveDatasetFilesInvalid(error)
         except Exception as e:
             main_curate_status = "Done"
             raise e

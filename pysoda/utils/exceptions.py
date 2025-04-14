@@ -41,6 +41,13 @@ class ConfigProfileNotSet(Exception):
     def __str__(self):
         return self.error_message
     
+class GenerateOptionsNotSet(Exception):
+    def __init__(self):
+        self.error_message = "The generate options have not been set."
+
+    def __str__(self):
+        return self.error_message
+    
 
 class PennsieveActionNoPermission(Exception):
     def __init__(self, action):
@@ -59,9 +66,10 @@ class GenericUploadError(Exception):
     
 
 class EmptyDatasetError(Exception):
-    def __init__(self, dataset_name):
+    def __init__(self, dataset_name, expanded=""):
         self.dataset_name = dataset_name
-        self.error_message = f"The dataset {self.dataset_name} is empty."
+        self.expanded = expanded
+        self.error_message = f"The dataset {self.dataset_name} is empty. {expanded}"
 
     def __str__(self):
         return self.error_message
@@ -105,6 +113,13 @@ class PennsieveAccountInvalid(Exception):
     def __init__(self, account_name):
         self.account_name = account_name
         self.error_message = f"The Pennsieve account name {self.account_name} is invalid."
+
+    def __str__(self):
+        return self.error_message
+    
+class PennsieveDatasetFilesInvalid(Exception):
+    def __init__(self, error_message):
+        self.error_message = error_message
 
     def __str__(self):
         return self.error_message
