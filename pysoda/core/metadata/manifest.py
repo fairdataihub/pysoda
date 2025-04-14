@@ -27,9 +27,9 @@ def create_excel(soda, upload_boolean, local_destination):
     row = 2
     ascii_headers = excel_columns(start_index=0)
     manifest_entries = manifest["data"]
-    for row in manifest_entries:
+    for curr_row in manifest_entries:
       ascii_header_idx = 0 
-      for col_data in row:
+      for col_data in curr_row:
         if isinstance(col_data, list):
             # space separwte the list into a string
             col_data = " ".join(col_data)
@@ -64,7 +64,14 @@ def load_existing_manifest_file(manifest_file_path):
         headers = list(row)
 
     for row in ws1.iter_rows(min_row=2, values_only=True):
-        data.append(list(row))
+        # grab the item in row 5
+        new_row = []
+        for col_data in row:
+            if isinstance(col_data, list):
+                # space separate the list into a string
+                col_data = " ".join(col_data)
+            new_row.append(col_data)
+        data.append(new_row)
 
     return {"headers": headers, "data": data}
 
