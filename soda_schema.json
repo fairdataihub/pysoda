@@ -107,7 +107,7 @@
         "relativePath": { "type": "string" }
       }
     },
-    "dataset-metadata": {
+    "dataset_metadata": {
       "type": "object",
       "properties": {
         "description-metadata": {
@@ -148,7 +148,8 @@
         },
         "resources": {
           "$ref": "resources.json"
-        }
+        },
+        "manifest_files": "$ref: manifests.json",
       }
     },
     "digital-metadata": {
