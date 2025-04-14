@@ -27,10 +27,13 @@ def create_excel(soda, upload_boolean, local_destination):
     row = 2
     ascii_headers = excel_columns(start_index=0)
     manifest_entries = manifest["data"]
-    for entry_items in manifest_entries:
+    for row in manifest_entries:
       ascii_header_idx = 0 
-      for entry in entry_items:
-        ws1[ascii_headers[ascii_header_idx] + str(row)] = entry
+      for col_data in row:
+        if isinstance(col_data, list):
+            # space separwte the list into a string
+            col_data = " ".join(col_data)
+        ws1[ascii_headers[ascii_header_idx] + str(row)] = col_data
         ascii_header_idx += 1
       row += 1
 
