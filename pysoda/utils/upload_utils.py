@@ -16,13 +16,13 @@ def generating_locally(soda_json_structure):
     return soda_json_structure["generate-dataset"]["destination"] == "local"
 
 def generating_on_ps(soda_json_structure):
-    return soda_json_structure["generate-dataset"]["destination"] == "bf"
+    return soda_json_structure["generate-dataset"]["destination"] == "ps"
 
 def uploading_with_ps_account(soda_json_structure):
-    return "bf-account-selected" in soda_json_structure
+    return "ps-account-selected" in soda_json_structure
 
 def uploading_to_existing_ps_dataset(soda_json_structure):
-    return "bf-dataset-selected" in soda_json_structure
+    return "ps-dataset-selected" in soda_json_structure
 
 def can_resume_prior_upload(resume_status):
     global ums 

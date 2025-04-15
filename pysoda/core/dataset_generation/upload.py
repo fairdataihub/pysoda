@@ -3103,7 +3103,7 @@ def ps_check_dataset_files_validity(soda):
 
     error = []
     # check that the files and folders specified in the dataset are valid
-    dataset_name = soda["bf-dataset-selected"]["dataset-name"]
+    dataset_name = soda["ps-dataset-selected"]["dataset-name"]
     dataset_id = get_dataset_id(dataset_name)
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(get_access_token()))
     r.raise_for_status()
@@ -3131,9 +3131,9 @@ def ps_check_dataset_files_validity(soda):
                         # recursively check all files + subfolders of collection_id
                         error = check_folder_validity(collection_id, folder, relative_path, error)
 
-    if "metadata-files" in soda.keys():
+    if "dataset_metadata" in soda.keys():
         # check that the metadata files specified in the dataset are valid
-        for file_key, file in soda["metadata-files"].items():
+        for file_key, file in soda["dataset_metadata"].items():
             if file["location"] == "ps":
                 file_id = file["path"]
                 if next((item for item in root_folder if item["content"]["id"] == file_id), None) is None:
@@ -3377,7 +3377,7 @@ def generate_dataset(soda, resume, ps):
             elif "digital-metadata" in soda and "name" in soda["digital-metadata"]:
                 dataset_name = soda["digital-metadata"]["name"]
             elif "ps-dataset-selected" in soda and "dataset-name" in soda["ps-dataset-selected"]:
-                dataset_name = soda["bf-dataset-selected"]["dataset-name"]
+                dataset_name = soda["ps-dataset-selected"]["dataset-name"]
             
             if resume: 
                 generate_new_ds_ps_resume(soda, dataset_name, ps)
@@ -3612,7 +3612,8 @@ def main_curate_function(soda, resume):
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
 
-    logger.info(f"Finished generating selected dataset {soda['generate-dataset']['dataset-name']}")
+
+    logger.info(f"Finished generating dataset")
     return {
         "main_curate_progress_message": main_curate_progress_message,
         "main_total_generate_dataset_size": main_total_generate_dataset_size,

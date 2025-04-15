@@ -264,7 +264,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # check that the Pennsieve dataset is valid
     try:
-        bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+        bf_dataset_name = soda_json_structure["ps-dataset-selected"]["dataset-name"]
     except Exception as e:
         raise e
 
@@ -369,7 +369,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     )
     create_soda_json_completed = 1
 
-    logger.info(f"Time to import {soda_json_structure['bf-dataset-selected']['dataset-name']} ")
+    logger.info(f"Time to import {soda_json_structure['ps-dataset-selected']['dataset-name']} ")
     return {
         "soda_object": soda_json_structure,
         "success_message": success_message,
