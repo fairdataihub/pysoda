@@ -1602,8 +1602,8 @@ def ps_update_existing_dataset(soda, ds, ps, resume):
 
     # Delete any files on Pennsieve that have been marked as deleted
     def metadata_file_delete(soda):
-        if "metadata-files" in soda.keys():
-            folder = soda["metadata-files"]
+        if "dataset_metadata" in soda.keys():
+            folder = soda["dataset_metadata"]
             for item in list(folder):
                 if "deleted" in folder[item]["action"]:
                     r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [folder[item]["path"]]})
@@ -1818,7 +1818,7 @@ def ps_update_existing_dataset(soda, ds, ps, resume):
 
     # 8. Run the original code to upload any new files added to the dataset.
     logger.info("ps_update_existing_dataset step 9 run the ps_create_new_dataset code to upload any new files added to the dataset")
-    if "manifest-files" in soda.keys():
+    if "dataset_metadata" in soda.keys() and "manifest_files" in soda["dataset_metadata"].keys():
         if "auto-generated" in soda["manifest-files"].keys():
             soda["manifest-files"] = {"destination": "ps", "auto-generated": True}
         else:
@@ -1828,7 +1828,7 @@ def ps_update_existing_dataset(soda, ds, ps, resume):
         "destination": "ps",
         "if-existing": "merge",
         "if-existing-files": "replace",
-        "generate-option": "existing-bf"
+        "generate-option": "existing-ps"
     }
 
     end = timer()
@@ -2507,15 +2507,16 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
 
 
             # 3. Add high-level metadata files to a list
-            if "metadata-files" in soda.keys():
+            if "dataset_metadata" in soda.keys():
                 logger.info("ps_create_new_dataset (optional) step 3 create high level metadata list")
                 (
                     my_bf_existing_files_name,
                     _,
                 ) = ps_get_existing_files_details(ds)
-                metadata_files = soda["metadata-files"]
+                metadata_files = soda["dataset_metadata"]
                 for file_key, file in metadata_files.items():
                     if file["location"] == "local":
+                        # TODO: SDS 3 Determine if can be done without needing the path key as that isn't in my updated schema for SDS3. Probably is possible. Probably just create it if not set to skip. And delete. Voila.
                         metadata_path = file["path"]
                         if isfile(metadata_path):
                             initial_name = splitext(basename(metadata_path))[0]
@@ -2539,9 +2540,10 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                             total_metadata_files += 1
 
             # 4. Prepare and add manifest files to a list
-            if "manifest-files" in soda.keys():
+            if "dataset_metadata" in soda.keys() and "manifest_files" in soda["dataset_metadata"].keys():
                 logger.info("ps_create_new_dataset (optional) step 4 create manifest list")
                 # create local folder to save manifest files temporarly (delete any existing one first)
+                # TODO: SDS 3 create manifests if not skipping and delete file on Pennsieve if it exists
                 if "auto-generated" in soda["manifest-files"]:
                     if soda["manifest-files"]["auto-generated"] == True:
                         manifest_files_structure = (
@@ -3354,7 +3356,7 @@ def generate_dataset(soda, resume, ps):
 
         if uploading_to_existing_ps_dataset(soda) and soda["starting-point"]["origin"] != "new":
             selected_dataset_id = get_dataset_id(
-                soda["bf-dataset-selected"]["dataset-name"]
+                soda["ps-dataset-selected"]["dataset-name"]
             )
             # make an api request to pennsieve to get the dataset details
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
