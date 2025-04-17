@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pysoda_fairhub_tools",
-    version="0.1.25",
+    version="0.1.27",
     author="Your Name",
     author_email="your.email@example.com",
     description="A description of your package",
