@@ -2,7 +2,7 @@ import requests
 from ..constants import PENNSIEVE_URL
 from .authentication import get_access_token
 import re 
-from .exceptions import PennsieveDatasetCannotBeFound
+from .exceptions import PennsieveDatasetCannotBeFound, FailedToFetchPennsieveDatasets
 
 def get_dataset_id(dataset_name_or_id):
     """
@@ -21,8 +21,7 @@ def get_dataset_id(dataset_name_or_id):
         # Attempt to retrieve the user's dataset list from Pennsieve
         dataset_list = get_users_dataset_list()
     except Exception as e:
-        print(e)
-        # abort(500, "Error: Failed to retrieve datasets from Pennsieve. Please try again later.")
+        raise FailedToFetchPennsieveDatasets(str(e))
     
     # Iterate through the user's dataset list to find a matching dataset name
     for dataset in dataset_list:

@@ -10,7 +10,7 @@ def load_schema(schema_name):
     current_dir = os.path.dirname(__file__)
     
     # Construct the path to the schema directory one level up
-    schema_path = os.path.join(current_dir, '..', "..", 'schema', schema_name)
+    schema_path = os.path.join(current_dir, "..", 'schema', schema_name)
     
     # Normalize the path
     schema_path = os.path.abspath(schema_path)
