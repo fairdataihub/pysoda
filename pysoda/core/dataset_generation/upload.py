@@ -12,7 +12,7 @@ from ...utils import (
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
-from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, readme_changes, METADATA_UPLOAD_PS_PATH
+from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, readme_changes, METADATA_UPLOAD_PS_PATH, create_high_lvl_manifest_files_existing_ps_starting_point
 from ..upload_manifests import get_upload_manifests
 logger = logging.getLogger(__name__)
 
@@ -761,7 +761,7 @@ def check_local_dataset_files_validity(soda):
 
 # path to local SODA folder for saving manifest files
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
-manifest_folder_path = join(userpath, "SODA", "manifest_files")
+manifest_folder_path = join(userpath, "pysoda", "manifest_file")
 
 
 
@@ -3750,6 +3750,9 @@ def generate_manifest_file_locally(generate_purpose, soda):
     """
     Function to generate manifest files locally
     """
+
+
+    global manifest_folder_path
 
     def recursive_item_path_create(folder, path):
         if "files" in folder.keys():

@@ -211,7 +211,7 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
 
 
 
-def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_path, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
+def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_path, manifest_progress={}):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Unlike the standalone manifest generator algorithm this removes any existing manifest files and replaces them with new ones.
@@ -230,27 +230,24 @@ def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structur
 
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
-            for item in list(folder["files"]):
-                relative_file_name = ""
-                i = 1
-                while i < len(folder["files"][item]["folderpath"]):
-                    relative_file_name += folder["files"][item]["folderpath"][i] + "/"
-                    i += 1
-                relative_file_name += item
-                relative_file_name.replace("\\", "/")
+            for current_file in list(folder["files"]):
+                # Construct the relative file name starting from the root of the dataset
+                relative_file_name = "/".join(folder["files"][current_file]["folderpath"]) + "/" + current_file
+                relative_file_name = relative_file_name.replace("\\", "/")  # Normalize to use forward slashes
                 dict_folder_manifest["filename"].append(relative_file_name)
-                unused_file_name, file_extension = get_name_extension(item)
+
+                unused_file_name, file_extension = get_name_extension(current_file)
                 if file_extension == "":
                     file_extension = "None"
                 dict_folder_manifest["file type"].append(file_extension)
 
-                if "type" in folder["files"][item].keys():
-                    if folder["files"][item]["type"] == "bf":
+                if "type" in folder["files"][current_file].keys():
+                    if folder["files"][current_file]["type"] == "ps":
                         dict_folder_manifest["timestamp"].append(
-                            folder["files"][item]["timestamp"]
+                            folder["files"][current_file]["timestamp"]
                         )
-                    elif folder["files"][item]["type"] == "local":
-                        file_path = folder["files"][item]["path"]
+                    elif folder["files"][current_file]["type"] == "local":
+                        file_path = folder["files"][current_file]["path"]
                         filepath = pathlib.Path(file_path)
                         mtime = filepath.stat().st_mtime
                         lastmodtime = datetime.fromtimestamp(mtime).astimezone(
@@ -262,24 +259,33 @@ def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structur
                 else:
                     dict_folder_manifest["timestamp"].append("")
 
-                if "description" in folder["files"][item].keys():
+                if "description" in folder["files"][current_file].keys():
                     dict_folder_manifest["description"].append(
-                        folder["files"][item]["description"]
+                        folder["files"][current_file]["description"]
                     )
                 else:
                     dict_folder_manifest["description"].append("")
 
-                if "additional-metadata" in folder["files"][item].keys():
+                if "additional-metadata" in folder["files"][current_file].keys():
                     dict_folder_manifest["Additional Metadata"].append(
-                        folder["files"][item]["additional-metadata"]
+                        folder["files"][current_file]["additional-metadata"]
                     )
                 else:
                     dict_folder_manifest["Additional Metadata"].append("")
 
+                dict_folder_manifest["entity"].append("")
+                dict_folder_manifest["data modality"].append("")
+                dict_folder_manifest["also in dataset"].append("")
+                dict_folder_manifest["also in dataset path"].append("")
+                dict_folder_manifest["data dictionary path"].append("")
+                dict_folder_manifest["entity is transitive"].append("")
+                dict_folder_manifest["data dictionary path"].append("")
+                
+
         if "folders" in folder.keys():
-            for item in list(folder["folders"]):
+            for current_file in list(folder["folders"]):
                 recursive_folder_traversal(
-                    folder["folders"][item], dict_folder_manifest
+                    folder["folders"][current_file], dict_folder_manifest
                 )
 
         return
@@ -287,50 +293,39 @@ def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structur
     dataset_structure = soda_json_structure["dataset-structure"]
 
     # create local folder to save manifest files temporarily if the existing files are stale (i.e. not from updating existing manfiest files)
-    if len(high_level_folders) == 6:
-        shutil.rmtree(manifest_path) if isdir(manifest_path) else 0
-        makedirs(manifest_path)
+    shutil.rmtree(manifest_path) if isdir(manifest_path) else 0
+    makedirs(manifest_path)
 
-    for high_level_folder in list(dataset_structure["folders"]):
+    manifestfilepath = join(manifest_path, "manifest.xlsx")
 
-        # do not overwrite an existing manifest file 
-        if high_level_folder not in high_level_folders:
-            continue
-        
-        if dataset_structure["folders"][high_level_folder]["files"] == {} and dataset_structure["folders"][high_level_folder]["folders"] == {}:
-            continue
+    # Initialize dict where manifest info will be stored
+    dict_folder_manifest = {}
+    dict_folder_manifest["filename"] = []
+    dict_folder_manifest["timestamp"] = []
+    dict_folder_manifest["description"] = []
+    dict_folder_manifest["file type"] = []
+    dict_folder_manifest["entity"] = []
+    dict_folder_manifest["data modality"] = []
+    dict_folder_manifest["also in dataset"] = []
+    dict_folder_manifest["also in dataset path"] = []
+    dict_folder_manifest["data dictionary path"] = []
+    dict_folder_manifest["entity is transitive"] = []
+    dict_folder_manifest["Additional Metadata"] = []
 
-
-        high_level_folders_present.append(high_level_folder)
-
-        folderpath = join(manifest_path, high_level_folder)
-        # remove any stale manifest files for this high level folder should they exist
-        if exists(folderpath):
-            shutil.rmtree(folderpath)
-        makedirs(folderpath)
-        manifestfilepath = join(folderpath, "manifest.xlsx")
-
-        # Initialize dict where manifest info will be stored
-        dict_folder_manifest = {}
-        dict_folder_manifest["filename"] = []
-        dict_folder_manifest["timestamp"] = []
-        dict_folder_manifest["description"] = []
-        dict_folder_manifest["file type"] = []
-        dict_folder_manifest["Additional Metadata"] = []
-
+    for high_level_folder in soda_json_structure["dataset-structure"]["folders"]:
         recursive_folder_traversal(
             dataset_structure["folders"][high_level_folder], dict_folder_manifest
         )
 
-        df = pd.DataFrame.from_dict(dict_folder_manifest)
-        df.to_excel(manifestfilepath, index=None, header=True)
+    df = pd.DataFrame.from_dict(dict_folder_manifest)
+    df.to_excel(manifestfilepath, index=None, header=True)
 
-        # update the progress of manifest file generation
-        if manifest_progress != {}:
-            manifest_progress["manifest_files_uploaded"] += 1
-        
-        # add the path to the manifest into the structure
-        manifest_files_structure[high_level_folder] = manifestfilepath
+    # update the progress of manifest file generation
+    if manifest_progress != {}:
+        manifest_progress["manifest_files_uploaded"] += 1
+    
+    # add the path to the manifest into the structure
+    manifest_files_structure[high_level_folder] = manifestfilepath
 
     return manifest_files_structure
     
