@@ -3796,7 +3796,9 @@ def generate_manifest_file_locally(generate_purpose, soda):
             os.path.join(manifest_destination, "manifest_file")
         )
 
-    copytree(manifest_folder_path, manifest_destination)
+        copytree(manifest_folder_path, manifest_destination)
+
+
 
     if generate_purpose == "edit-manifest":
         return {"success_message_or_manifest_destination": manifest_destination}
