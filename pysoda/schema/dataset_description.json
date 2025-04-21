@@ -250,22 +250,22 @@
                 "number_of_sites",
                 "number_of_performance"
             ]
-        }
-    },
-    "data_dictionary_information": {
-        "type": "object",
-        "properties": {
-            "data_dictionary_path": {
-                "type": "string",
-                "description": "The path to the data dictionary file."
-            },
-            "data_dictionary_type": {
-                "type": "string",
-                "description": "The type of the data dictionary. E.g., json-schema"
-            },
-            "data_dictionary_description": {
-                "type": "string",
-                "description": "A descrption of the data dictionary."
+        },
+        "data_dictionary_information": {
+            "type": "object",
+            "properties": {
+                "data_dictionary_path": {
+                    "type": "string",
+                    "description": "The path to the data dictionary file."
+                },
+                "data_dictionary_type": {
+                    "type": "string",
+                    "description": "The type of the data dictionary. E.g., json-schema"
+                },
+                "data_dictionary_description": {
+                    "type": "string",
+                    "description": "A descrption of the data dictionary."
+                }
             }
         }
     }
