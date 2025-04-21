@@ -279,7 +279,6 @@ def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structur
                 dict_folder_manifest["also in dataset path"].append("")
                 dict_folder_manifest["data dictionary path"].append("")
                 dict_folder_manifest["entity is transitive"].append("")
-                dict_folder_manifest["data dictionary path"].append("")
                 
 
         if "folders" in folder.keys():
