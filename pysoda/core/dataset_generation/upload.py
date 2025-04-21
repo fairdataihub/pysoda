@@ -3789,11 +3789,11 @@ def generate_manifest_file_locally(generate_purpose, soda):
     create_high_lvl_manifest_files_existing_ps_starting_point(soda, manifest_folder_path)
 
     if generate_purpose == "edit-manifest":
-        manifest_destination = os.path.join(manifest_destination, "SODA Manifest Files")
+        manifest_destination = os.path.join(manifest_destination, "manifest_file")
 
     else:
         manifest_destination = return_new_path(
-            os.path.join(manifest_destination, "SODA Manifest Files")
+            os.path.join(manifest_destination, "manifest_file")
         )
 
     copytree(manifest_folder_path, manifest_destination)
