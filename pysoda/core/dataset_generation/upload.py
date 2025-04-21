@@ -761,7 +761,7 @@ def check_local_dataset_files_validity(soda):
 
 # path to local SODA folder for saving manifest files
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
-manifest_folder_path = join(userpath, "pysoda", "manifest_file")
+manifest_folder_path = join(userpath, ".pysoda", "manifest_file")
 
 
 
