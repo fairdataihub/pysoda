@@ -136,20 +136,20 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     # verify timestamps
                     timestamp = items["content"]["createdAt"].replace('.', ',')
 
-                    paths_list = [*subfolder_json["bfpath"]]
+                    paths_list = [*subfolder_json["pspath"]]
                     subfolder_json["files"][folder_item_name] = {
                         "action": ["existing"],
                         "path": item_id,
-                        "bfpath": paths_list,
+                        "pspath": paths_list,
                         "timestamp": timestamp,
-                        "type": "bf",
+                        "type": "ps",
                         "additional-metadata": "",
                         "description": "",
                     }
                     
                     # creates path for folder_item_name (stored in temp_name)
-                    if len(subfolder_json["files"][folder_item_name]["bfpath"]) > 1:
-                        temp_name = '/'.join(subfolder_json["files"][folder_item_name]["bfpath"][1:]) + "/" + folder_item_name
+                    if len(subfolder_json["files"][folder_item_name]["pspath"]) > 1:
+                        temp_name = '/'.join(subfolder_json["files"][folder_item_name]["pspath"][1:]) + "/" + folder_item_name
                     else:
                         temp_name = folder_item_name
                     
@@ -161,6 +161,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             "timestamp": "timestamp",
                             "description": "description",
                             "filetype": "file type",
+                            "entity": "entity",
+                            "datamodality": "data modality",
+                            "alsoindataset": "also in dataset",
+                            "alsoindatasetpath": "also in dataset path",
+                            "datadictionarypath": "data dictionary path",
+                            "entityistransitive": "entity is transitive",
                             "additionalmetadata": "additional-metadata",
                         }
 
@@ -246,14 +252,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                             subfolder_json["files"][folder_item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
 
             else:  # another subfolder found
-                paths_list = [*subfolder_json["bfpath"], folder_item_name]
+                paths_list = [*subfolder_json["pspath"], folder_item_name]
                 subfolder_json["folders"][folder_item_name] = {
                     "action": ["existing"],
                     "path": item_id,
-                    "bfpath": paths_list,
+                    "pspath": paths_list,
                     "files": {},
                     "folders": {},
-                    "type": "bf",
+                    "type": "ps",
                 }
 
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
@@ -301,68 +307,69 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     for count in packages_list.values():
         create_soda_json_total_items += int(count)
 
-    # Go through the content in the root folder
+    # set manifest dictionry to empty dictionary; used to store the manifest information while we import dataset
+    manifest_dict = {}
+    
+
+    # Gather metadata files first
     for items in root_folder:
         item_id = items["content"]["id"]
         item_name = items["content"]["name"]
+
+        # Import manifest at the root of the dataset
+        if item_name in manifest_sparc:
+            # Item is a manifest file
+            df = ""
+            try:
+                if item_name.lower() == "manifest.xlsx":
+                    df = load_metadata_to_dataframe(item_id, "excel", get_access_token())
+                    df = df.fillna("")
+                else:
+                    df = load_metadata_to_dataframe(item_id, "csv", get_access_token())
+                    df = df.fillna("")
+                manifest_dict = df.to_dict()
+            except Exception as e:
+                manifest_error_message.append(item_name)
+
+        # Item is a metadata file
+        if item_name in high_level_metadata_sparc:
+            create_soda_json_progress += 1
+            if "dataset_metadata" not in soda_json_structure.keys():
+                soda_json_structure["dataset_metadata"] = {}
+            soda_json_structure["dataset_metadata"][item_name] = {
+                "type": "ps",
+                "action": ["existing"],
+                "path": item_id,
+            }
+
+    # Process the folder structure
+    for items in root_folder:
+        item_id = items["content"]["id"]
+        item_name = items["content"]["name"]
+
         # If package type is Collection, then it is a folder
         if items["content"]["packageType"] == "Collection" and item_name in high_level_sparc_folders:
             create_soda_json_progress += 1
             soda_json_structure["dataset-structure"]["folders"][item_name] = {
-                "type": "bf",
+                "type": "ps",
                 "path": item_id,
                 "action": ["existing"],
                 "files": {},
                 "folders": {},
-                "bfpath": [item_name],
+                "pspath": [item_name],
             }
 
-            manifest_dict[item_name] = {}
             # Check the content of the folder to see if a manifest file exists
             r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             folder_content = r.json()["children"]
 
             if len(folder_content) > 0:
-                for package in folder_content:
-                    package_name = package["content"]["name"]
-                    if package_name in manifest_sparc:
-                        # item is manifest
-                        df = ""
-                        package_id = package["content"]["id"]
-                        try:                            
-                            if package_name.lower() == "manifest.xlsx":
-                                df = load_metadata_to_dataframe(package_id, "excel", get_access_token())
-                                df = df.fillna("")
-                            else:
-                                df = load_metadata_to_dataframe(package_id, "csv", get_access_token())
-                                df = df.fillna("")
-                            manifest_dict[item_name].update(df.to_dict())
-                        except Exception as e:
-                            manifest_error_message.append(
-                                items["content"]["name"]
-                            )
+                high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][item_name]
 
-                high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
-                    item_name
-                ]
-
-                if item_name in manifest_dict:
-                    createFolderStructure(
-                        high_lvl_folder_dict, manifest_dict[item_name]
-                    )  # passing item's json and the collection ID
-
-
-        else:
-            # Item is a metadata file
-            if item_name in high_level_metadata_sparc:
-                create_soda_json_progress += 1
-                if "metadata-files" in soda_json_structure.keys():
-                    soda_json_structure["metadata-files"][item_name] = {
-                        "type": "bf",
-                        "action": ["existing"],
-                        "path": item_id,
-                    }
+                createFolderStructure(
+                    high_lvl_folder_dict, manifest_dict
+                )  # Passing item's JSON and the collection ID
 
     success_message = (
         "Data files under a valid high-level SPARC folders have been imported"
