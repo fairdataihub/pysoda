@@ -3870,21 +3870,28 @@ def generate_manifest_file_data(dataset_structure):
 
     # Recursive function: Traverse dataset and collect file data
     def traverse_folders(folder, path_parts):
+        # Add header row if processing files for the first time
+        if not manifest_data:
+            manifest_data.append(header_row)
+        
         if "files" in folder:
-            # Add header row if processing files for the first time
-            if not manifest_data:
-                manifest_data.append(header_row)
-
             for item, file_info in folder["files"].items():
+
+                if "path" in file_info:
+                    file_path = file_info["path"]
+                elif "pspath" in file_info:
+                    file_path = file_info["pspath"]
+                else: 
+                    continue 
 
                 # If the file is a manifest file, skip it
                 if item in {"manifest.xlsx", "manifest.csv"}:
                     continue
 
                 # Determine timestamp 
-                filename = os.path.basename(file_info["path"].replace("\\", "/"))
+                filename = os.path.basename(file_path.replace("\\", "/"))
                 logger.info(f"Processing file: {filename}")
-                if is_pennsieve and file_info["location"] == "ps":
+                if file_info["location"] == "ps":
                     timestamp = file_info["timestamp"]
                 else:
                     local_path = pathlib.Path(file_info["path"])
@@ -3910,7 +3917,6 @@ def generate_manifest_file_data(dataset_structure):
         "entity is transitive", "Additional Metadata"
     ]
     local_timezone = TZLOCAL()
-    is_pennsieve = "bfpath" in dataset_structure
 
     # Log the dataset structure
     logger.info("Generating manifest file data")

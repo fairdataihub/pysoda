@@ -142,7 +142,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         "path": item_id,
                         "pspath": paths_list,
                         "timestamp": timestamp,
-                        "type": "ps",
+                        "location": "ps",
                         "additional-metadata": "",
                         "description": "",
                     }
@@ -259,7 +259,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     "pspath": paths_list,
                     "files": {},
                     "folders": {},
-                    "type": "ps",
+                    "location": "ps",
                 }
 
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
@@ -337,7 +337,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             if "dataset_metadata" not in soda_json_structure.keys():
                 soda_json_structure["dataset_metadata"] = {}
             soda_json_structure["dataset_metadata"][item_name] = {
-                "type": "ps",
+                "location": "ps",
                 "action": ["existing"],
                 "path": item_id,
             }
@@ -351,7 +351,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if items["content"]["packageType"] == "Collection" and item_name in high_level_sparc_folders:
             create_soda_json_progress += 1
             soda_json_structure["dataset-structure"]["folders"][item_name] = {
-                "type": "ps",
+                "location": "ps",
                 "path": item_id,
                 "action": ["existing"],
                 "files": {},
