@@ -1,4 +1,3 @@
-import logging
 import os
 import requests
 
@@ -7,7 +6,7 @@ from ...utils import create_request_headers, get_access_token, get_dataset_id, P
 from ..permissions import pennsieve_get_current_user_permissions
 from ..metadata import load_metadata_to_dataframe
 
-logger = logging.getLogger(__name__)
+from .. import logger
 
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):

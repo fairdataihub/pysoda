@@ -1,10 +1,9 @@
 import requests
-import logging 
+from .. import logger
 from ...constants import PENNSIEVE_2_URL
 from ...utils import get_access_token, create_request_headers
 
 
-logger = logging.getLogger(__name__)
 
 
 def get_files_for_manifest(manifest_id, limit, continuation_token=None):

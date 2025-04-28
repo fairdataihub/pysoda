@@ -1,4 +1,4 @@
-import logging
+
 from ...utils import (
     generate_options_set, generating_locally, generating_on_ps, 
     uploading_with_ps_account, uploading_to_existing_ps_dataset, 
@@ -14,7 +14,7 @@ from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
 from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, readme_changes, METADATA_UPLOAD_PS_PATH, create_high_lvl_manifest_files_existing_ps_starting_point
 from ..upload_manifests import get_upload_manifests
-logger = logging.getLogger(__name__)
+from .. import logger
 
 main_curate_progress_message = ""
 main_curate_status = ""
@@ -3591,10 +3591,6 @@ def main_curate_function(soda, resume):
 
     logger.info("Generating dataset step 3")
 
-    raise Exception("Testing error handling gone wrong ruh roh")
-
-    
-    logger.info("Generating dataset step 3")
 
     # 2] Generate
     main_curate_progress_message = "Generating dataset"
