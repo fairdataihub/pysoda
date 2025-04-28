@@ -3589,6 +3589,10 @@ def main_curate_function(soda, resume):
 
     validate_dataset_structure(soda, resume)
 
+    logger.info("Generating dataset step 3")
+
+    raise Exception("Testing error handling gone wrong ruh roh")
+
     
     logger.info("Generating dataset step 3")
 
