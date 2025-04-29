@@ -7,10 +7,3 @@ from .pennsieveUtils import get_dataset_id, check_forbidden_characters_ps, get_u
 from .authentication import get_access_token, create_request_headers
 from .metadata_utils import column_check, returnFileURL, remove_high_level_folder_from_path, double_extensions, get_name_extension
 from .time_utils import TZLOCAL
-import logging
-
-
-# Create a logger for the package
-logger = logging.getLogger(__name__)
-# Optional: Provide a default configuration if no handlers are set
-logger.setLevel(logging.WARNING)

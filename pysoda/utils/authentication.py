@@ -12,7 +12,7 @@ from .exceptions import ConfigProfileNotSet, PennsieveAccountInformationFailedAu
 
 from ..constants import PENNSIEVE_URL
 
-from . import logger
+from .logger import logger
 
 from .profile import create_unique_profile_name
 
