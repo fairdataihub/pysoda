@@ -56,7 +56,6 @@ def get_dataset_id(dataset_name_or_id):
     
     # If no matching dataset is found, abort with a 404 status and a specific error message
     raise PennsieveDatasetCannotBeFound(dataset_name_or_id)
-    # abort(404, "Please select a valid Pennsieve dataset.")
 
 
 def get_users_dataset_list():
