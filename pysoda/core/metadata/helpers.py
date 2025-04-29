@@ -5,7 +5,7 @@ from ...core import has_edit_permissions
 from functools import partial
 import time 
 import os
-
+from .. import logger
 # helper function to process custom fields (users add and name them) for subjects and samples files
 def getMetadataCustomFields(matrix):
     return [column for column in matrix if any(column[1:])]
@@ -39,6 +39,7 @@ def sortedSubjectsTableData(matrix, fields):
 
 
 def upload_metadata_file(file_name, soda, path_to_file, delete_after_upload=True):
+    global logger
 
     if "ps-account-selected" in soda:
         ps_account = soda["ps-account-selected"]["account-name"]
@@ -46,7 +47,6 @@ def upload_metadata_file(file_name, soda, path_to_file, delete_after_upload=True
     if "ps-dataset-selected" in soda:
         ps_dataset = soda["ps-dataset-selected"]["dataset-name"]
     
-    # global namespace_logger
     # check that the Pennsieve dataset is valid
     selected_dataset_id = get_dataset_id(ps_dataset)
 
@@ -75,7 +75,7 @@ def upload_metadata_file(file_name, soda, path_to_file, delete_after_upload=True
         manifest = ps.manifest.create(path_to_file)
         m_id = manifest.manifest_id
     except Exception as e:
-        # namespace_logger.info(e)
+        logger.error(e)
         error_message = "Could not create manifest file for this dataset"
         raise GenericUploadError(error_message)
     
@@ -87,8 +87,8 @@ def upload_metadata_file(file_name, soda, path_to_file, delete_after_upload=True
         # subscribe for the upload to finish
         ps.subscribe(10, False, subscriber_metadata_ps_client)
     except Exception as e:
-        # namespace_logger.error("Error uploading dataset files")
-        # namespace_logger.error(e)
+        logger.error("Error uploading dataset files")
+        logger.error(e)
         raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
@@ -103,10 +103,11 @@ def upload_metadata_file(file_name, soda, path_to_file, delete_after_upload=True
 
 
 def subscriber_metadata(ps, events_dict):
+    global logger
     if events_dict["type"] == 1:
         fileid = events_dict["upload_status"].file_id
         total_bytes_to_upload = events_dict["upload_status"].total
         current_bytes_uploaded = events_dict["upload_status"].current
         if current_bytes_uploaded == total_bytes_to_upload and fileid != "":
-            # namespace_logger.info("File upload complete")
+            logger.info("File upload complete")
             ps.unsubscribe(10)

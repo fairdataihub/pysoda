@@ -18,7 +18,6 @@ def create_excel(
     source = join(TEMPLATE_PATH, SDS_FILE_DATASET_DESCRIPTION)
     destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_DATASET_DESCRIPTION) if upload_boolean else local_destination
     shutil.copyfile(source, destination)
-    # global namespace_logger
 
     validate_schema(soda["dataset_metadata"]["dataset_description"], SCHEMA_NAME_DATASET_DESCRIPTION)
 

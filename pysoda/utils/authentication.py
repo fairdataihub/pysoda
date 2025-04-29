@@ -26,7 +26,6 @@ last_fetch_time = 0
 TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
 
-# from namespaces import NamespaceEnum, get_namespace_logger
 
 
 def get_access_token(api_key=None, api_secret=None):
