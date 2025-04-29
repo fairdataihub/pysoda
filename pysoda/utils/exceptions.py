@@ -92,6 +92,14 @@ class PennsieveUploadException(Exception):
         return self.error_message
 
 
+class PennsieveAccountInformationFailedAuthentication(Exception):
+    def __init__(self, error_message):
+
+        self.error_message = error_message
+
+    def __str__(self):
+        return self.error_message
+
 
 class PennsieveDatasetNameTaken(Exception):
     def __init__(self, dataset_name):

@@ -8,12 +8,11 @@ import time
 import boto3
 from os import mkdir
 import time
-from .exceptions import ConfigProfileNotSet
+from .exceptions import ConfigProfileNotSet, PennsieveAccountInformationFailedAuthentication
 
 from ..constants import PENNSIEVE_URL
 
-# from namespaces import NamespaceEnum, get_namespace_logger
-# namespace_logger = get_namespace_logger(NamespaceEnum.USER)
+from . import logger
 
 from .profile import create_unique_profile_name
 
@@ -36,7 +35,7 @@ def get_access_token(api_key=None, api_secret=None):
         get cognito config . If no target profile name is provided the default profile is used. 
     """
     global cached_access_token, last_fetch_time, TOKEN_CACHE_DURATION # Variables used for token caching
-    global namespace_logger
+    global logger
     current_time = time.time()
 
     # If the cached_access_token is not None and the last fetch time is less than the cache duration, return the cached access token
@@ -109,9 +108,7 @@ def get_cognito_userpool_access_token(email, password):
             ClientId=cognito_app_client_id,
         )
     except Exception as e:
-        print(e)
-        # abort(400, "Username or password was incorrect.")
-
+        raise PennsieveAccountInformationFailedAuthentication("Invalid email or password") from e
     try:
         access_token = login_response["AuthenticationResult"]["AccessToken"]
         response = requests.get(
@@ -177,7 +174,7 @@ def bf_add_account_username(keyname, key, secret):
     Action:
         Adds account to the Pennsieve configuration file (local machine)
     """
-    global namespace_logger
+    global logger
 
 
     # format the keyname to lowercase and replace '.' with '_'
@@ -222,14 +219,11 @@ def bf_add_account_username(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        token = get_access_token()
+        get_access_token()
     except Exception as e:
-        print(e)
-        # namespace_logger.error(e)
+        logger.error(e)
         bf_delete_account(formatted_account_name)
-        # abort(401, 
-        #     "Please check that key name, key, and secret are entered properly"
-        # )
+        raise PennsieveAccountInformationFailedAuthentication("Pkease check that the key name, key value, and secret value are entered properly.") from e
 
     try:
         if not config.has_section("global"):
@@ -312,7 +306,7 @@ def get_access_token(api_key=None, api_secret=None):
         get cognito config . If no target profile name is provided the default profile is used. 
     """
     global cached_access_token, last_fetch_time, TOKEN_CACHE_DURATION # Variables used for token caching
-    # global namespace_logger
+    # global logger
     current_time = time.time()
 
     print("Current time:", current_time)

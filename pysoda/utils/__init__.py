@@ -1,5 +1,5 @@
 from .upload_utils import generate_options_set, generating_locally, generating_on_ps, uploading_with_ps_account, uploading_to_existing_ps_dataset, can_resume_prior_upload, virtual_dataset_empty, get_dataset_id
-from .exceptions import PropertyNotSetError, ConfigProfileNotSet, FailedToFetchPennsieveDatasets, FailedToFetchPennsieveDatasets, PennsieveActionNoPermission, PennsieveDatasetCannotBeFound, EmptyDatasetError, LocalDatasetMissingSpecifiedFiles, validation_error_message, GenericUploadError, PennsieveUploadException, PennsieveDatasetNameTaken, PennsieveDatasetNameInvalid, PennsieveAccountInvalid, GenerateOptionsNotSet, PennsieveDatasetFilesInvalid, PennsieveAgentError
+from .exceptions import PropertyNotSetError, ConfigProfileNotSet, FailedToFetchPennsieveDatasets, FailedToFetchPennsieveDatasets, PennsieveActionNoPermission, PennsieveDatasetCannotBeFound, EmptyDatasetError, LocalDatasetMissingSpecifiedFiles, validation_error_message, GenericUploadError, PennsieveUploadException, PennsieveDatasetNameTaken, PennsieveDatasetNameInvalid, PennsieveAccountInvalid, GenerateOptionsNotSet, PennsieveDatasetFilesInvalid, PennsieveAgentError, PennsieveAccountInformationFailedAuthentication
 from .pennsieveAgentUtils import connect_pennsieve_client
 from .schema_validation import validate_schema
 from .config import format_agent_profile_name
@@ -7,3 +7,10 @@ from .pennsieveUtils import get_dataset_id, check_forbidden_characters_ps, get_u
 from .authentication import get_access_token, create_request_headers
 from .metadata_utils import column_check, returnFileURL, remove_high_level_folder_from_path, double_extensions, get_name_extension
 from .time_utils import TZLOCAL
+import logging
+
+
+# Create a logger for the package
+logger = logging.getLogger(__name__)
+# Optional: Provide a default configuration if no handlers are set
+logger.setLevel(logging.WARNING)
