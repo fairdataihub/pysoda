@@ -7,16 +7,16 @@
         {
             "type": "object",
             "properties": {
-                "subject id": {
+                "subject_id": {
                     "type": "string",
                     "description": "Unique identifier for the subject. This should be a unique identifier for the subject within the dataset.",
                     "minLength": 1
                 },
-                "pool id": {
+                "pool_id": {
                     "type": "string",
                     "description": "Unique identifier for the pool associated with the subject. This should be a unique identifier for the pool within the dataset."
                 },
-                "subject experimental group": {
+                "subject_experimental_group": {
                     "type": "string",
                     "description": "Experimental group associated with the subject. This should provide information about the experimental conditions or treatment groups to which the subject belongs."
                 },
@@ -36,43 +36,43 @@
                     "type": "string",
                     "description": "Strain of the subject. This should provide information about the genetic background of the subject."
                 },
-                "rrid for strain": {
+                "rrid_for_strain": {
                     "type": "string",
                     "description": "RRID for strain. This should be a unique identifier for the strain in the Research Resource Identifier (RRID) database."
                 },
-                "age category": {
+                "age_category": {
                     "type": "string",
                     "description": "Age category of the subject. This should provide information about the age range of the subject."
                 },
-                "also in dataset": {
+                "also_in_dataset": {
                     "type": "string",
                     "description": "Indicates if the subject is also part of another dataset."
                 },
-                "member of": {
+                "member_of": {
                     "type": "string",
                     "description": "Indicates the group or pool the subject is a member of."
                 },
-                "metadata only": {
+                "metadata_only": {
                     "type": "string",
                     "description": "Indicates if this entry is metadata only."
                 },
-                "laboratory internal id": {
+                "laboratory_internal_id": {
                     "type": "string",
                     "description": "Internal identifier used by the laboratory for the subject."
                 },
-                "date of birth": {
+                "date_of_birth": {
                     "type": "string",
                     "description": "Date of birth of the subject."
                 },
-                "age range (min)": {
+                "age_range_min": {
                     "type": "string",
                     "description": "Minimum age range of the subject."
                 },
-                "age range (max)": {
+                "age_range_max": {
                     "type": "string",
                     "description": "Maximum age range of the subject."
                 },
-                "body mass": {
+                "body_mass": {
                     "type": "string",
                     "description": "Body mass of the subject."
                 },
@@ -88,19 +88,19 @@
                     "type": "string",
                     "description": "Handedness of the subject."
                 },
-                "reference atlas": {
+                "reference_atlas": {
                     "type": "string",
                     "description": "Reference atlas used for the subject."
                 },
-                "experimental log file path": {
+                "experimental_log_file_path": {
                     "type": "string",
                     "description": "Path to the experimental log file for the subject."
                 },
-                "experiment date": {
+                "experiment_date": {
                     "type": "string",
                     "description": "Date of the experiment involving the subject."
                 },
-                "disease or disorder": {
+                "disease_or_disorder": {
                     "type": "string",
                     "description": "Disease or disorder associated with the subject."
                 },
@@ -108,33 +108,37 @@
                     "type": "string",
                     "description": "Intervention applied to the subject."
                 },
-                "disease model": {
+                "disease_model": {
                     "type": "string",
                     "description": "Disease model associated with the subject."
                 },
-                "protocol title": {
+                "protocol_title": {
                     "type": "string",
                     "description": "Title of the protocol used for the subject."
                 },
-                "protocol url or doi": {
+                "protocol_url_or_doi": {
                     "type": "string",
                     "description": "URL or DOI of the protocol used for the subject."
                 }
             },
             "required": [
-                "subject id",
-                "pool id",
-                "subject experimental group",
+                "subject_id",
+                "pool_id",
+                "subject_experimental_group",
                 "age",
                 "sex",
                 "species",
                 "strain",
-                "rrid for strain",
-                "age category",
-                "also in dataset",
-                "member of",
-                "metadata only"
-            ]
+                "rrid_for_strain",
+                "age_category",
+                "also_in_dataset",
+                "member_of",
+                "metadata_only"
+            ],
+            "additionalProperties": {
+                "type": "string",
+                "description": "Additional properties for the subject. This can include any other relevant information about the subject that is not covered by the predefined fields."
+            }
         }
     ]
 }

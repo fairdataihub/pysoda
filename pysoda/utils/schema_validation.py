@@ -33,3 +33,20 @@ def validate_schema(schema, schema_name):
     print(schema_name)
     true_schema = load_schema(schema_name)
     validate(instance=schema, schema=true_schema)
+
+
+def get_sds_headers(schema_name):
+    """
+    Get the headers for the SDS file.
+
+    Args:
+        soda (dict): The soda object containing the metadata.
+        schema_name (str): The name of the schema to validate against.
+
+    Returns:
+        list: The headers for the SDS file.
+    """
+
+    true_schema = load_schema(schema_name)
+    sds_headers = true_schema["items"][0]["properties"].keys()
+    return sds_headers
