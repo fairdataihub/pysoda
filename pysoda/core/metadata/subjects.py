@@ -49,44 +49,97 @@ def create_excel(soda, upload_boolean, local_destination):
     # 2. populate excel file with the data 
     for subject in subjects:
         ws1[ascii_headers[0] + str(row)] = subject.get("subject_id", "")
+        ws1[ascii_headers[0] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[1] + str(row)] = subject.get("pool_id", "")
+        ws1[ascii_headers[1] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[2] + str(row)] = subject.get("subject_experimental_group", "")
+        ws1[ascii_headers[2] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[3] + str(row)] = subject.get("age", "")
+        ws1[ascii_headers[3] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[4] + str(row)] = subject.get("sex", "")
+        ws1[ascii_headers[4] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[5] + str(row)] = subject.get("species", "")
+        ws1[ascii_headers[5] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[6] + str(row)] = subject.get("strain", "")
+        ws1[ascii_headers[6] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[7] + str(row)] = subject.get("rrid_for_strain", "")
+        ws1[ascii_headers[7] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[8] + str(row)] = subject.get("age_category", "")
+        ws1[ascii_headers[8] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[9] + str(row)] = subject.get("also_in_dataset", "")
+        ws1[ascii_headers[9] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[10] + str(row)] = subject.get("member_of", "")
+        ws1[ascii_headers[10] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[11] + str(row)] = subject.get("metadata_only", "")
-        print(f"Ascii header: {ascii_headers[11]}")
-        print(f"Ascii header: {ascii_headers[12]}")
+        ws1[ascii_headers[11] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[12] + str(row)] = subject.get("laboratory_internal_id", "")
+        ws1[ascii_headers[12] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[13] + str(row)] = subject.get("date_of_birth", "")
+        ws1[ascii_headers[13] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[14] + str(row)] = subject.get("age_range_min", "")
+        ws1[ascii_headers[14] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[15] + str(row)] = subject.get("age_range_max", "")
+        ws1[ascii_headers[15] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[16] + str(row)] = subject.get("body_mass", "")
+        ws1[ascii_headers[16] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[17] + str(row)] = subject.get("genotype", "")
+        ws1[ascii_headers[17] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[18] + str(row)] = subject.get("phenotype", "")
+        ws1[ascii_headers[18] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[19] + str(row)] = subject.get("handedness", "")
+        ws1[ascii_headers[19] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[20] + str(row)] = subject.get("reference_atlas", "")
+        ws1[ascii_headers[20] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[21] + str(row)] = subject.get("experimental_log_file_path", "")
+        ws1[ascii_headers[21] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[22] + str(row)] = subject.get("experiment_date", "")
+        ws1[ascii_headers[22] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[23] + str(row)] = subject.get("disease_or_disorder", "")
+        ws1[ascii_headers[23] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[24] + str(row)] = subject.get("intervention", "")
+        ws1[ascii_headers[24] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[25] + str(row)] = subject.get("disease_model", "")
+        ws1[ascii_headers[25] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[26] + str(row)] = subject.get("protocol_title", "")
+        ws1[ascii_headers[26] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
         ws1[ascii_headers[27] + str(row)] = subject.get("protocol_url_or_doi", "")
-        # print(f"Ascii header: {ascii_headers[27]}")
+        ws1[ascii_headers[27] + str(row)].font = Font(bold=False, size=11, name="Arial")
 
         # handle custom fields
-        for field, field_name in subject.items():
-            if field in sds_headers:
+        for field_name, field in subject.items():
+            if field_name in sds_headers:
                 continue
 
             # check if the field is already in the custom_headers_to_column dictionary
             if field_name not in custom_headers_to_column:
+                print(field_name)
 
 
                 custom_headers_to_column[field_name] = len(custom_headers_to_column.keys()) + 1
@@ -95,21 +148,18 @@ def create_excel(soda, upload_boolean, local_destination):
                 offset_from_final_sds_header = custom_headers_to_column[field_name]
                 ws1[ascii_headers[27 + offset_from_final_sds_header] + "1"] = field_name
                 ws1[ascii_headers[27 + offset_from_final_sds_header] + "1"].fill = orangeFill
+                ws1[ascii_headers[27 + offset_from_final_sds_header] + "1"].font = Font(bold=True, size=12, name="Calibri")
+
 
 
             # add the field value to the corresponding cell in the excel file
             offset_from_final_sds_header = custom_headers_to_column[field_name]
-            # print(f"Ascii header: {ascii_headers[27 + offset_from_final_sds_header]}")
 
             ws1[ascii_headers[27 + offset_from_final_sds_header] + str(row)] = field
+            ws1[ascii_headers[27 + offset_from_final_sds_header] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
 
         row += 1
-
-
-            # import pdb; pdb.set_trace()
-            # cell = column + str(i + 1)
-            # ws1[cell] = refinedDatastructure[i][j] or ""
-            # ws1[cell].font = Font(bold=False, size=11, name="Arial")
 
     wb.save(destination)
 
@@ -125,3 +175,49 @@ def create_excel(soda, upload_boolean, local_destination):
 
 
 
+
+soda = {
+    "dataset-metadata": {
+        "subjects": [
+            {
+                "subject_id": "sub-1",
+                "pool_id": "pool-1",
+                "subject_experimental_group": "group-1",
+                "age": "25",
+                "sex": "M",
+                "species": "Humerus Sapensi",
+                "strain": "Humerus Sapensi",
+                "rrid_for_strain": "RRID:SCR_001234",
+                "age_category": "adult",
+                "also_in_dataset": "dataset-1",
+                "member_of": "member-1",
+                "metadata_only": "False",
+                "custom_field_1": "custom_value_1",
+                "custom_field_2": "custom_value_2",
+            },
+            {
+                "subject_id": "sub-2",
+                "pool_id": "pool-1",
+                "subject_experimental_group": "group-1",
+                "age": "29",
+                "sex": "F",
+                "species": "Humerus Sapensi",
+                "strain": "Humerus Sapensi",
+                "rrid_for_strain": "RRID:SCR_001234",
+                "age_category": "adult",
+                "also_in_dataset": "dataset-1",
+                "member_of": "member-1",
+                "metadata_only": "False",
+                "custom_field_1": "custom_value_34",
+                "custom_field_2": "custom_value_45",
+                "custom_field_3": "custom_value_56",
+            }
+        ]
+    }
+}
+
+try: 
+    create_excel(soda, False, "subjects.xlsx")
+except Exception as e:
+    print(f"Error: {e}")
+# create_excel(soda, False, "subjects.xlsx")
