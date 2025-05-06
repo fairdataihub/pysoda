@@ -60,6 +60,8 @@ def create_excel(soda, upload_boolean, local_destination):
         ws1[ascii_headers[9] + str(row)] = subject.get("also_in_dataset", "")
         ws1[ascii_headers[10] + str(row)] = subject.get("member_of", "")
         ws1[ascii_headers[11] + str(row)] = subject.get("metadata_only", "")
+        print(f"Ascii header: {ascii_headers[11]}")
+        print(f"Ascii header: {ascii_headers[12]}")
         ws1[ascii_headers[12] + str(row)] = subject.get("laboratory_internal_id", "")
         ws1[ascii_headers[13] + str(row)] = subject.get("date_of_birth", "")
         ws1[ascii_headers[14] + str(row)] = subject.get("age_range_min", "")
@@ -76,6 +78,7 @@ def create_excel(soda, upload_boolean, local_destination):
         ws1[ascii_headers[25] + str(row)] = subject.get("disease_model", "")
         ws1[ascii_headers[26] + str(row)] = subject.get("protocol_title", "")
         ws1[ascii_headers[27] + str(row)] = subject.get("protocol_url_or_doi", "")
+        # print(f"Ascii header: {ascii_headers[27]}")
 
         # handle custom fields
         for field, field_name in subject.items():
@@ -84,6 +87,8 @@ def create_excel(soda, upload_boolean, local_destination):
 
             # check if the field is already in the custom_headers_to_column dictionary
             if field_name not in custom_headers_to_column:
+
+
                 custom_headers_to_column[field_name] = len(custom_headers_to_column.keys()) + 1
 
                 # create the column header in the excel file
@@ -94,9 +99,11 @@ def create_excel(soda, upload_boolean, local_destination):
 
             # add the field value to the corresponding cell in the excel file
             offset_from_final_sds_header = custom_headers_to_column[field_name]
+            # print(f"Ascii header: {ascii_headers[27 + offset_from_final_sds_header]}")
+
             ws1[ascii_headers[27 + offset_from_final_sds_header] + str(row)] = field
 
-        
+        row += 1
 
 
             # import pdb; pdb.set_trace()
@@ -115,37 +122,6 @@ def create_excel(soda, upload_boolean, local_destination):
     return size
 
 
-
-subjectsTemplateHeaderList = [
-    "subject id",
-    "pool id",
-    "subject experimental group",
-    "age",
-    "sex",
-    "species",
-    "strain",
-    "rrid for strain",
-    "age category",
-    "also in dataset",
-    "member of",
-    "metadata only",
-    "laboratory internal id",
-    "date of birth",
-    "age range (min)",
-    "age range (max)",
-    "body mass",
-    "genotype",
-    "phenotype",
-    "handedness",
-    "reference atlas",
-    "experimental log file path",
-    "experiment date",
-    "disease or disorder",
-    "intervention",
-    "disease model",
-    "protocol title",
-    "protocol url or doi",
-]
 
 
 
