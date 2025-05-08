@@ -1,6 +1,6 @@
 from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH, SDS_FILE_MANIFEST, SCHEMA_NAME_MANIFEST
 from .excel_utils import rename_headers, excel_columns
-from openpyxl.styles import PatternFill
+from openpyxl.styles import Font, PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
@@ -23,21 +23,61 @@ def create_excel(soda, upload_boolean, local_destination):
 
     validate_schema(manifest, SCHEMA_NAME_MANIFEST)
 
-    # get the ascii column headers
-    row = 2
     ascii_headers = excel_columns(start_index=0)
-    manifest_entries = manifest["data"]
-    for curr_row in manifest_entries:
-      ascii_header_idx = 0 
-      for col_data in curr_row:
-        if isinstance(col_data, list):
-            # space separwte the list into a string
-            col_data = " ".join(col_data)
-        ws1[ascii_headers[ascii_header_idx] + str(row)] = col_data
-        ascii_header_idx += 1
-      row += 1
+    custom_headers_to_column = {}
 
-    print(destination)
+    orangeFill = PatternFill(
+        start_color="FFD965", end_color="FFD965", fill_type="solid"
+    )
+
+    # Standard headers from the manifest schema
+    standard_headers = [
+        "file_name",
+        "timestamp",
+        "description",
+        "file_type",
+        "entity",
+        "data_modality",
+        "also_in_dataset",
+        "also_in_dataset_path",
+        "data_dictionary_path",
+        "entity_is_transitive",
+        "additional_metadata",
+    ]
+
+    # Populate the Excel file with the data
+    for entry in manifest["data"]:
+        for idx, header in enumerate(standard_headers):
+            value = entry.get(header, "")
+            if isinstance(value, list):
+                # Convert lists to space-separated strings
+                value = " ".join(value)
+            ws1[ascii_headers[idx] + str(row)] = value
+            ws1[ascii_headers[idx] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
+        # Handle custom fields
+        for field_name, field_value in entry.items():
+            if field_name in standard_headers:
+                continue
+
+            # Check if the field is already in the custom_headers_to_column dictionary
+            if field_name not in custom_headers_to_column:
+                custom_headers_to_column[field_name] = len(custom_headers_to_column.keys()) + len(standard_headers)
+
+                # Create the column header in the Excel file
+                offset_from_final_standard_header = custom_headers_to_column[field_name]
+                ws1[ascii_headers[offset_from_final_standard_header] + "1"] = field_name
+                ws1[ascii_headers[offset_from_final_standard_header] + "1"].fill = orangeFill
+                ws1[ascii_headers[offset_from_final_standard_header] + "1"].font = Font(bold=True, size=12, name="Calibri")
+
+            # Add the field value to the corresponding cell in the Excel file
+            offset_from_final_standard_header = custom_headers_to_column[field_name]
+            ws1[ascii_headers[offset_from_final_standard_header] + str(row)] = field_value
+            ws1[ascii_headers[offset_from_final_standard_header] + str(row)].font = Font(bold=False, size=11, name="Arial")
+
+        row += 1
+
+
     wb.save(destination)
 
     size = getsize(destination)
@@ -75,109 +115,4 @@ def load_existing_manifest_file(manifest_file_path):
 
     return {"headers": headers, "data": data}
 
-# soda = {
-#     "generate-dataset": {
-#         "destination": "local",
-#         "generate-option": "new",
-#         "dataset-name": "test_dataset",
-#         "path": "/Users/aaronm",
-#         "if-existing": ""
-#     },
-#     "dataset-structure": {
-#         "folders": {
-#             "primary": {
-#                 "folders": {},
-#                 "files": {
-#                     "validation_progress.txt": {
-#                         "location": "local",
-#                         "path": "/Users/aaronm/gmps-11/primary/pool-1/validation_progress.txt",
-
-#                         "action": ["new"],
-#                     },
-#                     "clean_metadata.py": {
-#                         "location": "local",
-
-#                         "path": "/Users/aaronm/gmps-11/primary/pool-1/sub-1/clean_metadata.py",
-#                         "action": ["new"]
-#                     }
-#                 }
-#             }
-#         }, 
-#         "files":  {
-#             "metadata.xlsx": {
-#                 "location": "local",
-#                 "path": "/Users/aaronm/gmps-11/primary/metadata.xlsx",
-
-#                 "action": ["new"]
-#             }
-#         },
-#         "relativePath": "/"
-#     },
-#     "dataset_metadata": {
-#       "manifest_files": {
-#           "data": {
-#               "headers": [                  
-#                     "filename",
-#                     "timestamp",
-#                     "description",
-#                     "file type",
-#                     "entity",
-#                     "data modality",
-#                     "also in dataset",
-#                     "also in dataset path",
-#                     "data dictionary path",
-#                     "entity is transitive",
-#                     "Additional Metadata"
-#               ],
-#               "data": [
-#                   [
-#                       "metadata.xlsx",
-#                       "",
-#                       "",
-#                       ".xlsx",
-#                       "subject-1",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       ""
-#                   ],
-#                   [
-#                       "validation_progress.txt",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       ""
-#                   ],
-#                   [
-#                       "clean_metadata.py",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       "",
-#                       ""
-#                   ]
-#               ]
-#           }
-#       }
-#     }
-# }
-
-
-# try:
-#   create_excel(soda, False, "manifest.xlsx")
-# except Exception as e:
-#   print(e)
 
