@@ -906,8 +906,12 @@ def generate_dataset_locally(soda):
     if "dataset_metadata" in soda.keys():
         logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
         metadata_files = soda["dataset_metadata"]
+        # log the metadata files that will be created
+        logger.info(f"Metadata files to be created: {list(metadata_files.keys())}")
         for file_key, _ in metadata_files.items():
-            if file_key == "subjects":
+            logger.info(f"Processing metadata file: {file_key}")
+            if file_key == "subjects_metadata":
+                logger.info("Creating subjects metadata file")
                 subjects.create_excel(soda, False, join(datasetpath, "subjects.xlsx"))
             elif file_key == "samples":
                 samples.create_excel(soda, False, join(datasetpath, "samples.xlsx"))
@@ -924,9 +928,9 @@ def generate_dataset_locally(soda):
             elif file_key == "submission":
                 submission.create_excel(soda, False, join(datasetpath, "submission.xlsx"))
             elif file_key == "README":
-                readme_changes.create_readme(soda, False, join(datasetpath, "README.TXT"))
+                readme_changes.create_excel(soda, False, join(datasetpath, "README.TXT"), "README")
             elif file_key == "CHANGES":
-                readme_changes.create_changes(soda, False, join(datasetpath, "CHANGES.md"))
+                readme_changes.create_excel(soda, False, join(datasetpath, "CHANGES.md"), "CHANGES")
 
     # 4. Add manifest files in the list
     if "manifest_files" in soda["dataset_metadata"].keys():

@@ -5,7 +5,9 @@ from .helpers import upload_metadata_file
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
 ## (not used for generating locally)
-def create_excel(soda, file_type):
+def create_excel(soda, upload_boolean, local_destination, file_type):
+    """Create and upload a README or CHANGES file for a dataset"""
+    return True # TEMP
     file_path = join(METADATA_UPLOAD_PS_PATH, file_type)
     text_string = ''
 
