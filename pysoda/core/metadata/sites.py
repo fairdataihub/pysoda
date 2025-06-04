@@ -17,7 +17,7 @@ def create_excel(soda, upload_boolean, local_destination):
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
 
-    sites = soda["dataset_metadata"]["sites"]
+    sites = soda["dataset_metadata"]["sites_metadata"]
 
     validate_schema(sites, SCHEMA_NAME_SITES)
 

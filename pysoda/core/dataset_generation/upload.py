@@ -913,7 +913,7 @@ def generate_dataset_locally(soda):
             if file_key == "subjects_metadata":
                 logger.info("Creating subjects metadata file")
                 subjects.create_excel(soda, False, join(datasetpath, "subjects.xlsx"))
-            elif file_key == "samples":
+            elif file_key == "samples_metadata":
                 samples.create_excel(soda, False, join(datasetpath, "samples.xlsx"))
             elif file_key == "code_description":
                 code_description.create_excel(soda, False, join(datasetpath, "code_description.xlsx"))
@@ -923,7 +923,7 @@ def generate_dataset_locally(soda):
                 performances.create_excel(soda, False, join(datasetpath, "performances.xlsx"))
             elif file_key == "reources":
                 resources.create_excel(soda, False, join(datasetpath, "resources.xlsx"))
-            elif file_key == "sites":
+            elif file_key == "sites_metadata":
                 sites.create_excel(soda, False, join(datasetpath, "sites.xlsx"))
             elif file_key == "submission":
                 submission.create_excel(soda, False, join(datasetpath, "submission.xlsx"))
