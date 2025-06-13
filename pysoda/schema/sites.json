@@ -33,6 +33,6 @@
         "description": "Any additional metadata related to the site"
       }
     },
-    "required": ["site_id", "specimen_id", "site_type"]
+    "required": ["site_id", "specimen_id"]
   }
 }
