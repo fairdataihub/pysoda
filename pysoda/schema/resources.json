@@ -15,7 +15,7 @@
       "url": {
         "type": "string",
         "description": "URL to the resource.",
-        "pattern": "^(https?:\\/\\/)?.+"
+        "pattern": "^(https?://)?.*$"
       },
       "vendor": {
         "type": "string",
@@ -34,13 +34,6 @@
         "description": "Additional metadata about the resource, such as usage notes or specific details"
       }
     },
-    "required": [
-      "rrid",
-      "name",
-      "url",
-      "vendor",
-      "version",
-      "id_in_protocol"
-    ]
+    "required": ["rrid", "name", "url", "vendor", "version", "id_in_protocol"]
   }
 }

@@ -921,7 +921,7 @@ def generate_dataset_locally(soda):
                 dataset_description.create_excel(soda, False, join(datasetpath, "dataset_description.xlsx"))
             elif file_key == "performances":
                 performances.create_excel(soda, False, join(datasetpath, "performances.xlsx"))
-            elif file_key == "reources":
+            elif file_key == "resources_metadata":
                 resources.create_excel(soda, False, join(datasetpath, "resources.xlsx"))
             elif file_key == "sites_metadata":
                 sites.create_excel(soda, False, join(datasetpath, "sites.xlsx"))
