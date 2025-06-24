@@ -11,8 +11,8 @@ from .helpers import upload_metadata_file
 
 
 def create_excel(
-    upload_boolean,
     soda,
+    upload_boolean,
     local_destination,
 ):
     source = join(TEMPLATE_PATH, SDS_FILE_DATASET_DESCRIPTION)
@@ -32,7 +32,21 @@ def create_excel(
     ws1["D25"] = ""
     ws1["E25"] = ""
 
-    keyword_array = populate_dataset_info(ws1, soda)
+    # Populate the Metadata version (Required)
+    ws1["D2"] = soda["dataset_metadata"]["dataset_description"]["metadata_version"]
+
+    # Populate the Dataset Type (default to empty string if not present)
+    ws1["D3"] = (
+    soda.get("dataset_metadata", {})
+        .get("dataset_description", {})
+        .get("dataset_type", "")
+    )
+
+    populate_standards_info(ws1, soda)
+
+
+
+    keyword_array = populate_basic_info(ws1, soda)
 
     study_array_len = populate_study_info(ws1, soda)
 
@@ -80,9 +94,9 @@ def create_excel(
 
 def populate_study_info(workbook, soda):
     study_info = soda["dataset_metadata"]["dataset_description"]["study_information"]
-    workbook["D11"] = study_info["study purpose"]
-    workbook["D12"] = study_info["study data collection"]
-    workbook["D13"] = study_info["study primary conclusion"]
+    workbook["D11"] = study_info["study_purpose"]
+    workbook["D12"] = study_info["study_data_collection"]
+    workbook["D13"] = study_info["study_primary_conclusion"]
     workbook["D17"] = study_info["study collection title"]
 
     ## get study organ system
@@ -107,22 +121,35 @@ def populate_study_info(workbook, soda):
         len(study_info["study technique"]),
     )
 
+def populate_standards_info(workbook, soda):
+    standards_info = soda["dataset_metadata"]["dataset_description"]["standards_information"]
+    workbook["D5"] = standards_info["data_standard"]
+    workbook["D6"] = standards_info["data_standard_version"]
+
+    # Write standards array across columns in row 8 (D8, E8, F8, ...)
+    standards_array = standards_info["standards"]
+    for col, standard in zip(excel_columns(start_index=3), standards_array):
+        workbook[f"{col}8"] = standard
+
+    return len(standards_array)
 
 
-def populate_dataset_info(ws, soda):
-    ## name, description, type, samples, subjects
-    dataset_information = soda["dataset_metadata"]["dataset_description"]["dataset_information"]
-    ws["D5"] = dataset_information["title"]
-    ws["D6"] = dataset_information["description"]
-    ws["D3"] = dataset_information["type"]
-    ws["D29"] = dataset_information["number of subjects"]
-    ws["D30"] = dataset_information["number of samples"]
+def populate_basic_info(workbook, soda):
+    basic_info = soda["dataset_metadata"]["dataset_description"]["basic_information"]
+    workbook["D8"] = basic_info["title"]
+    workbook["D9"] = basic_info["subtitle"]
+    workbook["D10"] = basic_info["description"]
+    
+    # Write keywords array across columns in row 11 (D11, E11, F11, ...)
+    keywords = basic_info["keywords"]
+    for col, keyword in zip(excel_columns(start_index=3), keywords):
+        workbook[f"{col}11"] = keyword
+    
+    workbook["D12"] = basic_info["funding"]
+    workbook["D13"] = basic_info["acknowledgments"]
+    workbook["D14"] = basic_info["license"]
 
-    ## keywords
-    for i, column in zip(range(len(dataset_information["keywords"])), excel_columns(start_index=3)):
-        ws[column + "7"] = dataset_information["keywords"][i]
-
-    return dataset_information["keywords"]
+    return keywords
 
 
 

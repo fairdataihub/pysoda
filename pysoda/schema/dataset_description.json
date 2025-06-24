@@ -22,7 +22,7 @@
           "description": "The version of the standard used in the project."
         }
       },
-      "required": ["metadata_version"]
+      "required": []
     },
     "basic_information": {
       "type": "object",
