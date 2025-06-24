@@ -44,30 +44,25 @@ def create_excel(
 
     populate_standards_info(ws1, soda)
 
-
-
     keyword_array = populate_basic_info(ws1, soda)
 
     study_array_len = populate_study_info(ws1, soda)
 
-    (funding_array, contributor_role_array) = populate_contributor_info(
+    contributor_array = populate_contributor_info(
         ws1, soda
     )
 
-    related_info_len = populate_related_info(ws1, soda)
+    related_info_len = populate_related_resource_information(ws1, soda)
 
     # keywords length
     keyword_len = len(keyword_array)
 
     # contributors length
-    no_contributors = len(contributor_role_array)
-
-    # funding = SPARC award + other funding sources
-    funding_len = len(funding_array)
+    no_contributors = len(contributor_array)
 
     # obtain length for formatting compliance purpose
     max_len = max(
-        keyword_len, funding_len, no_contributors, related_info_len, study_array_len
+        keyword_len, no_contributors, related_info_len, study_array_len
     )
 
     rename_headers(ws1, max_len, 3)
@@ -94,44 +89,39 @@ def create_excel(
 
 def populate_study_info(workbook, soda):
     study_info = soda["dataset_metadata"]["dataset_description"]["study_information"]
-    workbook["D11"] = study_info["study_purpose"]
-    workbook["D12"] = study_info["study_data_collection"]
-    workbook["D13"] = study_info["study_primary_conclusion"]
-    workbook["D17"] = study_info["study collection title"]
+    workbook["D20"] = study_info["study_purpose"]
+    workbook["D21"] = study_info["study_data_collection"]
+    workbook["D22"] = study_info["study_primary_conclusion"]
 
     ## get study organ system
     for i, column in zip(
-        range(len(study_info["study organ system"])), excel_columns(start_index=3)
+        range(len(study_info["study_organ_system"])), excel_columns(start_index=3)
     ):
-        workbook[column + "14"] = study_info["study organ system"][i]
+        workbook[column + "23"] = study_info["study_organ_system"][i]
     ## get study approach
     for i, column in zip(
-        range(len(study_info["study approach"])), excel_columns(start_index=3)
+        range(len(study_info["study_approach"])), excel_columns(start_index=3)
     ):
-        workbook[column + "15"] = study_info["study approach"][i]
+        workbook[column + "24"] = study_info["study_approach"][i]
     ## get study technique
     for i, column in zip(
-        range(len(study_info["study technique"])), excel_columns(start_index=3)
+        range(len(study_info["study_technique"])), excel_columns(start_index=3)
     ):
-        workbook[column + "16"] = study_info["study technique"][i]
+        workbook[column + "25"] = study_info["study_technique"][i]
+
+    workbook["D26"] = study_info["study_collection_title"]
+
 
     return max(
-        len(study_info["study organ system"]),
-        len(study_info["study approach"]),
-        len(study_info["study technique"]),
+        len(study_info["study_organ_system"]),
+        len(study_info["study_approach"]),
+        len(study_info["study_technique"]),
     )
 
 def populate_standards_info(workbook, soda):
     standards_info = soda["dataset_metadata"]["dataset_description"]["standards_information"]
     workbook["D5"] = standards_info["data_standard"]
     workbook["D6"] = standards_info["data_standard_version"]
-
-    # Write standards array across columns in row 8 (D8, E8, F8, ...)
-    standards_array = standards_info["standards"]
-    for col, standard in zip(excel_columns(start_index=3), standards_array):
-        workbook[f"{col}8"] = standard
-
-    return len(standards_array)
 
 
 def populate_basic_info(workbook, soda):
@@ -151,20 +141,16 @@ def populate_basic_info(workbook, soda):
 
     return keywords
 
+def populate_funding_info(workbook, soda):
+    funding_info = soda["dataset_metadata"]["dataset_description"]["funding_information"]
+    workbook["D16"] = funding_info["funding_consortium"]
+    workbook["D17"] = funding_info["funding_agency"]
+    workbook["D18"] = funding_info["award_number"]
 
 
 
 def populate_contributor_info(workbook, soda):
     contributor_info = soda["dataset_metadata"]["dataset_description"]["contributor_information"]
-    basic_info = soda["dataset_metadata"]["dataset_description"]["basic_information"]
-    ## get award info
-    for i, column in zip(
-        range(len(basic_info["funding"])), excel_columns(start_index=3)
-    ):
-        workbook[column + "8"] = basic_info["funding"][i]
-
-    ### get Acknowledgments
-    workbook["D9"] = basic_info["acknowledgment"]
 
     ### get Contributors
     for contributor, column in zip(
@@ -175,19 +161,19 @@ def populate_contributor_info(workbook, soda):
         workbook[column + "21"] = contributor["contributor_affiliation"]
         workbook[column + "22"] = contributor["contributor_role"]
 
-    return [basic_info["funding"], contributor_info]
+    return len(contributor_info)
 
 
-def populate_related_info(workbook, soda):
+def populate_related_resource_information(workbook, soda):
     ## get related links including protocols
-    related_information = soda["dataset_metadata"]["dataset_description"]["related_information"]
-    for info, column in zip(related_information, excel_columns(start_index=3)):
+    related_resource_information = soda["dataset_metadata"]["dataset_description"]["related_resource_information"]
+    for info, column in zip(related_resource_information, excel_columns(start_index=3)):
         workbook[column + "24"] = info["identifier_description"]
         workbook[column + "25"] = info["relation_type"]
         workbook[column + "26"] = info["identifier"]
         workbook[column + "27"] = info["identifier_type"]
 
-    return len(related_information)
+    return len(related_resource_information)
 
 
 

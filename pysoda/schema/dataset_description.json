@@ -47,11 +47,8 @@
           "description": "A list of keywords related to the project."
         },
         "funding": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of funding awards for the project."
+          "type": "string",
+          "description": "Funding awards for the project."
         },
         "acknowledgments": {
           "type": "string",
@@ -68,25 +65,16 @@
       "type": "object",
       "properties": {
         "funding_consortium": {
-          "type": "array",
-          "description": "The name of the funding consortium or consortiums.",
-          "items": {
-            "type": "string"
-          }
+          "type": "string",
+          "description": "The name of the funding consortium."
         },
         "funding_agency": {
-          "type": "array",
-          "description": "The name of the funding agency or agencies.",
-          "items": {
-            "type": "string"
-          }
+          "type": "string",
+          "description": "The name of the funding agency."
         },
         "award_number": {
-          "type": "array",
-          "description": "The award number(s) for the funding.",
-          "items": {
-            "type": "string"
-          }
+          "type": "string",
+          "description": "The award number for the funding."
         }
       }
     },
@@ -180,7 +168,7 @@
         }
       }
     },
-    "related_information": {
+    "related_resource_information": {
       "type": "array",
       "items": {
         "type": "object",
