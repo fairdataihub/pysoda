@@ -11,7 +11,7 @@
         },
         "timestamp": {
           "type": "string",
-          "pattern": "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2},\\d{1,6}[+-]\\d{2}:\\d{2}|)$",
+          "pattern": "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:Z|(?:[.,]\\d{1,6}[+-]\\d{2}:\\d{2}))?)$",
           "description": "Timestamp of when the data was created or last modified. This should be in ISO 8601 format."
         },
         "description": {
