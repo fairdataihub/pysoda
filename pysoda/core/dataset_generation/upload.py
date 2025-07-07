@@ -1948,6 +1948,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
     total_bytes_uploaded_per_file = {}
     files_uploaded = 0
     renamed_files_counter = 0
+    
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2037,7 +2038,9 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 for file_key, file in dataset_structure["files"].items():
                     # relative_path = generate_relative_path(my_relative_path, file_key)
                     file_path = file["path"]
-                    if isfile(file_path) and file["location"] == "local":
+                    if my_relative_path == soda["generate-dataset"]["dataset-name"]:
+                        list_upload_metadata_files.append(file_path)
+                    elif isfile(file_path) and file["location"] == "local":
                         projected_name = splitext(basename(file_path))[0]
                         projected_name_w_extension = basename(file_path)
                         desired_name = splitext(file_key)[0]
@@ -2411,6 +2414,10 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 brand_new_dataset = True
                 list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
 
+                logger.info(list_upload_files)
+
+
+
             if "dataset_metadata" in soda.keys():
                 # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
                 # list_upload_metadata_files = gather_metadata_files(soda)
@@ -2472,20 +2479,14 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1
                         total_metadata_files += 1
-                    
-            print("Finished metadata files")
+                    if key == "manifest_file":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
+                        manifest.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
 
-            if "manifest_files" in soda["dataset_metadata"].keys():
-                # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
-                # list_upload_manifest_files = gather_manifest_files(soda)
-                logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
-                main_curate_progress_message = "Preparing manifest files"
-                metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
-                manifest.create_excel(soda, False, os.path.join(METADATA_UPLOAD_PS_PATH,  "manifest.xlsx"))
-                main_total_generate_dataset_size += getsize(metadata_path)
-                total_files += 1
-                total_metadata_files += 1
-                list_upload_manifest_files.append(metadata_path)
 
         else:
 
@@ -3443,9 +3444,11 @@ def validate_dataset_structure(soda, resume):
             connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
-            raise PennsieveAccountInvalid("Please select a valid Pennsieve account.")
+            if isinstance(e, AttributeError):
+                raise Exception("The Pennsieve Agent cannot access datasets but needs to in order to work. Please try again. If the issue persists, please contact the SODA team. The SODA team will contact Pennsieve to help resolve this issue.")
+            else:
+                raise PennsieveAccountInvalid("Please select a valid Pennsieve account.")
 
- 
     if uploading_to_existing_ps_dataset(soda):
         # check that the Pennsieve dataset is valid
         try:

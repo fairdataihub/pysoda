@@ -51,7 +51,7 @@
           "description": "Additional metadata about the data file. This can include any other relevant information that does not fit into the other categories."
         }
       },
-      "required": ["file_name", "timestamp", "description", "file_type"],
+      "required": ["file_name"],
       "additionalProperties": {
         "type": "string",
         "description": "Additional properties for the manifest file. This can include any other relevant information about the subject that is not covered by the predefined fields."

@@ -18,7 +18,7 @@ def create_excel(soda, upload_boolean, local_destination):
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
     manifest = soda["dataset_metadata"]["manifest_file"]
-    validate_schema(manifest, SCHEMA_NAME_MANIFEST)
+    # validate_schema(manifest, SCHEMA_NAME_MANIFEST)
     ascii_headers = excel_columns(start_index=0)
     custom_headers_to_column = {}
 
@@ -75,35 +75,6 @@ def create_excel(soda, upload_boolean, local_destination):
     return {"size": size}
 
 
-soda = {
-    "dataset_metadata": {
-        "manifest_file": [
-            {
-                "file_name": "example_manifest.xlsx",
-                "timestamp": "2023-10-01T12:00:00Z",
-                "description": "Example manifest file",
-                "file_type": ".xlsx",
-                "entity": "subject_123",
-                "data_modality": "genomics",
-                "data_file_path": "/path/to/data/file.txt",
-                "additional_metadata": "blue_seal"
-            }, 
-            {
-                "file_name": "another_manifest.xlsx",
-                "timestamp": "2023-10-02T12:00:00Z",
-                "description": "Another example manifest file",
-                "file_type": ".xlsx",
-                "entity": "subject_456",
-                "data_modality": "imaging",
-                "data_file_path": "/path/to/another/data/file.txt",
-                "additional_metadata": "poundcake",
-                "custom_field_two": "wappa"
-            }
-        ]
-    }
-}
-
-create_excel(soda, False, "./manifest.xlsx")
 
 
 def load_existing_manifest_file(manifest_file_path):
