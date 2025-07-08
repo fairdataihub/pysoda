@@ -3114,6 +3114,9 @@ def ps_check_dataset_files_validity(soda):
     r.raise_for_status()
     root_folder = r.json()["children"]
 
+    if len(root_folder) == 0:
+        return error
+
     if "dataset-structure" in soda.keys():
         dataset_structure = soda["dataset-structure"]
         if "folders" in dataset_structure:
