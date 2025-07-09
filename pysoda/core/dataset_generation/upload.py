@@ -1948,6 +1948,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
     total_bytes_uploaded_per_file = {}
     files_uploaded = 0
     renamed_files_counter = 0
+    
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2037,7 +2038,9 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 for file_key, file in dataset_structure["files"].items():
                     # relative_path = generate_relative_path(my_relative_path, file_key)
                     file_path = file["path"]
-                    if isfile(file_path) and file.get("location") == "local":
+                    if my_relative_path == soda["generate-dataset"]["dataset-name"]:
+                        list_upload_metadata_files.append(file_path)
+                    elif isfile(file_path) and file.get("location") == "local":
                         projected_name = splitext(basename(file_path))[0]
                         projected_name_w_extension = basename(file_path)
                         desired_name = splitext(file_key)[0]
@@ -2411,6 +2414,10 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 brand_new_dataset = True
                 list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
 
+                logger.info(list_upload_files)
+
+
+
             if "dataset_metadata" in soda.keys():
                 # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
                 # list_upload_metadata_files = gather_metadata_files(soda)
@@ -2472,6 +2479,14 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1
                         total_metadata_files += 1
+                    if key == "manifest_file":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
+                        manifest.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+
                     if key == "README":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "README.txt")
                         readme_changes.create_text_file(soda, False, metadata_path)
@@ -2527,35 +2542,101 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
             # 3. Add high-level metadata files to a list
             if "dataset_metadata" in soda.keys():
                 logger.info("ps_create_new_dataset (optional) step 3 create high level metadata list")
-                (
-                    my_bf_existing_files_name,
-                    _,
-                ) = ps_get_existing_files_details(ds)
-                metadata_files = soda["dataset_metadata"]
-                for file_key, file in metadata_files.items():
-                    if file.get("location") == "local":
-                        # TODO: SDS 3 Determine if can be done without needing the path key as that isn't in my updated schema for SDS3. Probably is possible. Probably just create it if not set to skip. And delete. Voila.
-                        metadata_path = file["path"]
-                        if isfile(metadata_path):
-                            initial_name = splitext(basename(metadata_path))[0]
-                            if (
-                                existing_file_option == "replace"
-                                and initial_name in my_bf_existing_files_name
-                            ):
-                                my_file = ds['children']['files'][file_key]
-                                # delete the file from Pennsieve
-                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(get_access_token()))
-                                r.raise_for_status()
-                            if (
-                                existing_file_option == "skip"
-                                and initial_name in my_bf_existing_files_name
-                            ):
-                                continue
+                # TODO: Add enahnced merge support post SDS3 launch
+                # (
+                #     my_bf_existing_files_name,
+                #     _,
+                # ) = ps_get_existing_files_details(ds)
+                for key, _ in soda["dataset_metadata"].items():
+                    if key == "submission":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "submission.xlsx")
+                        submission.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "subjects":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "subjects.xlsx")
+                        subjects.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "samples":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "samples.xlsx")
+                        samples.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "performances":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "performances.xlsx")
+                        performances.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "resources":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "resources.xlsx")
+                        resources.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "sites":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "sites.xlsx")
+                        sites.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "dataset_description":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "dataset_description.xlsx")
+                        dataset_description.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "code_description":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "code_description.xlsx")
+                        code_description.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "manifest_file":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
+                        manifest.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
 
-                            list_upload_metadata_files.append(metadata_path)
-                            main_total_generate_dataset_size += getsize(metadata_path)
-                            total_files += 1
-                            total_metadata_files += 1
+
+                    # TODO: Post SDS3 release add enhanced support for merging into existing datasets with more than 0 files
+                    # if file["location"] == "local":
+                    #     # TODO: SDS 3 Determine if can be done without needing the path key as that isn't in my updated schema for SDS3. Probably is possible. Probably just create it if not set to skip. And delete. Voila.
+                    #     metadata_path = file["path"]
+                    #     if isfile(metadata_path):
+                    #         initial_name = splitext(basename(metadata_path))[0]
+                    #         if (
+                    #             existing_file_option == "replace"
+                    #             and initial_name in my_bf_existing_files_name
+                    #         ):
+                    #             my_file = ds['children']['files'][file_key]
+                    #             # delete the file from Pennsieve
+                    #             r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(get_access_token()))
+                    #             r.raise_for_status()
+                    #         if (
+                    #             existing_file_option == "skip"
+                    #             and initial_name in my_bf_existing_files_name
+                    #         ):
+                    #             continue
+
+                    #         list_upload_metadata_files.append(metadata_path)
+                    #         main_total_generate_dataset_size += getsize(metadata_path)
+                    #         total_files += 1
+                    #         total_metadata_files += 1
 
             # 4. Prepare and add manifest files to a list
             if "dataset_metadata" in soda.keys() and "manifest_files" in soda["dataset_metadata"].keys():
@@ -3127,6 +3208,9 @@ def ps_check_dataset_files_validity(soda):
     r.raise_for_status()
     root_folder = r.json()["children"]
 
+    if len(root_folder) == 0:
+        return error
+
     if "dataset-structure" in soda.keys():
         dataset_structure = soda["dataset-structure"]
         if "folders" in dataset_structure:
@@ -3363,7 +3447,11 @@ def generate_dataset(soda, resume, ps):
         ]
         generate_option = soda["generate-dataset"]["generate-option"]
 
-        if uploading_to_existing_ps_dataset(soda) and soda["starting-point"]["origin"] != "new":
+        logger.info("generate_dataset generating_on_ps")
+        logger.info(soda)
+
+        if uploading_to_existing_ps_dataset(soda)  and soda["starting-point"]["origin"] != "new":
+            
             selected_dataset_id = get_dataset_id(
                 soda["ps-dataset-selected"]["dataset-name"]
             )
@@ -3375,9 +3463,11 @@ def generate_dataset(soda, resume, ps):
             if can_resume_prior_upload(resume): 
                 ps_upload_to_dataset(soda, ps, myds, resume)
             else:
+                logger.info("We are updating an existing dataset")
                 ps_update_existing_dataset(soda, myds, ps, resume)
 
         elif generate_option == "new" or generate_option == "existing-ps" and soda["starting-point"]["origin"] == "new":
+            logger.info("We are generating into an existing but not updating an existing lol")
             # if dataset name is in the generate-dataset section, we are generating a new dataset
             if "dataset-name" in soda["generate-dataset"]:
                 dataset_name = soda["generate-dataset"][
@@ -3404,6 +3494,7 @@ def generate_dataset(soda, resume, ps):
                         raise Exception(f"{e.status_code}, {e.message}")
                 print("3322")
                 myds = get_dataset_with_backoff(selected_dataset_id)
+            
                 print("3324")
                 ps_upload_to_dataset(soda, ps, myds, resume)
 
@@ -3448,9 +3539,11 @@ def validate_dataset_structure(soda, resume):
             connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
-            raise PennsieveAccountInvalid("Please select a valid Pennsieve account.")
+            if isinstance(e, AttributeError):
+                raise Exception("The Pennsieve Agent cannot access datasets but needs to in order to work. Please try again. If the issue persists, please contact the SODA team. The SODA team will contact Pennsieve to help resolve this issue.")
+            else:
+                raise PennsieveAccountInvalid("Please select a valid Pennsieve account.")
 
- 
     if uploading_to_existing_ps_dataset(soda):
         # check that the Pennsieve dataset is valid
         try:

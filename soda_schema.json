@@ -149,7 +149,7 @@
         "resources": {
           "$ref": "resources.json"
         },
-        "manifest_files": "$ref: manifests.json",
+        "manifest_file": "$ref: manifests.json"
       }
     },
     "digital-metadata": {

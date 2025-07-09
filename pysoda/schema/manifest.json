@@ -1,64 +1,61 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "properties": {
-    "data": {
+  "type": "array",
+  "items": [
+    {
       "type": "object",
-      "file_name": {
-        "type": "string",
-        "description": "File path to the data file. This should be a valid file path relative to the root of the dataset."
-      },
-      "timestamp": {
-        "type": "string",
-        "pattern": "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2},\\d{1,6}[+-]\\d{2}:\\d{2}|)$",
-        "description": "Timestamp of when the data was created or last modified. This should be in ISO 8601 format."
-      },
-      "description": {
-        "type": "string",
-        "description": "Description of the data file. This should provide a brief overview of the contents of the file."
-      },
-      "file_type": {
-        "type": "string",
-        "description": "Type of the data file. This should be the extension of the data file, such as .txt, .csv, .json, etc."
-      },
-      "entity": {
-        "type": "array",
-        "items": {
+      "properties": {
+        "file_name": {
+          "type": "string",
+          "description": "File path to the data file. This should be a valid file path relative to the root of the dataset."
+        },
+        "timestamp": {
+          "type": "string",
+          "pattern": "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:Z|(?:[.,]\\d{1,6}[+-]\\d{2}:\\d{2}))?)$",
+          "description": "Timestamp of when the data was created or last modified. This should be in ISO 8601 format."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the data file. This should provide a brief overview of the contents of the file."
+        },
+        "file_type": {
+          "type": "string",
+          "description": "Type of the data file. This should be the extension of the data file, such as .txt, .csv, .json, etc."
+        },
+        "entity": {
           "type": "string",
           "description": "Each ID should be taken from the subject.xlsx, samples.xlsx, sites.xlsx, or performances.xlsx files."
         },
-        "description": "A list of the entity IDs that this file is associated with."
+        "data_modality": {
+          "type": "string",
+          "description": "Modality of the data. This should describe the type of data contained in the file, such as 'image', 'text', 'audio', etc."
+        },
+        "also_in_dataset": {
+          "type": "string",
+          "description": "DOI to the dataset this data is also part of."
+        },
+        "also_in_dataset_path": {
+          "type": "string",
+          "description": "Path to the dataset that this data file is part of. This should be a valid file path in the system where the manifest is being used."
+        },
+        "data_dictionary_path": {
+          "type": "string",
+          "description": "Path to the data dictionary for this data file. This should be a valid file path in the system where the manifest is being used."
+        },
+        "entity_is_transitive": {
+          "type": "string",
+          "description": "Indicates whether the entity represented in this data file is transitive. This should be either true or false."
+        },
+        "additional_metadata": {
+          "type": "string",
+          "description": "Additional metadata about the data file. This can include any other relevant information that does not fit into the other categories."
+        }
       },
-      "data_modality": {
+      "required": ["file_name"],
+      "additionalProperties": {
         "type": "string",
-        "description": "Modality of the data. This should describe the type of data contained in the file, such as 'image', 'text', 'audio', etc."
-      },
-      "also_in_dataset": {
-        "type": "string",
-        "description": "DOI to the dataset this data is also part of."
-      },
-      "also_in_dataset_path": {
-        "type": "string",
-        "description": "Path to the dataset that this data file is part of. This should be a valid file path in the system where the manifest is being used."
-      },
-      "data_dictionary_path": {
-        "type": "string",
-        "description": "Path to the data dictionary for this data file. This should be a valid file path in the system where the manifest is being used."
-      },
-      "entity_is_transitive": {
-        "type": "string",
-        "description": "Indicates whether the entity represented in this data file is transitive. This should be either true or false."
-      },
-      "additional_metadata": {
-        "type": "string",
-        "description": "Additional metadata about the data file. This can include any other relevant information that does not fit into the other categories."
+        "description": "Additional properties for the manifest file. This can include any other relevant information about the subject that is not covered by the predefined fields."
       }
     }
-  },
-  "required": [
-    "file_path",
-    "timestamp",
-    "description",
-    "file_type"
   ]
 }
