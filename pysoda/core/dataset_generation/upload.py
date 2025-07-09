@@ -933,7 +933,7 @@ def generate_dataset_locally(soda):
                 readme_changes.create_text_file(soda, False, join(datasetpath, "CHANGES.TXT"), "CHANGES")
 
     # 4. Add manifest files in the list
-    if "manifest_files" in soda["dataset_metadata"].keys():
+    if "manifest_file" in soda["dataset_metadata"].keys():
         logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
         main_curate_progress_message = "Preparing manifest files"
         manifest.create_excel(soda, False, join(datasetpath,  "manifest.xlsx"))
