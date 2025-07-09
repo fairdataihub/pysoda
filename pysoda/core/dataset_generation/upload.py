@@ -2514,35 +2514,101 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
             # 3. Add high-level metadata files to a list
             if "dataset_metadata" in soda.keys():
                 logger.info("ps_create_new_dataset (optional) step 3 create high level metadata list")
-                (
-                    my_bf_existing_files_name,
-                    _,
-                ) = ps_get_existing_files_details(ds)
-                metadata_files = soda["dataset_metadata"]
-                for file_key, file in metadata_files.items():
-                    if file["location"] == "local":
-                        # TODO: SDS 3 Determine if can be done without needing the path key as that isn't in my updated schema for SDS3. Probably is possible. Probably just create it if not set to skip. And delete. Voila.
-                        metadata_path = file["path"]
-                        if isfile(metadata_path):
-                            initial_name = splitext(basename(metadata_path))[0]
-                            if (
-                                existing_file_option == "replace"
-                                and initial_name in my_bf_existing_files_name
-                            ):
-                                my_file = ds['children']['files'][file_key]
-                                # delete the file from Pennsieve
-                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(get_access_token()))
-                                r.raise_for_status()
-                            if (
-                                existing_file_option == "skip"
-                                and initial_name in my_bf_existing_files_name
-                            ):
-                                continue
+                # TODO: Add enahnced merge support post SDS3 launch
+                # (
+                #     my_bf_existing_files_name,
+                #     _,
+                # ) = ps_get_existing_files_details(ds)
+                for key, _ in soda["dataset_metadata"].items():
+                    if key == "submission":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "submission.xlsx")
+                        submission.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "subjects":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "subjects.xlsx")
+                        subjects.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "samples":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "samples.xlsx")
+                        samples.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "performances":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "performances.xlsx")
+                        performances.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "resources":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "resources.xlsx")
+                        resources.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "sites":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "sites.xlsx")
+                        sites.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "dataset_description":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "dataset_description.xlsx")
+                        dataset_description.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "code_description":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "code_description.xlsx")
+                        code_description.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+                    if key == "manifest_file":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
+                        manifest.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
 
-                            list_upload_metadata_files.append(metadata_path)
-                            main_total_generate_dataset_size += getsize(metadata_path)
-                            total_files += 1
-                            total_metadata_files += 1
+
+                    # TODO: Post SDS3 release add enhanced support for merging into existing datasets with more than 0 files
+                    # if file["location"] == "local":
+                    #     # TODO: SDS 3 Determine if can be done without needing the path key as that isn't in my updated schema for SDS3. Probably is possible. Probably just create it if not set to skip. And delete. Voila.
+                    #     metadata_path = file["path"]
+                    #     if isfile(metadata_path):
+                    #         initial_name = splitext(basename(metadata_path))[0]
+                    #         if (
+                    #             existing_file_option == "replace"
+                    #             and initial_name in my_bf_existing_files_name
+                    #         ):
+                    #             my_file = ds['children']['files'][file_key]
+                    #             # delete the file from Pennsieve
+                    #             r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(get_access_token()))
+                    #             r.raise_for_status()
+                    #         if (
+                    #             existing_file_option == "skip"
+                    #             and initial_name in my_bf_existing_files_name
+                    #         ):
+                    #             continue
+
+                    #         list_upload_metadata_files.append(metadata_path)
+                    #         main_total_generate_dataset_size += getsize(metadata_path)
+                    #         total_files += 1
+                    #         total_metadata_files += 1
 
             # 4. Prepare and add manifest files to a list
             if "dataset_metadata" in soda.keys() and "manifest_files" in soda["dataset_metadata"].keys():
@@ -3362,7 +3428,11 @@ def generate_dataset(soda, resume, ps):
         ]
         generate_option = soda["generate-dataset"]["generate-option"]
 
-        if uploading_to_existing_ps_dataset(soda) and soda["starting-point"]["origin"] != "new":
+        logger.info("generate_dataset generating_on_ps")
+        logger.info(soda)
+
+        if uploading_to_existing_ps_dataset(soda)  and soda["starting-point"]["origin"] != "new":
+            
             selected_dataset_id = get_dataset_id(
                 soda["ps-dataset-selected"]["dataset-name"]
             )
@@ -3374,9 +3444,11 @@ def generate_dataset(soda, resume, ps):
             if can_resume_prior_upload(resume): 
                 ps_upload_to_dataset(soda, ps, myds, resume)
             else:
+                logger.info("We are updating an existing dataset")
                 ps_update_existing_dataset(soda, myds, ps, resume)
 
         elif generate_option == "new" or generate_option == "existing-ps" and soda["starting-point"]["origin"] == "new":
+            logger.info("We are generating into an existing but not updating an existing lol")
             # if dataset name is in the generate-dataset section, we are generating a new dataset
             if "dataset-name" in soda["generate-dataset"]:
                 dataset_name = soda["generate-dataset"][
@@ -3403,6 +3475,7 @@ def generate_dataset(soda, resume, ps):
                         raise Exception(f"{e.status_code}, {e.message}")
                 print("3322")
                 myds = get_dataset_with_backoff(selected_dataset_id)
+            
                 print("3324")
                 ps_upload_to_dataset(soda, ps, myds, resume)
 
