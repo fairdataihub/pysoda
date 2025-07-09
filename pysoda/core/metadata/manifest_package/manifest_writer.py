@@ -458,7 +458,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
                 filename = file_key
             dict_folder_manifest["filename"].append(filename)
             # timestamp
-            file_type = file["location"]
+            file_type = file.get("location")
             if file_type == "local":
                 file_path = file["path"]
                 filepath = pathlib.Path(file_path)

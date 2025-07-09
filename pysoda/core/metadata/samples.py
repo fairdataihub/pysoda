@@ -11,7 +11,7 @@ from .helpers import upload_metadata_file
 def create_excel(soda, upload_boolean, local_destination):
     source = join(TEMPLATE_PATH, SDS_FILE_SAMPLES)
 
-    samples = soda["dataset_metadata"]["samples_metadata"]
+    samples = soda["dataset_metadata"]["samples"]
 
     validate_schema(samples, SCHEMA_NAME_SAMPLES)
 
