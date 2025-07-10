@@ -34,12 +34,9 @@ def create_excel(soda, upload_boolean, local_destination):
     item_schema = schema["items"][0]
     standard_headers = list(item_schema["properties"].keys())
 
-    # Remove underscores in headers and replace with spaces
-    standard_headers = [header.replace("_", " ") for header in standard_headers]
-
     # Write standard headers to the first row
     for idx, header in enumerate(standard_headers):
-        ws1[ascii_headers[idx] + "1"] = header
+        ws1[ascii_headers[idx] + "1"] = header.replace("_", " ")
         ws1[ascii_headers[idx] + "1"].font = Font(bold=True, size=12, name="Calibri")
 
     row = 2
