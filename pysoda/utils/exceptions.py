@@ -27,7 +27,7 @@ class FailedToFetchPennsieveDatasets(Exception):
 class PennsieveDatasetCannotBeFound(Exception):
     def __init__(self, dataset_name):
         self.dataset_name = dataset_name
-        self.error_message = f"The Pennsie dataset {self.dataset_name} could not be found."
+        self.error_message = f"The Pennsieve dataset {self.dataset_name} could not be found."
 
     def __str__(self):
         return self.error_message

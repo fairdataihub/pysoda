@@ -207,7 +207,7 @@
           "type": "number",
           "description": "The number of sites in the study."
         },
-        "number_of_performance": {
+        "number_of_performances": {
           "type": "number",
           "description": "The number of performance in the study."
         }

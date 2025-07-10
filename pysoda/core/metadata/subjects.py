@@ -14,7 +14,7 @@ def create_excel(soda, upload_boolean, local_destination):
     source = join(TEMPLATE_PATH, SDS_FILE_SUBJECTS)
 
 
-    subjects = soda["dataset_metadata"]["subjects_metadata"]
+    subjects = soda["dataset_metadata"]["subjects"]
 
     validate_schema(subjects, SCHEMA_NAME_SUBJECTS)
 
