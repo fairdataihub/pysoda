@@ -2501,20 +2501,14 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1
                         total_metadata_files += 1
-                    
-            print("Finished metadata files")
-            logger.info(f"SODA {soda}")
-            if "manifest_files" in soda["dataset_metadata"].keys():
-                # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
-                # list_upload_manifest_files = gather_manifest_files(soda)
-                logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
-                main_curate_progress_message = "Preparing manifest files"
-                metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
-                manifest.create_excel(soda, False, os.path.join(METADATA_UPLOAD_PS_PATH,  "manifest.xlsx"))
-                main_total_generate_dataset_size += getsize(metadata_path)
-                total_files += 1
-                total_metadata_files += 1
-                list_upload_manifest_files.append(metadata_path)
+                    if key == "manifest_file":
+                        metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "manifest.xlsx")
+                        manifest.create_excel(soda, False, metadata_path)
+                        list_upload_metadata_files.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+
 
         else:
 
