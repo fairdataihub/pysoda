@@ -5,7 +5,7 @@
     {
       "type": "object",
       "properties": {
-        "file_name": {
+        "filename": {
           "type": "string",
           "description": "File path to the data file. This should be a valid file path relative to the root of the dataset."
         },
@@ -50,7 +50,7 @@
           "description": "Additional metadata about the data file. This can include any other relevant information that does not fit into the other categories."
         }
       },
-      "required": ["file_name"],
+      "required": ["filename"],
       "additionalProperties": {
         "type": "string",
         "description": "Additional properties for the manifest file. This can include any other relevant information about the subject that is not covered by the predefined fields."
