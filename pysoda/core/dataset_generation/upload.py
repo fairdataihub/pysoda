@@ -2489,14 +2489,14 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
 
                     if key == "README":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "README.txt")
-                        readme_changes.create_text_file(soda, False, metadata_path)
+                        readme_changes.create_text_file(soda, False, metadata_path, "README")
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1
                         total_metadata_files += 1
                     if key == "CHANGES":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "CHANGES.txt")
-                        readme_changes.create_text_file(soda, False, metadata_path)
+                        readme_changes.create_text_file(soda, False, metadata_path, "CHANGES")
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1
