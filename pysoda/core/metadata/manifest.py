@@ -105,19 +105,5 @@ def load_existing_manifest_file(manifest_file_path):
 
 
 
-soda = {
-    "dataset_metadata": {
-        "manifest_file": [
-            {
-                "filename": "example.csv",
-                "description": "An example CSV file",
-                "subject": "Example Subject",
-                "additional_metadata": "saffas"
-            }
-        ]
-    }
-}
 
-
-create_excel(soda, False, "./manifest.xlsx")
 
