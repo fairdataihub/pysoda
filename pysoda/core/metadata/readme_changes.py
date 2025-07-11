@@ -19,20 +19,17 @@ def create_text_file(soda, upload_boolean, local_destination, file_type):
         dict: A dictionary containing the size of the metadata file.
     """
 
-    return True # TEMP
-    file_path = join(METADATA_UPLOAD_PS_PATH, file_type)
-    text_string = ''
+    text = soda["dataset_metadata"][file_type]
 
-    if file_type == "README.txt":
-        text_string = soda["dataset_metadata"]["README"]
-    else:
-        text_string = soda["dataset_metadata"]["CHANGES"]
+    """ Create the text file and get the size of the file. """
+    destination = join(METADATA_UPLOAD_PS_PATH, file_type + ".txt") if upload_boolean else local_destination
+    with open(destination, "w") as file:
+        file.write(text)
+    
+    metadata_file_size = getsize(destination)
+    if upload_boolean:
+        upload_metadata_file(soda, destination, file_type.lower() + ".txt")
+        
+    return {"metadata_file_size": metadata_file_size}
 
-    with open(file_path, "w") as f:
-        f.write(text_string)
 
-    size = getsize(file_path)
-
-    upload_metadata_file(file_type, soda, file_path, True)
-
-    return { "size": size, "filepath": file_path }
