@@ -64,6 +64,9 @@ def create_excel(soda, upload_boolean, local_destination):
             ws1[ascii_headers[col_idx] + str(row)].font = Font(bold=False, size=11, name="Arial")
         row += 1
 
+    # Rename additional metadata header to Additional Metadata header
+    # ws1[ascii_headers[len(standard_headers)] + "1"] = "Additional Metadata"
+
     wb.save(destination)
     size = getsize(destination)
     if upload_boolean:
@@ -100,4 +103,21 @@ def load_existing_manifest_file(manifest_file_path):
 
     return {"headers": headers, "data": data}
 
+
+
+soda = {
+    "dataset_metadata": {
+        "manifest_file": [
+            {
+                "filename": "example.csv",
+                "description": "An example CSV file",
+                "subject": "Example Subject",
+                "additional_metadata": "saffas"
+            }
+        ]
+    }
+}
+
+
+create_excel(soda, False, "./manifest.xlsx")
 
