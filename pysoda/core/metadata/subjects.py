@@ -169,4 +169,4 @@ def create_excel(soda, upload_boolean, local_destination):
     if upload_boolean:
         upload_metadata_file(SDS_FILE_SUBJECTS, soda, destination, True)
 
-    return size
+    return {size: size}
