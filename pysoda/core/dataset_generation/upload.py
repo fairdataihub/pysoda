@@ -1954,58 +1954,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
     current_size_of_uploaded_files = 0
     start = timer()
     try:
-        # Set the Pennsieve Python Client's dataset to the Pennsieve dataset that will be uploaded to.
-        selected_id = ds["content"]["id"]
-        ps.use_dataset(selected_id)
 
-        def gather_manifest_files(soda):
-            """
-            Gather the manifest files from the soda json structure.
-            Output: A list of the file path of the manifest files.
-            """
-            global total_files
-            global main_total_generate_dataset_size
-            nonlocal total_manifest_files
-            global bytes_file_path_dict
-
-            list_manifest_files = []
-            if "auto-generated" in soda["manifest-files"] and soda["manifest-files"]["auto-generated"] == True:
-                    manifest_files_structure = get_auto_generated_manifest_files(soda)
-                    for key in manifest_files_structure.keys():
-                        manifestpath = manifest_files_structure[key]
-                        list_manifest_files.append([manifestpath, key])
-                        total_files += 1
-                        total_manifest_files += 1
-                        mf_s = getsize(manifestpath)
-                        main_total_generate_dataset_size += mf_s
-                        bytes_file_path_dict[manifestpath] = mf_s
-
-            return list_manifest_files
-
-        def gather_metadata_files(soda):
-            """
-            Gather the metadata files from the soda json structure.
-            Output: A list of the file path of the metadata files.
-            """
-            global main_total_generate_dataset_size
-            global total_files
-            nonlocal total_metadata_files
-            global bytes_file_path_dict
-
-            metadata_files = soda["metadata-files"]
-            metadata_files_list = []
-            for file_key, file in metadata_files.items():
-                if file.get("location") == "local":
-                    metadata_path = file["path"]
-                    if isfile(metadata_path):
-                        metadata_files_list.append(metadata_path)
-                        mf_s = getsize(metadata_path)
-                        main_total_generate_dataset_size += mf_s
-                        total_files += 1
-                        total_metadata_files += 1
-                        bytes_file_path_dict[metadata_path] = mf_s
-
-            return metadata_files_list
 
         def recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, my_relative_path):
             """
@@ -2038,9 +1987,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 for file_key, file in dataset_structure["files"].items():
                     # relative_path = generate_relative_path(my_relative_path, file_key)
                     file_path = file["path"]
-                    if my_relative_path == soda["generate-dataset"]["dataset-name"]:
-                        list_upload_metadata_files.append(file_path)
-                    elif isfile(file_path) and file.get("location") == "local":
+                    if isfile(file_path) and file.get("location") == "local":
                         projected_name = splitext(basename(file_path))[0]
                         projected_name_w_extension = basename(file_path)
                         desired_name = splitext(file_key)[0]
@@ -2070,8 +2017,9 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         list_projected_names,
                         list_desired_names,
                         list_final_names,
-                        my_relative_path
+                        "/" if my_relative_path == soda["generate-dataset"]["dataset-name"] else my_relative_path,
                     ])
+
 
             return list_upload_files
 
@@ -2390,6 +2338,10 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                     main_curation_uploaded_files += 1
 
 
+        # Set the Pennsieve Python Client's dataset to the Pennsieve dataset that will be uploaded to.
+        selected_id = ds["content"]["id"]
+        ps.use_dataset(selected_id)
+
         # Set variables needed throughout generation flow
         list_upload_files = []
         list_upload_metadata_files = []
@@ -2401,7 +2353,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
         starting_point = soda["starting-point"]["origin"]
         relative_path = ds["content"]["name"]
 
-        print("Post setup")
+ 
 
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         if generate_option == "new" and starting_point == "new":
@@ -2414,14 +2366,11 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 brand_new_dataset = True
                 list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
 
-                logger.info(list_upload_files)
+
 
 
 
             if "dataset_metadata" in soda.keys():
-                # TODO: Add a custom key that is not in the schema to acommodate for guided mode's upload workfow of doing metadata files first
-                # list_upload_metadata_files = gather_metadata_files(soda)
-
                 for key, _ in soda["dataset_metadata"].items():
                     if key == "submission":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "submission.xlsx")
@@ -2486,6 +2435,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1
                         total_metadata_files += 1
+
                     if key == "README":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "README.txt")
                         readme_changes.create_text_file(soda, False, metadata_path, "README")
@@ -2663,6 +2613,9 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 file_paths_count = len(folderInformation[0])
                 total_files += file_paths_count
                 total_dataset_files += file_paths_count
+
+
+            
 
 
         # 3. Upload files and add to tracking list
@@ -4016,7 +3969,206 @@ def generate_manifest_file_data(dataset_structure):
 
     return manifest_data
 
-
+# soda = {
+#     "ps-account-selected": {
+#         "account-name": "soda-pennsieve-cb3c-cmarroquin-n:organization:f08e188e-2316-4668-ae2c-8a20dc88502f"
+#     },
+#     "dataset-structure": {
+#         "folders": {
+#             "primary": {
+#                 "path": "/Users/aaronm/Desktop/upload_test/primary",
+#                 "location": "local",
+#                 "files": {
+#                     "Screen Shot 2025-07-01 at 1.35.42 PM.png": {
+#                         "path": "/Users/aaronm/Desktop/upload_test/primary/Screen Shot 2025-07-01 at 1.35.42 PM.png",
+#                         "location": "local",
+#                         "description": "",
+#                         "additional-metadata": "",
+#                         "action": [
+#                             "new"
+#                         ],
+#                         "extension": ".png"
+#                     },
+#                     "Screen Shot 2025-07-01 at 11.15.06 AM.png": {
+#                         "path": "/Users/aaronm/Desktop/upload_test/primary/Screen Shot 2025-07-01 at 11.15.06 AM.png",
+#                         "location": "local",
+#                         "description": "",
+#                         "additional-metadata": "",
+#                         "action": [
+#                             "new"
+#                         ],
+#                         "extension": ".png"
+#                     },
+#                     "file1.dat": {
+#                         "path": "/Users/aaronm/Desktop/upload_test/primary/file1.dat",
+#                         "location": "local",
+#                         "description": "",
+#                         "additional-metadata": "",
+#                         "action": [
+#                             "new"
+#                         ],
+#                         "extension": ".dat"
+#                     }
+#                 },
+#                 "folders": {},
+#                 "action": [
+#                     "new"
+#                 ]
+#             }
+#         },
+#         "files": {
+#             "README.txt": {
+#                 "path": "/Users/aaronm/Desktop/upload_test/README.txt",
+#                 "action": [
+#                     "new"
+#                 ],
+#                 "location": "local"
+#             },
+#             "samples.xlsx": {
+#                 "path": "/Users/aaronm/Desktop/upload_test/samples.xlsx",
+#                 "action": [
+#                     "new"
+#                 ],
+#                 "location": "local"
+#             },
+#             "subjects.xlsx": {
+#                 "path": "/Users/aaronm/Desktop/upload_test/subjects.xlsx",
+#                 "action": [
+#                     "new"
+#                 ],
+#                 "location": "local"
+#             },
+#             "submission.xlsx": {
+#                 "path": "/Users/aaronm/Desktop/upload_test/submission.xlsx",
+#                 "action": [
+#                     "new"
+#                 ],
+#                 "location": "local"
+#             }
+#         }
+#     },
+#     "metadata-files": {},
+#     "manifest-files": {
+#         "destination": "generate-dataset"
+#     },
+#     "generate-dataset": {
+#         "destination": "ps",
+#         "generate-option": "new",
+#         "dataset-name": "hhhhhhh"
+#     },
+#     "dataset_metadata": {
+#         "manifest_file": [
+#             {
+#                 "filename": "primary",
+#                 "timestamp": "2025-07-08T22:44:08.773Z",
+#                 "description": "",
+#                 "file_type": "folder",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             },
+#             {
+#                 "filename": "primary/Screen Shot 2025-07-01 at 1.35.42 PM.png",
+#                 "timestamp": "2025-07-01T20:35:46.876Z",
+#                 "description": "",
+#                 "file_type": ".png",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             },
+#             {
+#                 "filename": "README.txt",
+#                 "timestamp": "2023-04-14T22:25:38.000Z",
+#                 "description": "",
+#                 "file_type": ".txt",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             },
+#             {
+#                 "filename": "primary/Screen Shot 2025-07-01 at 11.15.06 AM.png",
+#                 "timestamp": "2025-07-01T18:15:10.621Z",
+#                 "description": "",
+#                 "file_type": ".png",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             },
+#             {
+#                 "filename": "samples.xlsx",
+#                 "timestamp": "2023-04-14T22:25:38.000Z",
+#                 "description": "",
+#                 "file_type": ".xlsx",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             },
+#             {
+#                 "filename": "primary/file1.dat",
+#                 "timestamp": "2025-07-08T20:50:19.104Z",
+#                 "description": "",
+#                 "file_type": ".dat",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             },
+#             {
+#                 "filename": "subjects.xlsx",
+#                 "timestamp": "2023-04-14T22:25:38.000Z",
+#                 "description": "",
+#                 "file_type": ".xlsx",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             },
+#             {
+#                 "filename": "submission.xlsx",
+#                 "timestamp": "2023-04-14T22:25:38.000Z",
+#                 "description": "",
+#                 "file_type": ".xlsx",
+#                 "entity": "",
+#                 "data_modality": "",
+#                 "also_in_dataset": "",
+#                 "also_in_dataset_path": "",
+#                 "data_dictionary_path": "",
+#                 "entity_is_transitive": "",
+#                 "additional_metadata": ""
+#             }
+#         ]
+#     },
+#     "starting-point": {
+#         "origin": "new",
+#         "local-path": "/Users/aaronm/Desktop/upload_test"
+#     }
+# }
 
 
 # try:
