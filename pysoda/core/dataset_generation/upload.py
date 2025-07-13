@@ -2293,7 +2293,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                             list_desired_names,
                             list_final_names,
                             my_tracking_folder,
-                            my_relative_path,
+                            "/" if my_relative_path == soda["generate-dataset"]["dataset-name"] else my_relative_path,
                         ]
                     )
 
