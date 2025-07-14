@@ -87,18 +87,7 @@
           "description": "URL or DOI of the protocol used in the experiment."
         }
       },
-      "required": [
-        "sample_id",
-        "subject_id",
-        "was_derived_from",
-        "pool_id",
-        "sample_experimental_group",
-        "sample_type",
-        "sample_anatomical_location",
-        "also_in_dataset",
-        "member_of",
-        "metadata_only"
-      ],
+      "required": ["sample_id", "subject_id"],
       "additionalProperties": {
         "type": "string",
         "description": "Additional properties for the sample. This can include any other relevant information about the sample that is not covered by the predefined fields."

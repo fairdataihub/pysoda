@@ -25,15 +25,15 @@ def create_excel(soda, upload_boolean, local_destination):
     # get the ascii column headers
     row = 2
     ascii_headers = excel_columns(start_index=0)
-    for performance in resources: 
-        ws1[ascii_headers[0] + str(row)] = performance.get("rrid", "")
-        ws1[ascii_headers[1] + str(row)] = performance.get("type", "")
-        ws1[ascii_headers[2] + str(row)] = performance.get("name", "")
-        ws1[ascii_headers[3] + str(row)] = performance.get("url", "")
-        ws1[ascii_headers[4] + str(row)] = performance.get("vendor", "")
-        ws1[ascii_headers[5] + str(row)] = performance.get("version", "")
-        ws1[ascii_headers[6] + str(row)] = performance.get("id_in_protocol", "")
-        ws1[ascii_headers[7] + str(row)] = performance.get("additional_metadata", "")
+    for resource in resources: 
+        ws1[ascii_headers[0] + str(row)] = resource.get("rrid", "")
+        ws1[ascii_headers[1] + str(row)] = resource.get("type", "")
+        ws1[ascii_headers[2] + str(row)] = resource.get("name", "")
+        ws1[ascii_headers[3] + str(row)] = resource.get("url", "")
+        ws1[ascii_headers[4] + str(row)] = resource.get("vendor", "")
+        ws1[ascii_headers[5] + str(row)] = resource.get("version", "")
+        ws1[ascii_headers[6] + str(row)] = resource.get("id_in_protocol", "")
+        ws1[ascii_headers[7] + str(row)] = resource.get("additional_metadata", "")
 
         row += 1
 

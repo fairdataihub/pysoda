@@ -9,20 +9,16 @@ from .helpers import upload_metadata_file
 import os
 
 
+from json import load as json_load
+
 def create_excel(soda, upload_boolean, local_destination):
     source = join(TEMPLATE_PATH, SDS_FILE_MANIFEST)
-
     destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_MANIFEST) if upload_boolean else local_destination
-
     shutil.copyfile(source, destination)
-
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
-
-    manifest = soda["dataset_metadata"]["manifest_files"]
-
-    validate_schema(manifest, SCHEMA_NAME_MANIFEST)
-
+    manifest = soda["dataset_metadata"]["manifest_file"]
+    # validate_schema(manifest, SCHEMA_NAME_MANIFEST)
     ascii_headers = excel_columns(start_index=0)
     custom_headers_to_column = {}
 
@@ -30,27 +26,25 @@ def create_excel(soda, upload_boolean, local_destination):
         start_color="FFD965", end_color="FFD965", fill_type="solid"
     )
 
-    # Standard headers from the manifest schema
-    standard_headers = [
-        "file_name",
-        "timestamp",
-        "description",
-        "file_type",
-        "entity",
-        "data_modality",
-        "also_in_dataset",
-        "also_in_dataset_path",
-        "data_dictionary_path",
-        "entity_is_transitive",
-        "additional_metadata",
-    ]
+    # Load schema to get standard headers
+    schema_path = os.path.join(os.path.dirname(__file__), "../../schema/manifest.json")
+    with open(schema_path, "r") as f:
+        schema = json_load(f)
+    # The schema is an array, so get the first item's properties
+    item_schema = schema["items"][0]
+    standard_headers = list(item_schema["properties"].keys())
 
-    # Populate the Excel file with the data
-    for entry in manifest["data"]:
+    # Write standard headers to the first row
+    for idx, header in enumerate(standard_headers):
+        ws1[ascii_headers[idx] + "1"] = header.replace("_", " ")
+        ws1[ascii_headers[idx] + "1"].font = Font(bold=True, size=12, name="Calibri")
+
+    row = 2
+    for entry in manifest:
+        # Write standard fields
         for idx, header in enumerate(standard_headers):
             value = entry.get(header, "")
             if isinstance(value, list):
-                # Convert lists to space-separated strings
                 value = " ".join(value)
             ws1[ascii_headers[idx] + str(row)] = value
             ws1[ascii_headers[idx] + str(row)].font = Font(bold=False, size=11, name="Arial")
@@ -59,34 +53,28 @@ def create_excel(soda, upload_boolean, local_destination):
         for field_name, field_value in entry.items():
             if field_name in standard_headers:
                 continue
-
-            # Check if the field is already in the custom_headers_to_column dictionary
             if field_name not in custom_headers_to_column:
-                custom_headers_to_column[field_name] = len(custom_headers_to_column.keys()) + len(standard_headers)
-
-                # Create the column header in the Excel file
-                offset_from_final_standard_header = custom_headers_to_column[field_name]
-                ws1[ascii_headers[offset_from_final_standard_header] + "1"] = field_name
-                ws1[ascii_headers[offset_from_final_standard_header] + "1"].fill = orangeFill
-                ws1[ascii_headers[offset_from_final_standard_header] + "1"].font = Font(bold=True, size=12, name="Calibri")
-
-            # Add the field value to the corresponding cell in the Excel file
-            offset_from_final_standard_header = custom_headers_to_column[field_name]
-            ws1[ascii_headers[offset_from_final_standard_header] + str(row)] = field_value
-            ws1[ascii_headers[offset_from_final_standard_header] + str(row)].font = Font(bold=False, size=11, name="Arial")
-
+                custom_headers_to_column[field_name] = len(custom_headers_to_column) + len(standard_headers)
+                col_idx = custom_headers_to_column[field_name]
+                ws1[ascii_headers[col_idx] + "1"] = field_name
+                ws1[ascii_headers[col_idx] + "1"].fill = orangeFill
+                ws1[ascii_headers[col_idx] + "1"].font = Font(bold=True, size=12, name="Calibri")
+            col_idx = custom_headers_to_column[field_name]
+            ws1[ascii_headers[col_idx] + str(row)] = field_value
+            ws1[ascii_headers[col_idx] + str(row)].font = Font(bold=False, size=11, name="Arial")
         row += 1
 
+    # Rename additional metadata header to Additional Metadata header
+    # ws1[ascii_headers[len(standard_headers)] + "1"] = "Additional Metadata"
 
     wb.save(destination)
-
     size = getsize(destination)
-
-    ## if generating directly on Pennsieve, call upload function
     if upload_boolean:
-        upload_metadata_file(SDS_FILE_MANIFEST, soda,  destination, True)
+        upload_metadata_file(SDS_FILE_MANIFEST, soda, destination, True)
 
     return {"size": size}
+
+
 
 
 def load_existing_manifest_file(manifest_file_path):
@@ -114,5 +102,8 @@ def load_existing_manifest_file(manifest_file_path):
         data.append(new_row)
 
     return {"headers": headers, "data": data}
+
+
+
 
 
