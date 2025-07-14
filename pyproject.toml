@@ -10,18 +10,15 @@ repository = "https://github.com/fairdataihub/pysoda"
 packages = [
     { include = "pysoda" }
 ]
+include = [
+    "pysoda/core/metadata_templates/*.xlsx",
+    "pysoda/schema/*.json"
+]
 
 [tool.poetry.dependencies]
 python = ">=3.6"
 openpyxl = "*"
 
-[tool.poetry.include]
-# Include data files in the package
-# Adjust the paths as needed for your project structure
-files = [
-    "pysoda/core/metadata_templates/*.xlsx",
-    "pysoda/schema/*.json"
-]
 
 [build-system]
 requires = ["poetry-core"]
