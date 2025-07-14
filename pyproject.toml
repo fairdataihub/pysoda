@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "pysoda-fairdataihub-tools"
+version = "0.1.33"
+description = "Pysoda package for Fairdataihub tools"
+authors = ["Your Name <cmarroquin@calmi2.org>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/fairdataihub/pysoda"
+repository = "https://github.com/fairdataihub/pysoda"
+packages = [
+    { include = "pysoda" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.6"
+openpyxl = "*"
+
+[tool.poetry.include]
+# Include data files in the package
+# Adjust the paths as needed for your project structure
+files = [
+    "pysoda/core/metadata_templates/*.xlsx",
+    "pysoda/schema/*.json"
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
