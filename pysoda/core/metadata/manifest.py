@@ -7,12 +7,18 @@ import shutil
 from ...utils import validate_schema
 from .helpers import upload_metadata_file
 import os
+import importlib.resources
 
 
 from json import load as json_load
 
+def get_template_path(filename):
+    """Get the path to a template file within the metadata_templates package."""
+    with importlib.resources.path('pysoda.core.metadata_templates', filename) as p:
+        return str(p)
+
 def create_excel(soda, upload_boolean, local_destination):
-    source = join(TEMPLATE_PATH, SDS_FILE_MANIFEST)
+    source = get_template_path("manifest.xlsx")
     destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_MANIFEST) if upload_boolean else local_destination
     shutil.copyfile(source, destination)
     wb = load_workbook(destination)
