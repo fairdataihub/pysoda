@@ -1018,13 +1018,11 @@ def ps_create_new_dataset(datasetname, ps):
             if datasetname == dataset["content"]["name"]:
                 raise PennsieveDatasetNameTaken("Dataset name already exists")
             
-        print("About to create a dataset")
         
         # Create the dataset on Pennsieve
         r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
         r.raise_for_status()
 
-        print("Finished creating dataset")
 
         return r.json()
 
@@ -2338,6 +2336,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                     main_curation_uploaded_files += 1
 
 
+
         # Set the Pennsieve Python Client's dataset to the Pennsieve dataset that will be uploaded to.
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
@@ -2615,9 +2614,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 total_dataset_files += file_paths_count
 
 
-            
-
-
         # 3. Upload files and add to tracking list
         start_generate = 1
 
@@ -2665,7 +2661,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
         # create a manifest for files - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         elif len(list_upload_files) > 0:
             main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
-            print("Queueing")
 
             first_file_local_path = list_upload_files[0][0][0]
 
@@ -2760,7 +2755,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
             if renamed_files_counter > 0:
                 ums.set_list_of_files_to_rename(list_of_files_to_rename)
                 ums.set_rename_total_files(renamed_files_counter)
-
 
             # upload the manifest files
             try: 
@@ -3357,9 +3351,7 @@ def generate_new_ds_ps_resume(soda, dataset_name, ps):
     ps_upload_to_dataset(soda, ps, myds, True)
 
 def generate_new_ds_ps(soda, dataset_name, ps):
-    print("3258")
     ds = ps_create_new_dataset(dataset_name, ps)
-    print("New dataset created")
     selected_dataset_id = ds["content"]["id"]    
     myds = get_dataset_with_backoff(selected_dataset_id)
     ps_upload_to_dataset(soda, ps, myds, False)
@@ -3423,19 +3415,14 @@ def generate_dataset(soda, resume, ps):
             else: 
                 try: 
                     selected_dataset_id = get_dataset_id(dataset_name)
-                    print("Should have dataset id now")
-                    print(selected_dataset_id)
                 except Exception as e:
                     if isinstance(e, PennsieveDatasetCannotBeFound):
-                        print("Generating the new dataset then")
                         generate_new_ds_ps(soda, dataset_name, ps)
                         return
                     else:
                         raise Exception(f"{e.status_code}, {e.message}")
-                print("3322")
                 myds = get_dataset_with_backoff(selected_dataset_id)
             
-                print("3324")
                 ps_upload_to_dataset(soda, ps, myds, resume)
 
                         
@@ -3466,7 +3453,6 @@ def validate_dataset_structure(soda, resume):
         
 
     logger.info("main_curate_function step 1.2")
-    print("Validating Pennsieve account information")
 
     # 1.2. If generating dataset to Pennsieve or any other Pennsieve actions are requested check that the destination is valid
     if uploading_with_ps_account(soda):
@@ -3642,10 +3628,8 @@ def main_curate_function(soda, resume):
             generate_dataset(soda, resume, ps=None)
         else:
             logger.info("main_curate_function generating on Pennsieve")
-            print("Doing Pennsieve")
             accountname = soda["ps-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
-            print("Finished doing Pennsieve")
             generate_dataset(soda, resume, ps)
     except Exception as e:
         main_curate_status = "Done"
@@ -3968,211 +3952,3 @@ def generate_manifest_file_data(dataset_structure):
     traverse_folders(dataset_structure, [])
 
     return manifest_data
-
-# soda = {
-#     "ps-account-selected": {
-#         "account-name": "soda-pennsieve-cb3c-cmarroquin-n:organization:f08e188e-2316-4668-ae2c-8a20dc88502f"
-#     },
-#     "dataset-structure": {
-#         "folders": {
-#             "primary": {
-#                 "path": "/Users/aaronm/Desktop/upload_test/primary",
-#                 "location": "local",
-#                 "files": {
-#                     "Screen Shot 2025-07-01 at 1.35.42 PM.png": {
-#                         "path": "/Users/aaronm/Desktop/upload_test/primary/Screen Shot 2025-07-01 at 1.35.42 PM.png",
-#                         "location": "local",
-#                         "description": "",
-#                         "additional-metadata": "",
-#                         "action": [
-#                             "new"
-#                         ],
-#                         "extension": ".png"
-#                     },
-#                     "Screen Shot 2025-07-01 at 11.15.06 AM.png": {
-#                         "path": "/Users/aaronm/Desktop/upload_test/primary/Screen Shot 2025-07-01 at 11.15.06 AM.png",
-#                         "location": "local",
-#                         "description": "",
-#                         "additional-metadata": "",
-#                         "action": [
-#                             "new"
-#                         ],
-#                         "extension": ".png"
-#                     },
-#                     "file1.dat": {
-#                         "path": "/Users/aaronm/Desktop/upload_test/primary/file1.dat",
-#                         "location": "local",
-#                         "description": "",
-#                         "additional-metadata": "",
-#                         "action": [
-#                             "new"
-#                         ],
-#                         "extension": ".dat"
-#                     }
-#                 },
-#                 "folders": {},
-#                 "action": [
-#                     "new"
-#                 ]
-#             }
-#         },
-#         "files": {
-#             "README.txt": {
-#                 "path": "/Users/aaronm/Desktop/upload_test/README.txt",
-#                 "action": [
-#                     "new"
-#                 ],
-#                 "location": "local"
-#             },
-#             "samples.xlsx": {
-#                 "path": "/Users/aaronm/Desktop/upload_test/samples.xlsx",
-#                 "action": [
-#                     "new"
-#                 ],
-#                 "location": "local"
-#             },
-#             "subjects.xlsx": {
-#                 "path": "/Users/aaronm/Desktop/upload_test/subjects.xlsx",
-#                 "action": [
-#                     "new"
-#                 ],
-#                 "location": "local"
-#             },
-#             "submission.xlsx": {
-#                 "path": "/Users/aaronm/Desktop/upload_test/submission.xlsx",
-#                 "action": [
-#                     "new"
-#                 ],
-#                 "location": "local"
-#             }
-#         }
-#     },
-#     "metadata-files": {},
-#     "manifest-files": {
-#         "destination": "generate-dataset"
-#     },
-#     "generate-dataset": {
-#         "destination": "ps",
-#         "generate-option": "new",
-#         "dataset-name": "hhhhhhh"
-#     },
-#     "dataset_metadata": {
-#         "manifest_file": [
-#             {
-#                 "filename": "primary",
-#                 "timestamp": "2025-07-08T22:44:08.773Z",
-#                 "description": "",
-#                 "file_type": "folder",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             },
-#             {
-#                 "filename": "primary/Screen Shot 2025-07-01 at 1.35.42 PM.png",
-#                 "timestamp": "2025-07-01T20:35:46.876Z",
-#                 "description": "",
-#                 "file_type": ".png",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             },
-#             {
-#                 "filename": "README.txt",
-#                 "timestamp": "2023-04-14T22:25:38.000Z",
-#                 "description": "",
-#                 "file_type": ".txt",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             },
-#             {
-#                 "filename": "primary/Screen Shot 2025-07-01 at 11.15.06 AM.png",
-#                 "timestamp": "2025-07-01T18:15:10.621Z",
-#                 "description": "",
-#                 "file_type": ".png",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             },
-#             {
-#                 "filename": "samples.xlsx",
-#                 "timestamp": "2023-04-14T22:25:38.000Z",
-#                 "description": "",
-#                 "file_type": ".xlsx",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             },
-#             {
-#                 "filename": "primary/file1.dat",
-#                 "timestamp": "2025-07-08T20:50:19.104Z",
-#                 "description": "",
-#                 "file_type": ".dat",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             },
-#             {
-#                 "filename": "subjects.xlsx",
-#                 "timestamp": "2023-04-14T22:25:38.000Z",
-#                 "description": "",
-#                 "file_type": ".xlsx",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             },
-#             {
-#                 "filename": "submission.xlsx",
-#                 "timestamp": "2023-04-14T22:25:38.000Z",
-#                 "description": "",
-#                 "file_type": ".xlsx",
-#                 "entity": "",
-#                 "data_modality": "",
-#                 "also_in_dataset": "",
-#                 "also_in_dataset_path": "",
-#                 "data_dictionary_path": "",
-#                 "entity_is_transitive": "",
-#                 "additional_metadata": ""
-#             }
-#         ]
-#     },
-#     "starting-point": {
-#         "origin": "new",
-#         "local-path": "/Users/aaronm/Desktop/upload_test"
-#     }
-# }
-
-
-# try:
-#     main_curate_function(soda, False)
-# except Exception as e:
-#     print("Error is")
-#     print(e)
