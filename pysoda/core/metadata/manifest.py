@@ -14,8 +14,27 @@ from json import load as json_load
 
 def get_template_path(filename):
     """Get the path to a template file within the metadata_templates package."""
-    with importlib.resources.path('pysoda.core.metadata_templates', filename) as p:
-        return str(p)
+    try:
+        # Try the newer files() API first (Python 3.9+)
+        if hasattr(importlib.resources, 'files'):
+            files = importlib.resources.files('pysoda.core.metadata_templates')
+            return str(files / filename)
+        else:
+            # Fallback to path() for older Python versions
+            with importlib.resources.path('pysoda.core.metadata_templates', filename) as p:
+                return str(p)
+    except (ImportError, ModuleNotFoundError):
+        # If the module can't be found, try relative import
+        try:
+            from .. import metadata_templates
+            if hasattr(importlib.resources, 'files'):
+                files = importlib.resources.files(metadata_templates)
+                return str(files / filename)
+            else:
+                with importlib.resources.path(metadata_templates, filename) as p:
+                    return str(p)
+        except (ImportError, ModuleNotFoundError):
+            raise ImportError(f"Could not locate metadata_templates module. Ensure pysoda is properly installed and metadata_templates has __init__.py")
 
 def create_excel(soda, upload_boolean, local_destination):
     source = get_template_path("manifest.xlsx")
