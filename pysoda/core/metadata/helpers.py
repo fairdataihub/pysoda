@@ -22,6 +22,7 @@ def get_template_path(filename):
         ]
         for path in possible_paths:
             if os.path.exists(path):
+                logger.debug(f"Template found in PyInstaller bundle: {path}")
                 return path
     
     # Method 2: Try to import the metadata_templates module (works if PyPI package is properly installed)
@@ -30,6 +31,7 @@ def get_template_path(filename):
         templates_dir = os.path.dirname(metadata_templates.__file__)
         template_path = os.path.join(templates_dir, filename)
         if os.path.exists(template_path):
+            logger.debug(f"Template found in metadata_templates module: {template_path}")
             return template_path
     except (ImportError, ModuleNotFoundError, AttributeError):
         pass
@@ -59,6 +61,7 @@ def get_template_path(filename):
     
     for path in all_paths:
         if os.path.exists(path):
+            logger.debug(f"Template found in directory structure: {path}")
             return path
     
     # Method 4: Try to find in Electron app resources (if not using PyInstaller)
@@ -73,6 +76,7 @@ def get_template_path(filename):
             ]
             for path in electron_paths:
                 if os.path.exists(path):
+                    logger.debug(f"Template found in Electron app resources: {path}")
                     return path
             current_path = os.path.dirname(current_path)
     except Exception:
@@ -84,6 +88,7 @@ def get_template_path(filename):
         from importlib import resources
         with resources.path('metadata_templates', filename) as template_path:
             if template_path.exists():
+                logger.debug(f"Template found using importlib_resources: {template_path}")
                 return str(template_path)
     except (ImportError, ModuleNotFoundError):
         # Fallback to other methods if importlib_resources is not available
