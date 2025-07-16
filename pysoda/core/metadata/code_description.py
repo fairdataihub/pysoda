@@ -5,13 +5,14 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema
-from .helpers import upload_metadata_file
+from .helpers import upload_metadata_file, get_template_path
+
 
 
 # TODO: Handle optional entries when coupled with provided entries
 # TODO: Handle extending columns and filling with color when more entries are provided than the template default handles
 def create_excel(soda, upload, local_destination):
-    source = join(TEMPLATE_PATH, SDS_FILE_CODE_DESCRIPTION)
+    source = get_template_path(SDS_FILE_CODE_DESCRIPTION)
     destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_CODE_DESCRIPTION) if upload else local_destination
     shutil.copyfile(source, destination)
 

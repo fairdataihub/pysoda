@@ -93,55 +93,6 @@ def get_template_path(filename):
     except Exception as e:
         raise ImportError(f"Could not locate or create template file {filename}. Error: {e}")
 
-def get_schema_path(filename):
-    """Get the path to a schema file within the metadata_templates package."""
-    
-    # Method 1: Try PyInstaller bundle first (onefolder creates _MEIPASS)
-    if hasattr(sys, '_MEIPASS'):
-        # PyInstaller onefolder extracts to _MEIPASS/
-        possible_paths = [
-            os.path.join(sys._MEIPASS, "pysoda", "schema", filename),
-            os.path.join(sys._MEIPASS, filename)
-        ]
-        for path in possible_paths:
-            if os.path.exists(path):
-                return path
-    
-    # Method 2: Try to import the metadata_templates module (works if PyPI package is properly installed)
-    try:
-        from .. import schema
-        schema_dir = os.path.dirname(schema.__file__)
-        schema_path = os.path.join(schema_dir, filename)
-        if os.path.exists(schema_path):
-            return schema_path
-    except (ImportError, ModuleNotFoundError, AttributeError):
-        pass
-    
-    # Method 3: Search in the Flask app's directory structure
-    current_file = os.path.abspath(__file__)
-    current_dir = os.path.dirname(current_file)
-    
-    search_paths = [
-        os.path.join(current_dir, '..', '..', 'schema', filename),
-        os.path.join(current_dir, 'schema', filename),
-    ]
-    
-    for path in search_paths:
-        if os.path.exists(path):
-            return path
-        
-    
-    # Method 4: Use importlib_resources (Python 3.7+)
-    try:
-        from importlib import resources
-        with resources.path('schema', filename) as schema_path:
-            if schema_path.exists():
-                return str(schema_path)
-    except (ImportError, ModuleNotFoundError):
-        # Fallback to other methods if importlib_resources is not available
-        pass
-    
-    raise ImportError(f"Could not locate or create schema file {filename}.")
 
 
 # helper function to process custom fields (users add and name them) for subjects and samples files

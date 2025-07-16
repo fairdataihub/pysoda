@@ -6,7 +6,7 @@ from .excel_utils import rename_headers, excel_columns
 import itertools
 from openpyxl.styles import PatternFill
 from ...utils import validate_schema
-from .helpers import upload_metadata_file
+from .helpers import upload_metadata_file, get_template_path
 
 
 
@@ -15,7 +15,7 @@ def create_excel(
     upload_boolean,
     local_destination,
 ):
-    source = join(TEMPLATE_PATH, SDS_FILE_DATASET_DESCRIPTION)
+    source = get_template_path(SDS_FILE_DATASET_DESCRIPTION)
     destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_DATASET_DESCRIPTION) if upload_boolean else local_destination
     shutil.copyfile(source, destination)
 

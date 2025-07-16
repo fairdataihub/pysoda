@@ -4,9 +4,9 @@ from openpyxl.styles import Font, PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
-from ...utils import validate_schema
+from ...utils import validate_schema, get_schema_path
 from .helpers import upload_metadata_file
-from .helpers import get_template_path, get_schema_path
+from .helpers import get_template_path
 import os
 
 

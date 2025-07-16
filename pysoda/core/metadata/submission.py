@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import Font
 import shutil
 import tempfile
-from .helpers import upload_metadata_file
+from .helpers import upload_metadata_file, get_template_path
 
 
 from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH
@@ -29,7 +29,7 @@ def create_excel(soda, upload_boolean, local_destination):
 
     font_submission = Font(name="Calibri", size=14, bold=False)
 
-    source = join(TEMPLATE_PATH, "submission.xlsx")
+    source = get_template_path("submission.xlsx")
 
     destination = join(METADATA_UPLOAD_PS_PATH, "submission.xlsx") if upload_boolean else local_destination
 

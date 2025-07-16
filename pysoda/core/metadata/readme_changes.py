@@ -1,6 +1,6 @@
 from .constants import METADATA_UPLOAD_PS_PATH, TEMPLATE_PATH
 from os.path import join, getsize
-from .helpers import upload_metadata_file
+from .helpers import upload_metadata_file, get_template_path
 import shutil
 
 
@@ -21,7 +21,7 @@ def create_text_file(soda, upload_boolean, local_destination, file_type):
     """
 
     template_filename = f"{file_type}.txt"
-    source = join(TEMPLATE_PATH, template_filename)
+    source = get_template_path(template_filename)
     destination = join(METADATA_UPLOAD_PS_PATH, template_filename) if upload_boolean else local_destination
 
     # Copy the template to the destination (if it exists)

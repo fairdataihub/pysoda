@@ -5,10 +5,10 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema
-from .helpers import upload_metadata_file
+from .helpers import upload_metadata_file, get_template_path
 
 def create_excel(soda, upload_boolean, local_destination):
-    source = join(TEMPLATE_PATH, SDS_FILE_PERFORMANCES)
+    source = get_template_path(SDS_FILE_PERFORMANCES)
 
     destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_PERFORMANCES) if upload_boolean else local_destination
 
@@ -46,30 +46,30 @@ def create_excel(soda, upload_boolean, local_destination):
     return {"size": size}
 
 
-# soda = {
-#     "dataset_metadata": {
-#         "performances": [
-#             {
-#                 "performance_id": "P001",
-#                 "protocol_url_or_doi": "https://doi.org/10.1234/abcd",
-#                 "date": "2023-10-01",
-#                 "start_datetime": "2023-10-01T10:00:00Z",
-#                 "end_datetime": "2023-10-01T12:00:00Z",
-#                 "participants": ["sub-1", "sub-2"],
-#                 "additional_metadata": "unfun metadata here"
-#             },
-#             {
-#                 "performance_id": "P002",
-#                 "protocol_url_or_doi": "https://doi.org/10.1234/abcde",
-#                 "date": "2023-10-01",
-#                 "start_datetime": "2023-10-01T10:00:00Z",
-#                 "end_datetime": "2023-10-01T12:00:00Z",
-#                 "participants": ["sub-1", "sub-2"],
-#                 "additional_metadata": "fun metadata here"
-#             }
-#         ]
-#     }
-# }
+soda = {
+    "dataset_metadata": {
+        "performances": [
+            {
+                "performance_id": "P001",
+                "protocol_url_or_doi": "https://doi.org/10.1234/abcd",
+                "date": "2023-10-01",
+                "start_datetime": "2023-10-01T10:00:00Z",
+                "end_datetime": "2023-10-01T12:00:00Z",
+                "participants": ["sub-1", "sub-2"],
+                "additional_metadata": "unfun metadata here"
+            },
+            {
+                "performance_id": "P002",
+                "protocol_url_or_doi": "https://doi.org/10.1234/abcde",
+                "date": "2023-10-01",
+                "start_datetime": "2023-10-01T10:00:00Z",
+                "end_datetime": "2023-10-01T12:00:00Z",
+                "participants": ["sub-1", "sub-2"],
+                "additional_metadata": "fun metadata here"
+            }
+        ]
+    }
+}
 
 
-# create_excel(soda, False, "performances.xlsx")
+create_excel(soda, False, "performances.xlsx")

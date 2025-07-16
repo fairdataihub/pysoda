@@ -5,11 +5,11 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema, get_sds_headers
-from .helpers import upload_metadata_file
+from .helpers import upload_metadata_file, get_template_path
 
 
 def create_excel(soda, upload_boolean, local_destination):
-    source = join(TEMPLATE_PATH, SDS_FILE_SAMPLES)
+    source = get_template_path(SDS_FILE_SAMPLES)
 
     samples = soda["dataset_metadata"]["samples"]
 

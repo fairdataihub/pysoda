@@ -7,11 +7,11 @@ import shutil
 import numpy as np
 from ...utils import validate_schema, get_sds_headers
 from openpyxl.styles import Font
-from .helpers import transposeMatrix, getMetadataCustomFields, sortedSubjectsTableData, upload_metadata_file
+from .helpers import transposeMatrix, getMetadataCustomFields, sortedSubjectsTableData, upload_metadata_file, get_template_path
 
 
 def create_excel(soda, upload_boolean, local_destination):
-    source = join(TEMPLATE_PATH, SDS_FILE_SUBJECTS)
+    source = get_template_path(SDS_FILE_SUBJECTS)
 
 
     subjects = soda["dataset_metadata"]["subjects"]

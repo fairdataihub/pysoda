@@ -5,10 +5,10 @@ from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema
-from .helpers import upload_metadata_file
+from .helpers import upload_metadata_file, get_template_path
 
 def create_excel(soda, upload_boolean, local_destination):
-    source = join(TEMPLATE_PATH, SDS_FILE_RESOURCES)
+    source = get_template_path(SDS_FILE_RESOURCES)
 
     destination = join(METADATA_UPLOAD_PS_PATH, SDS_FILE_RESOURCES) if upload_boolean else local_destination
 
