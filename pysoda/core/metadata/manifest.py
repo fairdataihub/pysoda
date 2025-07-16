@@ -6,95 +6,12 @@ from openpyxl import load_workbook
 import shutil
 from ...utils import validate_schema
 from .helpers import upload_metadata_file
+from .helpers import get_template_path, get_schema_path
 import os
-import sys
 
 
 from json import load as json_load
 
-def get_template_path(filename):
-    """Get the path to a template file within the metadata_templates package."""
-    
-    # Method 1: Try PyInstaller bundle first (onefolder creates _MEIPASS)
-    if hasattr(sys, '_MEIPASS'):
-        # PyInstaller onefolder extracts to _MEIPASS/
-        possible_paths = [
-            os.path.join(sys._MEIPASS, "pysoda", "core", "metadata_templates", filename),
-            os.path.join(sys._MEIPASS, "metadata_templates", filename),
-            os.path.join(sys._MEIPASS, filename)
-        ]
-        for path in possible_paths:
-            if os.path.exists(path):
-                return path
-    
-    # Method 2: Try to import the metadata_templates module (works if PyPI package is properly installed)
-    try:
-        from .. import metadata_templates
-        templates_dir = os.path.dirname(metadata_templates.__file__)
-        template_path = os.path.join(templates_dir, filename)
-        if os.path.exists(template_path):
-            return template_path
-    except (ImportError, ModuleNotFoundError, AttributeError):
-        pass
-    
-    # Method 3: Search in the Flask app's directory structure
-    current_file = os.path.abspath(__file__)
-    current_dir = os.path.dirname(current_file)
-    
-    # Walk up the directory tree to find the templates
-    search_paths = [
-        os.path.join(current_dir, '..', 'metadata_templates', filename),
-        os.path.join(current_dir, 'metadata_templates', filename),
-    ]
-    
-    # Also check if we're in a site-packages structure
-    site_packages_paths = []
-    path_parts = current_file.split(os.sep)
-    for i, part in enumerate(path_parts):
-        if part == 'site-packages':
-            site_packages_root = os.sep.join(path_parts[:i+1])
-            site_packages_paths.extend([
-                os.path.join(site_packages_root, 'pysoda', 'core', 'metadata_templates', filename),
-                os.path.join(site_packages_root, 'pysoda_fairdataihub_tools', 'pysoda', 'core', 'metadata_templates', filename)
-            ])
-    
-    all_paths = search_paths + site_packages_paths
-    
-    for path in all_paths:
-        if os.path.exists(path):
-            return path
-    
-    # Method 4: Try to find in Electron app resources (if not using PyInstaller)
-    try:
-        # Look for Electron app structure
-        current_path = current_dir
-        while current_path and current_path != os.path.dirname(current_path):
-            electron_paths = [
-                os.path.join(current_path, 'resources', 'app', 'node_modules', 'pysoda', 'core', 'metadata_templates', filename),
-                os.path.join(current_path, 'resources', 'pysoda', 'core', 'metadata_templates', filename),
-                os.path.join(current_path, 'app', 'pysoda', 'core', 'metadata_templates', filename)
-            ]
-            for path in electron_paths:
-                if os.path.exists(path):
-                    return path
-            current_path = os.path.dirname(current_path)
-    except Exception:
-        pass
-
-
-    # Method 5: Use importlib_resources (Python 3.7+)
-    try:
-        from importlib import resources
-        with resources.path('metadata_templates', filename) as template_path:
-            if template_path.exists():
-                return str(template_path)
-    except (ImportError, ModuleNotFoundError):
-        # Fallback to other methods if importlib_resources is not available
-        pass
-    
-
-    except Exception as e:
-        raise ImportError(f"Could not locate or create template file {filename}. Error: {e}")
 
 
 def create_excel(soda, upload_boolean, local_destination):
@@ -113,7 +30,7 @@ def create_excel(soda, upload_boolean, local_destination):
     )
 
     # Load schema to get standard headers
-    schema_path = os.path.join(os.path.dirname(__file__), "../../schema/manifest.json")
+    schema_path =get_schema_path(SCHEMA_NAME_MANIFEST)
     with open(schema_path, "r") as f:
         schema = json_load(f)
     # The schema is an array, so get the first item's properties
