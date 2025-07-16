@@ -59,6 +59,43 @@ def get_schema_path(filename):
     except (ImportError, ModuleNotFoundError):
         # Fallback to other methods if importlib_resources is not available
         pass
+
+
+
+        # Method 5: Try to find in Electron Resources folder
+    try:
+        # Find the Electron Resources folder
+        current_path = current_dir
+        resources_folder = None
+        
+        # Walk up the directory tree to find the Resources folder
+        while current_path and current_path != os.path.dirname(current_path):
+            # Check common Electron Resources locations
+            possible_resources = [
+                os.path.join(current_path, 'Resources'),  # macOS
+                os.path.join(current_path, 'resources'),  # Windows/Linux
+                os.path.join(current_path, 'Contents', 'Resources'),  # macOS app bundle
+            ]
+            
+            for resource_path in possible_resources:
+                if os.path.exists(resource_path):
+                    resources_folder = resource_path
+                    break
+            
+            if resources_folder:
+                break
+                
+            current_path = os.path.dirname(current_path)
+        
+        # If we found the Resources folder, look for schema inside it
+        if resources_folder:
+            template_path = os.path.join(resources_folder, 'schema', filename)
+
+            if os.path.exists(template_path):
+                return template_path
+                
+    except Exception as e:
+        pass
     
     raise ImportError(f"Could not locate or create schema file {filename}.")
 
