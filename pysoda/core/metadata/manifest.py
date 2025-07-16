@@ -4,6 +4,7 @@ from openpyxl.styles import Font, PatternFill
 from os.path import join, getsize
 from openpyxl import load_workbook
 import shutil
+import tempfile
 from ...utils import validate_schema
 from .helpers import upload_metadata_file
 import os
@@ -15,26 +16,32 @@ from json import load as json_load
 def get_template_path(filename):
     """Get the path to a template file within the metadata_templates package."""
     try:
-        # Try the newer files() API first (Python 3.9+)
-        if hasattr(importlib.resources, 'files'):
-            files = importlib.resources.files('pysoda.core.metadata_templates')
-            return str(files / filename)
-        else:
-            # Fallback to path() for older Python versions
-            with importlib.resources.path('pysoda.core.metadata_templates', filename) as p:
-                return str(p)
-    except (ImportError, ModuleNotFoundError):
-        # If the module can't be found, try relative import
-        try:
-            from .. import metadata_templates
-            if hasattr(importlib.resources, 'files'):
-                files = importlib.resources.files(metadata_templates)
-                return str(files / filename)
-            else:
-                with importlib.resources.path(metadata_templates, filename) as p:
-                    return str(p)
-        except (ImportError, ModuleNotFoundError):
-            raise ImportError(f"Could not locate metadata_templates module. Ensure pysoda is properly installed and metadata_templates has __init__.py")
+        # First try to import the module to get its actual location
+        import pysoda.core.metadata_templates as templates_module
+        templates_dir = os.path.dirname(templates_module.__file__)
+        template_path = os.path.join(templates_dir, filename)
+        if os.path.exists(template_path):
+            return template_path
+    except (ImportError, ModuleNotFoundError, AttributeError):
+        pass
+    
+    try:
+        # Fallback: try relative import
+        from .. import metadata_templates
+        templates_dir = os.path.dirname(metadata_templates.__file__)
+        template_path = os.path.join(templates_dir, filename)
+        if os.path.exists(template_path):
+            return template_path
+    except (ImportError, ModuleNotFoundError, AttributeError):
+        pass
+    
+    # Final fallback: use direct file path relative to current file
+    templates_dir = os.path.join(os.path.dirname(__file__), '..', 'metadata_templates')
+    template_path = os.path.join(templates_dir, filename)
+    if os.path.exists(template_path):
+        return template_path
+    
+    raise ImportError(f"Could not locate metadata_templates module or file {filename}. Ensure pysoda is properly installed.")
 
 def create_excel(soda, upload_boolean, local_destination):
     source = get_template_path("manifest.xlsx")
