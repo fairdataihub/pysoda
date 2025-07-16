@@ -44,32 +44,3 @@ def create_excel(soda, upload_boolean, local_destination):
         upload_metadata_file(SDS_FILE_PERFORMANCES, soda,  destination, True)
 
     return {"size": size}
-
-
-soda = {
-    "dataset_metadata": {
-        "performances": [
-            {
-                "performance_id": "P001",
-                "protocol_url_or_doi": "https://doi.org/10.1234/abcd",
-                "date": "2023-10-01",
-                "start_datetime": "2023-10-01T10:00:00Z",
-                "end_datetime": "2023-10-01T12:00:00Z",
-                "participants": ["sub-1", "sub-2"],
-                "additional_metadata": "unfun metadata here"
-            },
-            {
-                "performance_id": "P002",
-                "protocol_url_or_doi": "https://doi.org/10.1234/abcde",
-                "date": "2023-10-01",
-                "start_datetime": "2023-10-01T10:00:00Z",
-                "end_datetime": "2023-10-01T12:00:00Z",
-                "participants": ["sub-1", "sub-2"],
-                "additional_metadata": "fun metadata here"
-            }
-        ]
-    }
-}
-
-
-create_excel(soda, False, "performances.xlsx")
