@@ -11,6 +11,7 @@ import sys
 
 def get_template_path(filename):
     """Get the path to a template file within the metadata_templates package."""
+    global logger
     
     # Method 1: Try PyInstaller bundle first (onefolder creates _MEIPASS)
     if hasattr(sys, '_MEIPASS'):
@@ -22,7 +23,7 @@ def get_template_path(filename):
         ]
         for path in possible_paths:
             if os.path.exists(path):
-                logger.debug(f"Template found in PyInstaller bundle: {path}")
+                logger.info(f"Template found in PyInstaller bundle: {path}")
                 return path
     
     # Method 2: Try to import the metadata_templates module (works if PyPI package is properly installed)
@@ -31,7 +32,7 @@ def get_template_path(filename):
         templates_dir = os.path.dirname(metadata_templates.__file__)
         template_path = os.path.join(templates_dir, filename)
         if os.path.exists(template_path):
-            logger.debug(f"Template found in metadata_templates module: {template_path}")
+            logger.info(f"Template found in metadata_templates module: {template_path}")
             return template_path
     except (ImportError, ModuleNotFoundError, AttributeError):
         pass
@@ -61,7 +62,7 @@ def get_template_path(filename):
     
     for path in all_paths:
         if os.path.exists(path):
-            logger.debug(f"Template found in directory structure: {path}")
+            logger.info(f"Template found in directory structure: {path}")
             return path
     
     # Method 4: Try to find in Electron app resources (if not using PyInstaller)
@@ -76,26 +77,68 @@ def get_template_path(filename):
             ]
             for path in electron_paths:
                 if os.path.exists(path):
-                    logger.debug(f"Template found in Electron app resources: {path}")
+                    logger.info(f"Template found in Electron app resources: {path}")
                     return path
             current_path = os.path.dirname(current_path)
     except Exception:
         pass
 
 
-    # Method 5: Use importlib_resources (Python 3.7+)
+    # Method 5: Try to find in Electron Resources folder
+    try:
+        # Find the Electron Resources folder
+        current_path = current_dir
+        resources_folder = None
+        
+        # Walk up the directory tree to find the Resources folder
+        while current_path and current_path != os.path.dirname(current_path):
+            # Check common Electron Resources locations
+            possible_resources = [
+                os.path.join(current_path, 'Resources'),  # macOS
+                os.path.join(current_path, 'resources'),  # Windows/Linux
+                os.path.join(current_path, 'Contents', 'Resources'),  # macOS app bundle
+            ]
+            
+            for resource_path in possible_resources:
+                if os.path.exists(resource_path):
+                    resources_folder = resource_path
+                    break
+            
+            if resources_folder:
+                break
+                
+            current_path = os.path.dirname(current_path)
+        
+        # If we found the Resources folder, look for metadata_templates inside it
+        if resources_folder:
+            template_path = os.path.join(resources_folder, 'metadata_templates', filename)
+            logger.info(f"Searching for template file in Electron Resources: {template_path}")
+
+            if os.path.exists(template_path):
+                logger.info(f"Template found in Electron Resources: {template_path}")
+                return template_path
+                
+    except Exception as e:
+        logger.warning(f"Failed to search Electron Resources: {e}")
+        pass
+
+    # Method 6: Use importlib_resources as fallback (Python 3.7+)
     try:
         from importlib import resources
         with resources.path('metadata_templates', filename) as template_path:
+            logger.info(f"Using template path: {template_path}")
+
             if template_path.exists():
-                logger.debug(f"Template found using importlib_resources: {template_path}")
+                logger.info(f"Template found using importlib_resources: {template_path}")
                 return str(template_path)
-    except (ImportError, ModuleNotFoundError):
+    except (ImportError, ModuleNotFoundError, AttributeError):
         # Fallback to other methods if importlib_resources is not available
         pass
     
 
+        
     except Exception as e:
+        logger.error(f"Failed to create fallback template: {e}")
         raise ImportError(f"Could not locate or create template file {filename}. Error: {e}")
 
 
