@@ -15,19 +15,11 @@ from json import load as json_load
 
 def get_template_path(filename):
     """Get the path to a template file within the metadata_templates package."""
+    # Use the same approach as other imports in this file
     try:
-        # First try to import the module to get its actual location
-        import pysoda.core.metadata_templates as templates_module
-        templates_dir = os.path.dirname(templates_module.__file__)
-        template_path = os.path.join(templates_dir, filename)
-        if os.path.exists(template_path):
-            return template_path
-    except (ImportError, ModuleNotFoundError, AttributeError):
-        pass
-    
-    try:
-        # Fallback: try relative import
+        # Import the metadata_templates module just like we import other modules
         from .. import metadata_templates
+        # Get the directory where the module is located
         templates_dir = os.path.dirname(metadata_templates.__file__)
         template_path = os.path.join(templates_dir, filename)
         if os.path.exists(template_path):
@@ -35,13 +27,14 @@ def get_template_path(filename):
     except (ImportError, ModuleNotFoundError, AttributeError):
         pass
     
-    # Final fallback: use direct file path relative to current file
+    # If the relative import fails, fall back to the direct path approach
+    # This uses the same pattern as how you access the schema file
     templates_dir = os.path.join(os.path.dirname(__file__), '..', 'metadata_templates')
     template_path = os.path.join(templates_dir, filename)
     if os.path.exists(template_path):
         return template_path
     
-    raise ImportError(f"Could not locate metadata_templates module or file {filename}. Ensure pysoda is properly installed.")
+    raise ImportError(f"Could not locate metadata_templates module or file {filename}. Template directory: {templates_dir}")
 
 def create_excel(soda, upload_boolean, local_destination):
     source = get_template_path("manifest.xlsx")
