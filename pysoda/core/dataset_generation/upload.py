@@ -2283,6 +2283,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                             main_total_generate_dataset_size += getsize(file_path)
 
                 if list_local_files:
+                    ds_name = soda["ps-dataset-selected"]["dataset-name"]
                     list_upload_files.append(
                         [
                             list_local_files,
@@ -2291,7 +2292,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                             list_desired_names,
                             list_final_names,
                             my_tracking_folder,
-                            "/" if my_relative_path == soda["generate-dataset"]["dataset-name"] else my_relative_path,
+                            "/" if my_relative_path == ds_name else my_relative_path,
                         ]
                     )
 
