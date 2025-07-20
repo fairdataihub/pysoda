@@ -2141,7 +2141,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         relative_path,
                     )
 
-            if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") == -1: 
+            if "files" in my_folder.keys(): 
 
                 # delete files to be deleted
                 (
