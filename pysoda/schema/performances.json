@@ -39,13 +39,6 @@
         "description": "Any additional metadata related to the performance"
       }
     },
-    "required": [
-      "performance_id",
-      "protocol_url_or_doi",
-      "date",
-      "start_datetime",
-      "end_datetime",
-      "participants"
-    ]
+    "required": ["performance_id"]
   }
 }
