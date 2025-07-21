@@ -46,21 +46,12 @@ def create_excel(
 
     keyword_array = populate_basic_info(ws1, soda)
 
-    study_array_len = populate_study_info(ws1, soda)
-    no_contributors = populate_contributor_info(ws1, soda)
-    related_info_len = populate_related_resource_information(ws1, soda)
-
-    # obtain length for formatting compliance purpose
-    max_len = max(
-        keyword_array, no_contributors, related_info_len, study_array_len
-    )
-
-    rename_headers(ws1, max_len, 3)
-    grayout_subheaders(ws1, max_len, 3)
-    grayout_single_value_rows(ws1, max_len, 3)
-
-    if ws1["G1"].value == "Value n":
-        ws1.delete_cols(7)
+    populate_study_info(ws1, soda)
+    populate_contributor_info(ws1, soda)
+    populate_related_resource_information(ws1, soda)
+    populate_funding_info(ws1, soda)
+    populate_participant_information(ws1, soda)
+    data_dictionary_information(ws1, soda)
 
     wb.save(destination)
 
@@ -136,10 +127,10 @@ def populate_funding_info(workbook, soda):
 def populate_contributor_info(workbook, soda):
     contributor_info = soda["dataset_metadata"]["dataset_description"].get("contributor_information", [])
     for contributor, column in zip(contributor_info, excel_columns(start_index=3)):
-        workbook[column + "19"] = contributor.get("contributor_name", "")
-        workbook[column + "20"] = contributor.get("contributor_orcid_id", "")
-        workbook[column + "21"] = contributor.get("contributor_affiliation", "")
-        workbook[column + "22"] = contributor.get("contributor_role", "")
+        workbook[column + "28"] = contributor.get("contributor_name", "")
+        workbook[column + "29"] = contributor.get("contributor_orcid_id", "")
+        workbook[column + "30"] = contributor.get("contributor_affiliation", "")
+        workbook[column + "31"] = contributor.get("contributor_role", "")
     # Return the length of the contributor array, or 1 if empty
     return max(1, len(contributor_info))
 
@@ -147,14 +138,34 @@ def populate_contributor_info(workbook, soda):
 def populate_related_resource_information(workbook, soda):
     related_resource_information = soda["dataset_metadata"]["dataset_description"].get("related_resource_information", [])
     for info, column in zip(related_resource_information, excel_columns(start_index=3)):
-        workbook[column + "24"] = info.get("identifier_description", "")
-        workbook[column + "25"] = info.get("relation_type", "")
-        workbook[column + "26"] = info.get("identifier", "")
-        workbook[column + "27"] = info.get("identifier_type", "")
+        workbook[column + "33"] = info.get("identifier_description", "")
+        workbook[column + "34"] = info.get("relation_type", "")
+        workbook[column + "35"] = info.get("identifier", "")
+        workbook[column + "36"] = info.get("identifier_type", "")
     # Return the length of the related resource array, or 1 if empty
     return max(1, len(related_resource_information))
 
 
+
+def populate_participant_information(workbook, soda):
+    participant_info = soda["dataset_metadata"]["dataset_description"]["participant_information"]
+    workbook["D38"] = participant_info.get("number_of_subjects", 0)
+    workbook["D39"] = participant_info.get("number_of_samples", 0)
+    workbook["D40"] = participant_info.get("number_of_sites", 0)
+    workbook["D41"] = participant_info.get("number_of_performances", 0)
+
+
+def data_dictionary_information(workbook, soda):
+    """
+    This function is a placeholder for future implementation.
+    It currently does not populate any data in the workbook.
+    """
+    # Placeholder for future implementation
+    data_dictionary_info = soda["dataset_metadata"]["dataset_description"].get("data_dictionary_information", {})
+
+    workbook["D43"] = data_dictionary_info.get("data_dictionary_path", "")
+    workbook["D44"] = data_dictionary_info.get("data_dictionary_type", "")
+    workbook["D45"] = data_dictionary_info.get("data_dictionary_description", "")
 
 def grayout_subheaders(workbook, max_len, start_index):
     """
@@ -168,19 +179,88 @@ def grayout_subheaders(workbook, max_len, start_index):
         fillColor("B2B2B2", cell)
 
 
-def grayout_single_value_rows(workbook, max_len, start_index):
-    """
-    Gray out rows where only single values are allowed. Row number: 2, 3, 5, 6, 9, 11, 12, 13, 17, 29, 30
-    """
 
-    columns_list = excel_columns(start_index=start_index)
-    row_list = ["2", "3", "5", "6", "9", "11", "12", "13", "17", "29", "30"]
-    for (i, column), no in itertools.product(zip(range(2, max_len + 1), columns_list[1:]), row_list):
-        cell = workbook[column + no]
-        fillColor("CCCCCC", cell)
 
 
 def fillColor(color, cell):
     colorFill = PatternFill(start_color=color, end_color=color, fill_type="solid")
 
     cell.fill = colorFill
+
+
+
+
+soda = {
+    "dataset_metadata": {
+        "dataset_description": {
+            "metadata_version": "3.0.0",
+            "type": "Experimental",
+            "standards_information": {
+                "data_standard": "SPARC",
+                "data_standard_version": "SODA Metadata Standards"
+            },
+            "basic_information": {
+                "title": "aaronds",
+                "subtitle": "test",
+                "description": "test",
+                "keywords": [
+                "keyword 1",
+                "keyword 2",
+                "keyword 3"
+                ],
+                "funding": "1, 2, 3",
+                "acknowledgments": "my acknowledgment",
+                "license": "CC-BY-4.0"
+            },
+            "funding_information": {
+                "funding_consortium": "ASDF Consortium",
+                "funding_agency": "ASDF Program",
+                "award_number": "123"
+            },
+            "study_information": {
+                "study_purpose": "my study purpose",
+                "study_data_collection": "my data collection",
+                "study_primary_conclusion": "my primary conclusion",
+                "study_organ_system": [
+                "kidney",
+                "Not Kidney"
+                ],
+                "study_approach": [
+                "my study approach"
+                ],
+                "study_technique": [
+                "my study technique"
+                ],
+                "study_collection_title": "my study collection title"
+            },
+            "contributor_information": [
+                {
+                "contributor_name": "Jacob, Clark",
+                "contributor_orcid_id": "https://orcid.org/0000-0001-8134-6481",
+                "contributor_affiliation": "CALMII",
+                "contributor_role": "PrincipalInvestigator"
+                }
+            ],
+            "related_resource_information": [
+                {
+                "identifier_description": "test protocol (url)",
+                "relation_type": "IsProtocolFor",
+                "identifier": "https://google.com",
+                "identifier_type": "URL"
+                }
+            ],
+            "participant_information": {
+                "number_of_subjects": 1,
+                "number_of_samples": 1,
+                "number_of_sites": 0,
+                "number_of_performances": 1
+            }
+        }
+   }
+}
+
+
+try: 
+    create_excel(soda, False, "test.xlsx")
+except Exception as e:
+    print(f"An error occurred: {e}")
