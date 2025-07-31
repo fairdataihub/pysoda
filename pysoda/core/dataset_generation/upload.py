@@ -907,11 +907,8 @@ def generate_dataset_locally(soda):
         logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
         metadata_files = soda["dataset_metadata"]
         # log the metadata files that will be created
-        logger.info(f"Metadata files to be created: {list(metadata_files.keys())}")
         for file_key, _ in metadata_files.items():
-            logger.info(f"Processing metadata file: {file_key}")
             if file_key == "subjects":
-                logger.info("Creating subjects metadata file")
                 subjects.create_excel(soda, False, join(datasetpath, "subjects.xlsx"))
             elif file_key == "samples":
                 samples.create_excel(soda, False, join(datasetpath, "samples.xlsx"))
@@ -3276,8 +3273,7 @@ def clean_json_structure(soda):
         recursive_folder_delete(dataset_structure)
         soda["dataset-structure"] = dataset_structure
 
-    logger.info("clean_json_structure step 1")
-    logger.info(soda)
+
     # here will be clean up the soda json object before creating the manifest file cards
     return {"soda": soda}
 
@@ -3381,7 +3377,6 @@ def generate_dataset(soda, resume, ps):
         generate_option = soda["generate-dataset"]["generate-option"]
 
         logger.info("generate_dataset generating_on_ps")
-        logger.info(soda)
 
         if uploading_to_existing_ps_dataset(soda)  and soda["starting-point"]["origin"] != "new":
             
@@ -3396,11 +3391,9 @@ def generate_dataset(soda, resume, ps):
             if can_resume_prior_upload(resume): 
                 ps_upload_to_dataset(soda, ps, myds, resume)
             else:
-                logger.info("We are updating an existing dataset")
                 ps_update_existing_dataset(soda, myds, ps, resume)
 
         elif generate_option == "new" or generate_option == "existing-ps" and soda["starting-point"]["origin"] == "new":
-            logger.info("We are generating into an existing but not updating an existing lol")
             # if dataset name is in the generate-dataset section, we are generating a new dataset
             if "dataset-name" in soda["generate-dataset"]:
                 dataset_name = soda["generate-dataset"][
@@ -3917,7 +3910,6 @@ def generate_manifest_file_data(dataset_structure):
 
                 # Determine timestamp 
                 filename = os.path.basename(file_path.replace("\\", "/"))
-                logger.info(f"Processing file: {filename}")
                 if file_info["location"] == "ps":
                     timestamp = file_info["timestamp"]
                 else:
@@ -3946,8 +3938,6 @@ def generate_manifest_file_data(dataset_structure):
     local_timezone = TZLOCAL()
 
     # Log the dataset structure
-    logger.info("Generating manifest file data")
-    logger.info(dataset_structure)
 
     # Start recursive traversal from the root
     traverse_folders(dataset_structure, [])
