@@ -84,9 +84,9 @@ class LocalDatasetMissingSpecifiedFiles(Exception):
 
 
 class PennsieveUploadException(Exception):
-    def __init__(self, message):
-        self.message = message
-        super().__init__(self.message)
+    def __init__(self, error_message):
+        self.error_message = error_message
+        super().__init__(self.error_message)
 
     def __str__(self):
         return self.error_message
