@@ -12,7 +12,7 @@ from ...utils import (
 )
 from ..permissions import pennsieve_get_current_user_permissions
 from os.path import isdir, isfile, getsize
-from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, text_metadata, METADATA_UPLOAD_PS_PATH, create_high_lvl_manifest_files_existing_ps_starting_point, readme, changes, license
+from ..metadata import create_high_level_manifest_files, get_auto_generated_manifest_files, manifest, subjects, samples, code_description, dataset_description, performances, resources, sites, submission, text_metadata, METADATA_UPLOAD_PS_PATH, create_high_lvl_manifest_files_existing_ps_starting_point
 from ..upload_manifests import get_upload_manifests
 from .. import logger
 
@@ -925,11 +925,11 @@ def generate_dataset_locally(soda):
             elif file_key == "submission":
                 submission.create_excel(soda, False, join(datasetpath, "submission.xlsx"))
             elif file_key == "README":
-                readme.create_file(soda, False, join(datasetpath, "README.md"))
+                text_metadata.create_text_file(soda, False, join(datasetpath, "README.md"), "README.md")
             elif file_key == "CHANGES":
-                changes.create_file(soda, False, join(datasetpath, "CHANGES"))
+                text_metadata.create_text_file(soda, False, join(datasetpath, "CHANGES"), "CHANGES")
             elif file_key == "LICENSE":
-                license.create_file(soda, False, join(datasetpath, "license.txt"))
+                text_metadata.create_text_file(soda, False, join(datasetpath, "LICENSE"), "LICENSE")
 
     # 4. Add manifest files in the list
     if "manifest_file" in soda["dataset_metadata"].keys():
@@ -2437,7 +2437,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
 
                     if key == "README":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "README.md")
-                        text_metadata.create_text_file(soda, False, metadata_path, "README")
+                        text_metadata.create_text_file(soda, False, metadata_path, "README.md")
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1

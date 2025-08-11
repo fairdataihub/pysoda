@@ -8,6 +8,7 @@ from .resources import create_excel
 from .performances import create_excel
 from .submission import create_excel
 from .sites import create_excel 
+from .text_metadata import create_text_file
 from .constants import (
     SDS_FILE_RESOURCES,
     SDS_FILE_PERFORMANCES,
