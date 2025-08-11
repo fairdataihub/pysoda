@@ -6,23 +6,23 @@ import shutil
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
 ## (not used for generating locally)
-def create_text_file(soda, upload_boolean, local_destination, file_type):
+def create_text_file(soda, upload_boolean, local_destination, metadata_filename):
     """
-    Create a text file for README or CHANGES metadata using a template.
+    Create a text file for README, LICENSE, or CHANGES metadata using a template.
 
     Args:
         soda (dict): The soda object containing dataset metadata.
         upload_boolean (bool): Whether to upload the file to Pennsieve.
         local_destination (str): The path to save the text file.
-        file_type (str): The type of the file to be created, either "README" or "CHANGES".
+        metadata_filename (str): The name of the metadata file to be created (e.g., "README.md", "LICENSE", "CHANGES").
 
     Returns:
-        dict: A dictionary containing the size of the metadata file.
+        int: The size of the metadata file in bytes.
     """
 
-    template_filename = f"{file_type}.txt"
-    source = get_template_path(template_filename)
-    destination = join(METADATA_UPLOAD_PS_PATH, template_filename) if upload_boolean else local_destination
+    # Use metadata_filename directly for template and output filename
+    source = get_template_path(metadata_filename)
+    destination = join(METADATA_UPLOAD_PS_PATH, metadata_filename) if upload_boolean else local_destination
 
     # Copy the template to the destination (if it exists)
     try:
@@ -33,13 +33,14 @@ def create_text_file(soda, upload_boolean, local_destination, file_type):
             pass
 
     # Write the actual content from soda into the file (overwriting template content)
-    text = soda["dataset_metadata"].get(file_type, "")
+    # Use metadata_filename as the key for content
+    text = soda["dataset_metadata"].get(metadata_filename, "")
     with open(destination, "w", encoding="utf-8") as file:
         file.write(text)
 
     size = getsize(destination)
     if upload_boolean:
-        upload_metadata_file(template_filename, soda, destination, True)
+        upload_metadata_file(metadata_filename, soda, destination, True)
 
     return size
 
