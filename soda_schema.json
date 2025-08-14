@@ -138,8 +138,9 @@
         "code_description": {
           "$ref": "code_description.json"
         },
-        "README": { "type": "string" },
+        "README.md": { "type": "string" },
         "CHANGES": { "type": "string" },
+        "LICENSE": { "type": "string" },
         "performances": {
           "$ref": "performances.json"
         },
