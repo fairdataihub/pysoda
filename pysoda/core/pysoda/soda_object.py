@@ -41,7 +41,7 @@ soda = {
     "sample-metadata": {},
     "submission-metadata": {},
     "code-metadata": {},
-    "README": "",
+    "README.md": "",
     "CHANGES": "",
     "performances": {},
     "sites": {},
