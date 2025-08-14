@@ -2557,6 +2557,27 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                             main_total_generate_dataset_size += getsize(metadata_path)
                             total_files += 1
                             total_metadata_files += 1
+                        if key == "README.md":
+                            metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "README.md")
+                            text_metadata.create_text_file(soda, False, metadata_path, "README.md")
+                            list_upload_metadata_files.append(metadata_path)
+                            main_total_generate_dataset_size += getsize(metadata_path)
+                            total_files += 1
+                            total_metadata_files += 1
+                        if key == "CHANGES":
+                            metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "CHANGES")
+                            text_metadata.create_text_file(soda, False, metadata_path, "CHANGES")
+                            list_upload_metadata_files.append(metadata_path)
+                            main_total_generate_dataset_size += getsize(metadata_path)
+                            total_files += 1
+                            total_metadata_files += 1
+                        if key == "LICENSE":
+                            metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "LICENSE")
+                            text_metadata.create_text_file(soda, False, metadata_path, "LICENSE")
+                            list_upload_metadata_files.append(metadata_path)
+                            main_total_generate_dataset_size += getsize(metadata_path)
+                            total_files += 1
+                            total_metadata_files += 1
 
 
 
