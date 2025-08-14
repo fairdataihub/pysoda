@@ -924,7 +924,7 @@ def generate_dataset_locally(soda):
                 sites.create_excel(soda, False, join(datasetpath, "sites.xlsx"))
             elif file_key == "submission":
                 submission.create_excel(soda, False, join(datasetpath, "submission.xlsx"))
-            elif file_key == "README":
+            elif file_key == "README.md":
                 text_metadata.create_text_file(soda, False, join(datasetpath, "README.md"), "README.md")
             elif file_key == "CHANGES":
                 text_metadata.create_text_file(soda, False, join(datasetpath, "CHANGES"), "CHANGES")
@@ -2435,7 +2435,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         total_files += 1
                         total_metadata_files += 1
 
-                    if key == "README":
+                    if key == "README.md":
                         metadata_path = os.path.join(METADATA_UPLOAD_PS_PATH, "README.md")
                         text_metadata.create_text_file(soda, False, metadata_path, "README.md")
                         list_upload_metadata_files.append(metadata_path)
