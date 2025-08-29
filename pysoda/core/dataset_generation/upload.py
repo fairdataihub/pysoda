@@ -2492,6 +2492,13 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 )
 
 
+                # return and mark upload as completed if nothing is added to the manifest
+                logger.info(list_upload_files)
+                if len(list_upload_files) < 1:
+                    logger.warning("No files found to upload.")
+                    main_curate_progress_message = "No files were uploaded in this session"
+                    main_curate_status = "Done"
+                    return
 
                 # 3. Add high-level metadata files to a list
                 if "dataset_metadata" in soda.keys():
