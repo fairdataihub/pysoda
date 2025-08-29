@@ -1898,6 +1898,8 @@ bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
 
+# keep track of folders created in the upload session
+folder_created_in_session = {}
 
 bytes_file_path_dict = {}
 
@@ -1934,6 +1936,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
     global main_curate_status
     global list_of_files_to_rename
     global renamed_files_counter
+    global folder_created_in_session
 
 
     total_files = 0
@@ -2061,6 +2064,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                             r.raise_for_status()
                             ps_folder = r.json()
                             normalize_tracking_folder(ps_folder)
+                            folder_created_in_session[folder_key] = True
                         else:
                             ps_folder = my_tracking_folder["children"]["folders"][folder_key]
                             normalize_tracking_folder(ps_folder)
@@ -2117,6 +2121,8 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
             """
 
             global main_total_generate_dataset_size
+            global logger
+            global folder_created_in_session
 
 
             # folder children are packages such as collections and files stored on the Pennsieve dataset
@@ -2128,7 +2134,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
-                    if existing_folder_option == "skip" and folder_key in my_tracking_folder["children"]["folders"]:
+                    if existing_folder_option == "skip" and folder_key in my_tracking_folder["children"]["folders"] and folder_key not in folder_created_in_session:
                         continue
 
                     tracking_folder = ps_folder_children["folders"][folder_key]
@@ -2165,6 +2171,8 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                     my_bf_existing_files_name,
                     my_bf_existing_files_name_with_extension,
                 ) = ps_get_existing_files_details(my_tracking_folder)
+
+                logger.info(f"Existing files in Pennsieve: {my_bf_existing_files_name_with_extension}")
 
                 list_local_files = []
                 list_projected_names = []
@@ -3032,7 +3040,8 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
         ums.set_total_files_to_upload(total_files)
         ums.set_elapsed_time(elapsed_time)        
         
-
+        # at end of successful session reset tracking for folders created
+        folder_created_in_session = {}
         main_curate_progress_message = "Success: COMPLETED!"
         main_curate_status = "Done"
 
