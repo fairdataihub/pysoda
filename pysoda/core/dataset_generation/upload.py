@@ -1898,8 +1898,7 @@ bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
 
-# keep track of folders created in the upload session
-folder_created_in_session = {}
+
 
 bytes_file_path_dict = {}
 
@@ -1936,7 +1935,7 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
     global main_curate_status
     global list_of_files_to_rename
     global renamed_files_counter
-    global folder_created_in_session
+
 
 
     total_files = 0
@@ -2058,22 +2057,16 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
             # create/replace/skip folder
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
-                    if existing_folder_option == "skip":
-                        if folder_key not in my_tracking_folder["children"]["folders"]:
+                    if existing_folder_option == "merge":
+                        if folder_key in my_tracking_folder["children"]["folders"]:
+                            ps_folder = my_tracking_folder["children"]["folders"][folder_key]
+                            normalize_tracking_folder(ps_folder)
+                        else:
+                            # We are merging but this is a new folder - not one that already exists in the current dataset - so we create it.
                             r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
                             r.raise_for_status()
                             ps_folder = r.json()
                             normalize_tracking_folder(ps_folder)
-                            folder_created_in_session[folder_key] = True
-                        else:
-                            ps_folder = my_tracking_folder["children"]["folders"][folder_key]
-                            normalize_tracking_folder(ps_folder)
-
-                    elif existing_folder_option == "create-duplicate":
-                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
-                        r.raise_for_status()
-                        ps_folder = r.json()
-                        normalize_tracking_folder(ps_folder)
 
                     elif existing_folder_option == "replace":
                         # if the folder exists on Pennsieve remove it
@@ -2090,18 +2083,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                         r.raise_for_status()
                         ps_folder = r.json()
                         normalize_tracking_folder(ps_folder)
-
-                    elif existing_folder_option == "merge":
-                        if folder_key in my_tracking_folder["children"]["folders"]:
-                            ps_folder = my_tracking_folder["children"]["folders"][folder_key]
-                            normalize_tracking_folder(ps_folder)
-                        else:
-                            # We are merging but this is a new folder - not one that already exists in the current dataset - so we create it.
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
-                            r.raise_for_status()
-                            ps_folder = r.json()
-                            normalize_tracking_folder(ps_folder)
-
 
                     my_tracking_folder["children"]["folders"][folder_key] = ps_folder
                     tracking_folder = my_tracking_folder["children"]["folders"][folder_key] # get the folder we just added to the tracking folder
@@ -2122,7 +2103,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
 
             global main_total_generate_dataset_size
             global logger
-            global folder_created_in_session
 
 
             # folder children are packages such as collections and files stored on the Pennsieve dataset
@@ -2133,10 +2113,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
-
-                    if existing_folder_option == "skip" and folder_key in my_tracking_folder["children"]["folders"] and folder_key not in folder_created_in_session:
-                        continue
-
                     tracking_folder = ps_folder_children["folders"][folder_key]
                     list_upload_files = recursive_dataset_scan_for_ps(
                         folder,
@@ -3047,7 +3023,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
         ums.set_elapsed_time(elapsed_time)        
         
         # at end of successful session reset tracking for folders created
-        folder_created_in_session = {}
         main_curate_progress_message = "Success: COMPLETED!"
         main_curate_status = "Done"
 
