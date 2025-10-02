@@ -2335,7 +2335,6 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
         generate_option = soda["generate-dataset"]["generate-option"]
         starting_point = soda["starting-point"]["origin"]
         relative_path = ds["content"]["name"]
-
  
 
         # 1. Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
@@ -2466,6 +2465,8 @@ def ps_upload_to_dataset(soda, ps, ds, resume=False):
                     list_upload_files,
                     relative_path,
                 )
+
+                logger.info(f"List of files to upload: {list_upload_files}")
 
 
                 # return and mark upload as completed if nothing is added to the manifest
