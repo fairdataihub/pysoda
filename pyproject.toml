@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "pysoda-fairdataihub-tools"
-version = "0.1.61"
+name = "pysodafair"
+version = "0.1.62"
 description = "Pysoda package for Fairdataihub tools"
-authors = ["Your Name <cmarroquin@calmi2.org>"]
+authors = ["Christopher Marroquin <cmarroquin@calmi2.org>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/fairdataihub/pysoda"
-repository = "https://github.com/fairdataihub/pysoda"
+homepage = "https://github.com/fairdataihub/pysodafair"
+repository = "https://github.com/fairdataihub/pysodafair"
 packages = [
     { include = "pysoda" }
 ]
